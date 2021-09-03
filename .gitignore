@@ -1,5 +1,7 @@
 # Arquivos auxiliares de teste
 tmp/
+auxiliar/
+src/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
