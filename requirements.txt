@@ -1,0 +1,11 @@
+boto3==1.18.35
+botocore==1.21.35
+-e git+https://github.com/ThiagoPanini/cloudgeass.git@731ff5a8c4fdce1dcb50c47e64cf5921d6bd3880#egg=cloudgeass
+jmespath==0.10.0
+numpy==1.21.2
+pandas==1.3.2
+python-dateutil==2.8.2
+pytz==2021.1
+s3transfer==0.5.0
+six==1.16.0
+urllib3==1.26.6
