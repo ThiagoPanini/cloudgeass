@@ -16,6 +16,8 @@
 - [Sobre cloudgeass](#sobre-cloudgeass)
 - [Instalação do Pacote](#instalação-do-pacote)
 - [Funcionalidades Disponíveis](#funcionalidades-disponíveis)
+  - [Módulo s3](#módulo-s3)
+  - [Módulo serverless](#módulo-serverless) 
 - [Utilização Prática](#utilização-prática)
 - [Contatos](#contatos)
 
