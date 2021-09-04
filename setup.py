@@ -37,7 +37,7 @@ reqs = [str(ir.req) for ir in install_reqs]"""
 # Criando setup
 setup(
     name='cloudgeass',
-    version='0.0.1',
+    version='0.0.2',
     author='Thiago Panini',
     author_email='thipanini94@gmail.com',
     packages=find_packages(),
