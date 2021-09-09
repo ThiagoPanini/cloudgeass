@@ -116,7 +116,7 @@ def create_layer_path(path, runtime_folder='python'):
     
     # Verificando diretório de leitura de camada no lambda
     if ref_folder != runtime_folder:
-        path = os.path.join(ref_folder, runtime_folder)
+        path = os.path.join(path, runtime_folder)
 
     # Criando diretório
     try:
