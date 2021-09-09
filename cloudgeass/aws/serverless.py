@@ -107,7 +107,7 @@ def create_layer_path(path, runtime_folder='python'):
         práticas de construção de layers lambda.
         [type: string, default='python']
     """
-
+    
     # Extraindo última parcela do diretório da camada
     if os.path.isdir(path):
         ref_folder = pathlib.PurePath(path).name
@@ -124,6 +124,8 @@ def create_layer_path(path, runtime_folder='python'):
         logger.info(f'Diretório de camada criado em {path}')
     except FileExistsError as fee:
         logger.warning(fee)
+
+    return path
 
 # Estruturando dependências do pacote
 def get_packages(layer_path, type='venv', **kwargs):
@@ -200,10 +202,6 @@ def get_packages(layer_path, type='venv', **kwargs):
     if type not in ('venv', 'manual'):
         logger.error(f'Tipo de estruturação (type={type}) inválida. Por favor, selecione entre "manual" ou "venv". Programa encerrado')
         return
-
-    # Criando diretório do layer
-    if not os.path.isdir(layer_path):
-        create_layer_path(path=layer_path)
 
     # Coleta automática de pacotes extraindo do venv via pip freeze
     if type == 'venv':
@@ -340,7 +338,7 @@ def build_lambda_layer(layer_path, bucket_name, prefix, runtime_folder='python',
     """
 
     # Criando diretório do layer
-    create_layer_path(
+    layer_path = create_layer_path(
         path=layer_path,
         runtime_folder=runtime_folder
     )
