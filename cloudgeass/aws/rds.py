@@ -42,7 +42,7 @@ from dotenv import load_dotenv, find_dotenv
 
 # Logging
 import logging
-from utils.log import log_config
+from cloudgeass.utils.log import log_config
 
 
 """

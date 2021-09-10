@@ -35,7 +35,7 @@ import shutil
 import pathlib
 
 # Módulos auxiliares
-from utils.log import log_config
+from cloudgeass.utils.log import log_config
 from cloudgeass.aws.s3 import JimmyBuckets
 
 # Logging
