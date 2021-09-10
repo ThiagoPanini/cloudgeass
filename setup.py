@@ -37,14 +37,15 @@ reqs = [str(ir.req) for ir in install_reqs]"""
 # Criando setup
 setup(
     name='cloudgeass',
-    version='0.0.7',
+    version='0.0.8',
     author='Thiago Panini',
     author_email='thipanini94@gmail.com',
     packages=find_packages(),
     install_requires=[
         'boto3',
         'pandas',
-        'psycopg2'
+        'psycopg2',
+        'psycopg2-binary'
     ],
     license='MIT',
     description='Componentes de integração para construção de arquiteturas de soluções utilizando ambientes cloud',
