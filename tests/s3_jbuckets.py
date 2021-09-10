@@ -43,7 +43,7 @@ import shutil
 
 # Logging
 import logging
-from utils.log import log_config
+from cloudgeass.utils.log import log_config
 
 
 """

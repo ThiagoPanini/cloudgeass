@@ -43,7 +43,7 @@ from dotenv import find_dotenv, load_dotenv
 
 # Logging
 import logging
-from utils.log import log_config
+from cloudgeass.utils.log import log_config
 
 
 """
@@ -132,8 +132,7 @@ db.insert_execute_values(df=df, table=TABLE_NAME)
 # Realizando consulta para validar quantidade de registros
 rows = db.select_values(
     query=f'SELECT count(1) AS qtd_linhas FROM {TABLE_NAME}',
-    columns=['qtd_linhas'],
-    verbose=False
+    columns=['qtd_linhas']
 )
 qtd_rows = rows['qtd_linhas'][0]
 
