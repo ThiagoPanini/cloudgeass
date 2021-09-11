@@ -1,6 +1,6 @@
 """
 ---------------------------------------------------
---------------- TESTS: s3_jbuckets ----------------
+------------ TESTS: serverless_layers -------------
 ---------------------------------------------------
 Testes relacionados às funcionalidades do módulo
 serverless.py da classe cloudgeass, mais especificamente
