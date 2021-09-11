@@ -2,6 +2,7 @@
 tmp/
 auxiliar/
 src/
+lambda_layers/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
