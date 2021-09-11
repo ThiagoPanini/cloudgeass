@@ -62,17 +62,18 @@ logger = log_config(logger)
 # Variáveis de configuração s3 da AWS
 REGION = 'sa-east-1'
 BUCKET_NAME = 'cloudgeass'
-LAYER_S3_PREFIX = 'layers/serverless/'
+LAYER_KEY = 'layers/serverless/python.zip'
 
-# Variáveis de diretório
+# Variáveis de configuração dos layers
 PROJECT_PATH = os.getcwd()
-TMP_PATH = os.path.join(PROJECT_PATH, 'tmp')
-LAYER_PATH = os.path.join(PROJECT_PATH, 'tmp\\python')
-LAYER_REQ_FILE = os.path.join(PROJECT_PATH, 'requirements_dev.txt')
+LAYER_ROOT_PATH = 'lambda_layers'
+LAYER_NAME = 'test_layer'
+RUNTIME_FOLDER = 'python'
+TARGET_PATH = os.path.join(LAYER_ROOT_PATH, LAYER_NAME, RUNTIME_FOLDER)
 
 # Eliminando diretório tmp
-if os.path.isdir(TMP_PATH):
-    shutil.rmtree(path=TMP_PATH)
+if os.path.isdir(LAYER_ROOT_PATH):
+    shutil.rmtree(path=LAYER_ROOT_PATH)
 
 
 """
@@ -98,13 +99,25 @@ Testando funcionalidades do pacote cloudgeass
 print(banner)
 
 # Diretório de dependências do layer
-create_layer_path(path=LAYER_PATH)
+create_layer_path(
+    layers_root_path=LAYER_ROOT_PATH,
+    layer_name=LAYER_NAME,
+    runtime_folder=RUNTIME_FOLDER
+)
 
-# Coletando dependências
-get_packages(layer_path=LAYER_PATH, type='venv')
+# Realizando o download das dependências
+download_packages(
+    target_path=TARGET_PATH,
+    packages_from='list',
+    packages_list=['pandas', 'numpy', 'requests']
+)
 
 # Realizando upload de layer no s3
-upload_layer_to_bucket(layer_path=LAYER_PATH, bucket_name=BUCKET_NAME, prefix=LAYER_S3_PREFIX)
+upload_layer_to_bucket(
+    target_path=TARGET_PATH, 
+    bucket_name=BUCKET_NAME, 
+    key=LAYER_KEY
+)
 
 
 """
@@ -115,11 +128,13 @@ upload_layer_to_bucket(layer_path=LAYER_PATH, bucket_name=BUCKET_NAME, prefix=LA
 """
 
 # Eliminando diretório criado
-shutil.rmtree(TMP_PATH)
+shutil.rmtree(LAYER_ROOT_PATH)
 
 # Criando layer
 build_lambda_layer(
-    layer_path=LAYER_PATH,
+    target_path=TARGET_PATH,
     bucket_name=BUCKET_NAME,
-    prefix=LAYER_S3_PREFIX
+    key=LAYER_KEY,
+    packages_from='list',
+    packages_list=['pandas', 'numpy', 'requests']
 )
