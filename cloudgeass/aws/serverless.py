@@ -298,7 +298,12 @@ def upload_layer_to_bucket(target_path, bucket_name, key):
 
     # Zipando diretório do layer
     try:
-        shutil.make_archive(target_path, format='zip', root_dir=target_path)
+        shutil.make_archive(
+            base_name=target_path,
+            format='zip',
+            root_dir=os.path.dirname(target_path),
+            base_dir=os.path.basename(target_path)
+        )
         logger.info(f'Diretório de dependências {target_path} zipado com sucesso')
     except Exception as e:
         logger.error(f'Erro ao zipar diretório de dependências {target_path}. Exception: {e}')
