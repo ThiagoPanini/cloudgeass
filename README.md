@@ -17,7 +17,8 @@
 - [Instalação do Pacote](#instalação-do-pacote)
 - [Funcionalidades Disponíveis](#funcionalidades-disponíveis)
   - [Módulo s3](#módulo-s3)
-  - [Módulo serverless](#módulo-serverless) 
+  - [Módulo rds](#módulo-rds)
+  - [Módulo serverless](#módulo-serverless)
 - [Utilização Prática](#utilização-prática)
 - [Contatos](#contatos)
 
@@ -66,6 +67,25 @@ Detalhando um pouco mais as _features_ disponíveis dentro da classe JimmyBucket
 | `jbuckets.read_object()`          | Realiza a leitura de um objeto presente no s3, retornando um conteúdo binário que pode ser trabalhado posteriormente pelo código |
 | `jbuckets.object_to_df()`         | Mirando dados em formato tabular (arquivos csv ou txt), realiza a leitura de um objeto no s3 direto em um formato de DataFrame do pandas |
 
+
+## Módulo rds
+
+De maneira geral, pode-se definir o módulo rds como um frente facilidadora para operações em bancos de dados relacionais, sejam estes presentes na nuvem ou não. Sabe-se que a linguagem python proporciona uma série de funcionalidades capazes de integrar serviços de leitura e escrita de dados utilizando os mais variados _engines_. Bibliotecas como [`pymysql`](https://pypi.org/project/PyMySQL/), [`psycopg2`](https://pypi.org/project/psycopg2/), entre outras são exemplos de pacotes que fornecem tais benefícios. Assim, visando encapsular as principais operações em termos de conexões a bancos de dados, o módulo rds, concebido com inspiração o serviço de bancos de dados relacionais da AWS (_Relational Database Service_) traz, como principal característica, classes responsáveis por inicializar objetos de conexão através de parâmetros essenciais fornecidos pelo usuário como, por exemplo, um endpoint, credenciais do usuário do banco, nome do banco de dados a ser utilizado, entre outros. Um exemplo prático deste módulo pode ser encontrado na classe [PostgreSQLConnection](https://github.com/ThiagoPanini/cloudgeass/blob/main/cloudgeass/aws/rds.py) que, construída sob os elementos de um banco de dados PostgreSQL a partir da biblioteca `psycopg2`, pode ser instanciada a partir dos seguintes parâmetros:
+
+* _host:_ endpoint do servidor do banco de dados a ser utilizado na conexão
+* _user:_ usuário do banco de dados
+* _password:_ senha do usuário do banco de dados
+* _database:_ referência do banco de dados utilizado na conexão
+
+Com isso, tem-se em mãos um objeto de conexão que pode ser utilizado das mais variadas formas, seja para executar queries, criar tabelas, selecionar dados ou receber dados de forma dinâmica através de métodos que transformam resultados de consultas em objetos DataFrame do pandas. Abaixo, uma relação dos métodos presentes na classe `PostgreSQLConnection` utilizada como exemplo:
+
+| Método                            | Descrição                                                                                             |
+| :-------------------------------: | :---------------------------------------------------------------------------------------------------: |         
+| `conn.show_tables()`              | Lista todas as tabelas presentes no banco de dados conectado |
+| `jbuckets.execute_query()`        | Utiliza o objeto de conexão instanciado da classe para executar uma query no banco de dados |
+| `jbuckets.crate_table_from_df()`  | Recebe um objeto DataFrame como entrada para verificar as colunas e os tipos primitivos de modo a construir uma query `CREATE TABLE` de acordo com o conteúdo dos dados |
+| `jbuckets.insert_execute_values()`| Utiliza um método de alta performance para inserção de dados em uma tabela do banco de dados a partir de um objeto DataFrame |
+| `jbuckets.select_values()`        | Executa uma query `SELECT` para retornar os dados em um formato DataFrame para o usuário solicitante |
 
 ### Módulo serverless
 
@@ -119,7 +139,40 @@ jbuckets.download_all_objects(
 )
 ```
 
-Em um exemplo básico de criação de layers lambda, o snippet abaixo traz a execução de uma única função capaz de encapsular todo o procedimento:
+Em um exemplo básico de conexão a um banco de dados relacional (por exemplo, RDS com engine PostgreSQL), o código abaixo utiliza o módulo `cloudgeass.aws.rds` para gerenciar todas as operações de leitura e escrita no banco alvo:
+
+```python
+# Importando bibliotecas
+from cloudgeass.aws.rds import PostgreSQLConnection
+
+# Instância de conexão ao banco de dados
+db = PostgreSQLConnection(
+    host=DB_HOST,
+    database=DB_NAME,
+    user=DB_USER,
+    password=os.getenv('DB_PWD')
+)
+
+# Dropando tabela alvo, caso existente
+db.execute_query(f'DROP TABLE IF EXISTS {TABLE_NAME}')
+
+# Retornando tabelas já existentes no banco
+db_tables = db.show_tables()
+
+# Criando tabela a partir de schema do DataFrame
+db.create_table_from_df(df=df, table=TABLE_NAME)
+
+# Inserindo dados a partir de DataFrame
+db.insert_execute_values(df=df, table=TABLE_NAME)
+
+# Realizando consulta para validar quantidade de registros
+rows = db.select_values(
+    query=f'SELECT count(1) AS qtd_linhas FROM {TABLE_NAME}',
+    columns=['qtd_linhas']
+)
+```
+
+Já em um exemplo básico de criação de layers lambda, o snippet abaixo traz a execução de uma única função capaz de encapsular todo o procedimento:
 
 ```python
 # Importando bibliotecas
