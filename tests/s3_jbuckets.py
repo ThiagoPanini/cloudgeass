@@ -63,10 +63,13 @@ BUCKET_NAME = 'cloudgeass'
 
 # Variáveis de diretório
 PROJECT_PATH = os.getcwd()
-MODULES_PATH = os.path.join(PROJECT_PATH, 'cloudgeass\\aws')
+MODULES_PATH = os.path.join(PROJECT_PATH, r'cloudgeass\aws')
 MODULES_PREFIX = 'cloudgeass/aws/'
 TXT_FILENAME = 'requirements_dev.txt'
 TMP_PATH = os.path.join(PROJECT_PATH, 'tmp')
+IGNORE_FOLDERS = ['auxiliar', 'build', 'cloudgeass.egg-info', 'dist', 
+                  'lambda_layers', 'src', '.git']
+IGNORE_FILES = ['.env']
 
 # Eliminando diretório tmp
 if os.path.isdir(TMP_PATH):
@@ -126,7 +129,8 @@ assert objs_f1[0] == TXT_FILENAME, f'Objeto presente no bucket {BUCKET_NAME} ({o
 
 # Realizando upload individual de múltiplos arquivos em um diretório
 logger.debug(f'Iniciando upload individual de arquivos presentes no diretório {MODULES_PATH}')
-files = [f for f in os.listdir(MODULES_PATH) if f != '__pycache__']
+files = [f for f in os.listdir(MODULES_PATH) if f not in ('__pycache__', '.env')]
+
 for file in files:
     jbuckets.upload_object(
         file=os.path.join(MODULES_PATH, file),
@@ -139,15 +143,24 @@ for file in files:
 objs_f2 = jbuckets.list_bucket_objects(bucket_name=BUCKET_NAME)
 assert len(files) + len(objs_f1) == len(objs_f2), f'Quantidade de objetos no bucket ({len(files) + len(objs_f1)}) é diferente do esperado ({len(objs_f2)})'
 
+# Verificando quantidade de arquivos listados no diretório para validação do upload
+dir_files = []
+for paths, dirs, files in os.walk(PROJECT_PATH):
+    dirs[:] = [d for d in dirs if d not in IGNORE_FOLDERS]
+    files[:] = [f for f in files if f not in IGNORE_FILES]
+    for name in files:
+        dir_files.append(name)
+total_objects = len(dir_files)
+
 # Realizando o upload de todos os arquivos em um diretório raíz
-dir_files = [f for f in os.listdir(PROJECT_PATH) if '.' in f]
 jbuckets.upload_directory(
     directory=PROJECT_PATH,
-    bucket_name=BUCKET_NAME
+    bucket_name=BUCKET_NAME,
+    ignore_folders=IGNORE_FOLDERS,
+    ignore_files=IGNORE_FILES
 )
 
 # Validando funcionalidade
-total_objects = len([name for _, _, files in os.walk(PROJECT_PATH) for name in files])
 objs_f3 = jbuckets.list_bucket_objects(bucket_name=BUCKET_NAME)
 assert total_objects == len(objs_f3), f'Quantidade de objetos presentes no bucket ({len(objs_f3)}) não equivale ao número esperado ({total_objects})'
 
@@ -170,3 +183,7 @@ jbuckets.download_all_objects(
 # Validando funcionalidade
 downloaded_files = len([name for _, _, files in os.walk(TMP_PATH) for name in files])
 assert len(objs_f3) == downloaded_files, f'Quantidade de arquivos baixados do bucket {downloaded_files}, não equivale ao número esperado ({len(objs_f3)})'
+
+# Eliminando diretório tmp
+if os.path.isdir(TMP_PATH):
+    shutil.rmtree(path=TMP_PATH)
