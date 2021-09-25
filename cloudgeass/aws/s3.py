@@ -352,8 +352,8 @@ class JimmyBuckets():
             logger.info(f'Upload do objeto {key} realizado com sucesso no bucket {bucket_name}')
 
     # Realizando upload de todos os arquivos em um diretório local
-    def upload_directory(self, directory, bucket_name, folder_prefix='',
-                         method='put_object', inner_verbose=False, outer_verbose=True):
+    def upload_directory(self, directory, bucket_name, ignore_folders=[], ignore_files=[],
+                         folder_prefix='', method='put_object', inner_verbose=False, outer_verbose=True):
         """
         Método criado para com o objetivo de encapsular múltiplas
         execuções de upload de objetos no s3 presentes em um
@@ -432,13 +432,20 @@ class JimmyBuckets():
         """
 
         # Levantando parâmetros
-        if outer_verbose:
+        """if outer_verbose:
             total_objects = len([name for _, _, files in os.walk(directory) for name in files])
-            logger.debug(f'Iniciando upload dos {total_objects} objetos encontrados no diretório alvo')
+            logger.debug(f'Iniciando upload dos {total_objects} objetos encontrados no diretório alvo')"""
 
         # Navegando por todos os arquivos em um diretório
+        i = 0
         for path, dirs, files in os.walk(directory):
+            # Criando novas listas eliminando pastas e arquivos ignorados
+            dirs[:] = [d for d in dirs if d not in ignore_folders]
+            files[:] = [f for f in files if f not in ignore_files]
+
+            # Iterando sobre cada arquivo e realizando upload
             for name in files:
+                i += 1
                 filepath = os.path.join(path, name)
                 key = filepath.replace(directory, folder_prefix).replace(os.path.sep, '/')[1:]
                 # Realizando ingestão de cada objeto encontrado
@@ -451,7 +458,7 @@ class JimmyBuckets():
                 )
 
         if outer_verbose:
-            logger.info(f'Fim do processo de upload dos objetos encontrados no diretório')
+            logger.info(f'Fim do processo de upload dos {i} objetos listados no diretório')
     
     # Lendo objeto direto do s3
     def read_object(self, bucket_name, key, verbose=True):
