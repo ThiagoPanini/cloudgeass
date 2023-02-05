@@ -6,8 +6,9 @@
   
   [![PyPI](https://img.shields.io/pypi/v/cloudgeass?color=purple)](https://pypi.org/project/cloudgeass/)
   ![GitHub commit activity](https://img.shields.io/github/commit-activity/m/ThiagoPanini/cloudgeass?color=blue)
-  ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/cloudgeass?color=lightblue)
   ![PyPI - Status](https://img.shields.io/pypi/status/cloudgeass?color=red)
+  ![CI workflow](https://img.shields.io/github/actions/workflow/status/ThiagoPanini/cloudgeass/ci-cloudgeass-main.yml?label=ci)
+  [![codecov](https://codecov.io/github/ThiagoPanini/cloudgeass/branch/main/graph/badge.svg?token=7HI1YGS4AA)](https://codecov.io/github/ThiagoPanini/cloudgeass)
 
 </div>
 
@@ -47,3 +48,7 @@ ___
 - [GitHub Actions - pypa/gh-action-pypi-publish](https://github.com/marketplace/actions/pypi-publish)
 - [Medium - Major, Minor and Patch](https://medium.com/fiverr-engineering/major-minor-patch-a5298e2e1798)
 - [Medium - Automate PyPI Releases with GitHub Actions](https://medium.com/@VersuS_/automate-pypi-releases-with-github-actions-4c5a9cfe947d)
+
+**Tests**
+- [Codecov - Setting Threshold](https://github.com/codecov/codecov-action/issues/554#issuecomment-1261250304)
+- [Codecov - Configuring codecov.yml](https://docs.codecov.com/docs/commit-status)
