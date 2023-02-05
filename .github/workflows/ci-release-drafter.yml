@@ -21,6 +21,3 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           config-name: configs/release-drafter.yml
-
-      - name: Verifica output de action anterior
-        run: echo "Tag name ${{ steps.update-release-draft.outputs.tag_name }}" 
