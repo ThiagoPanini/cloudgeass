@@ -58,19 +58,3 @@ def test_funcao_list_buckets_retorna_o_bucket_esperado(mocked_s3_resource):
     buckets = list_buckets(resource=mocked_s3_resource)
 
     assert buckets[0] == bucket_name
-
-
-@mock_s3
-def test_funcao_list_buckets_retorna_o_bucket_esperado2(mocked_resource):
-    """
-    G: dado que o usuário deseja obter uma lista de buckets em sua conta
-    W: quando o método list_buckets() de cloudgeass.aws.s3 for executado
-       na ciência da existência de um bucket de nome específico
-    T: então a lista resultante deve conter o bucket esperado
-    """
-
-    # Executando método de listagem de buckets
-    buckets = list_buckets(resource=mocked_resource)
-    print(buckets)
-
-    assert False
