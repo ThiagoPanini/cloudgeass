@@ -1,28 +1,10 @@
 """
----------------------------------------------------------
-                    Resumo do Módulo
----------------------------------------------------------
-    Arquivo de setup com as principais informações da
-aplicação consolidadas a partir da biblioteca setuptools
+SCRIPT: setup.py.
 
----------------------------------------------------------
-                          FAQ
----------------------------------------------------------
-
-1. Qual o objetivo do script setup.py?
-    R: O arquivo setup.py serve para consolidar algumas
-informações úteis da aplicação e fornecer um informativo
-básico para novos desenvolvedores
-
----------------------------------------------------------
-2. Qual sua usabilidade em aplicações criadas?
-    R: Na prática, o arquivo setup.py pode ser utilizado
-para instalação dos pacotes no virtual env de trabalho
-
-Ref [2.1]: https://stackoverflow.com/questions/1471994/what-is-setup-py
+Arquivo de configuração da biblioteca como um todo
+---------------------------------------------------
 """
-
-# Bibliotecas
+# Importando bibliotecas
 from setuptools import setup, find_packages
 
 # Lendo README.md
