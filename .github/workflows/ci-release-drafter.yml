@@ -24,4 +24,4 @@ jobs:
 
       - name: Verifica resolved version
         run: |
-          echo {{$RESOLVED_VERSION}}
+          env
