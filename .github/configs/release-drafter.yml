@@ -60,6 +60,7 @@ version-resolver:
       - bug 🐞
       - doc 🖍️
       - observability 👁️‍🗨️
+      - config ⚙️
   
   default: patch
 
