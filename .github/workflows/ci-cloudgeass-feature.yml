@@ -47,7 +47,7 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Build do Pacote
-        runs: python -m build
+        run: python -m build
 
       - name: Publicação no PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
