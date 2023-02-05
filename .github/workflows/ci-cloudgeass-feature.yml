@@ -46,6 +46,14 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
 
+      - name: Build do Pacote
+        runs: python -m build
+
+      - name: Publicação no PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          password: ${{ secrets.PYPI_API_TOKEN }}
+
   open-pr-to-main:
     name: open-pr-to-main
     runs-on: ubuntu-latest
@@ -61,7 +69,7 @@ jobs:
         with:
           source_branch: ${{ github.ref }}
           destination_branch: "main"
-          pr_title: "pr(dev): ${{ github.ref }} -> main"
+          pr_title: "pr(main): ${{ github.ref }} -> main"
           pr_template: ".github/pull_request_template.md"
           pr_assignee: "ThiagoPanini"
           pr_label: "github-bot 🤖"
