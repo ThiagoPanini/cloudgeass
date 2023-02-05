@@ -22,6 +22,5 @@ jobs:
         with:
           config-name: configs/release-drafter.yml
 
-      - name: Verifica resolved version
-        run: |
-          echo ${{ join(steps.update_relase_draft.outputs.*, '\n') }}
+      - name: Verifica output de action anterior
+        run: echo "Tag name ${{ steps.update-release-draft.outputs.tag_name }}" 
