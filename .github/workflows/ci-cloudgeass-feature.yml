@@ -39,7 +39,7 @@ jobs:
 
       - name: Testes Unitários com pytest
         run:
-          pytest app/ -vv --color=yes --cov=./ --cov-report=xml
+          pytest -vv --color=yes --cov=./ --cov-report=xml
 
       - name: Cobertura dos Testes - codecov
         uses: codecov/codecov-action@v3
