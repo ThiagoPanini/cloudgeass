@@ -22,6 +22,6 @@ jobs:
         with:
           config-name: configs/release-drafter.yml
 
-      - name: Verifica resovled version
+      - name: Verifica resolved version
         run: |
-          echo $RESOLVED_VERSION
+          echo {{$RESOLVED_VERSION}}
