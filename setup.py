@@ -1,5 +1,7 @@
 """
-Arquivo de configuração da biblioteca
+MÓDULO: setup.py.
+
+Arquivo de configuração da biblioteca.
 """
 # Importando bibliotecas
 from setuptools import setup, find_packages
