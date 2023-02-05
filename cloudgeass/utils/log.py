@@ -9,55 +9,92 @@
 import logging
 import os
 
+
+# Parâmetros de log
+LOG_LEVEL = logging.DEBUG
+LOG_FORMAT = "%(levelname)s;%(asctime)s;%(filename)s;%(lineno)d;%(message)s"
+LOG_FILE = os.path.join(os.getcwd(), 'log/execution_log.log')
+LOG_DATEFMT = '%Y-%m-%d %H:%M:%S'
+
+
 # Definindo função para configurar objeto de log do código
-def log_config(logger, level=logging.DEBUG, 
-               log_format='%(levelname)s;%(asctime)s;%(filename)s;%(module)s;%(lineno)d;%(message)s',
-               log_filepath=os.path.join(os.getcwd(), 'exec_log/execution_log.log'),
-               flag_file_handler=False, flag_stream_handler=True, filemode='a'):
+def log_config(logger, level=LOG_LEVEL, format=LOG_FORMAT, datefmt=LOG_DATEFMT,
+               file=LOG_FILE, stream_handler=True, file_handler=False,
+               filemode='a'):
     """
-    Função que recebe um objeto logging e aplica configurações básicas ao mesmo
-    
+    Função auxiliar que recebe um objeto logger instanciado externamente
+    e propõe configurações customizadas como, por exemplo, a adição de
+    um level padrão, formato especificado da mensagem, configuração de
+    handlers de arquivo ou stream no terminal ou mesmo o tipo de
+    armazenamento dos logs.
+
     Parâmetros
     ----------
-    :param logger: objeto logger criado no escopo do módulo [type: logging.getLogger()]
-    :param level: level do objeto logger criado [type: level, default=logging.DEBUG]
-    :param log_format: formato do log a ser armazenado [type: string]
-    :param log_filepath: caminho onde o arquivo .log será armazenado 
-        [type: string, default='exec_log/execution_log.log']
-    :param flag_file_handler: define se será criado um arquivo de armazenamento de log
-        [type: bool, default=False]
-    :param flag_stream_handler: define se as mensagens de log serão mostradas na tela
+    :param logger:
+        Objeto logger criado a partir da biblioteca nativa logging
+        [type: logging.logger]
+
+    :param level:
+        Level padrão do logger a ser configurado.
+        * Opções: DEBUG, INFO, WARNING, ERROR
+        [type: logger.Level, default=logger.DEBUG]
+
+    :param format:
+        Formato da mensagem de log mostrada ou armazenada em arquivo
+        [type: str,
+        default='%(levelname)s;%(asctime)s;%(filename)s;%(module)s;%(lineno)d;%(message)s']
+
+    :param datefmt:
+        Formato padrão de datas considerado na mensagens de log
+        [type: str, default='%Y-%m-%d %H:%M:%S']
+
+    :param file:
+        Caminho do arquivo de log a ser opcionalmente armazenado
+        [type: str, default=os.path.join(os.getcwd(), 'log/execution_log.log')]
+
+    :param stream_handler:
+        Handler para mostrar mensagens de log no terminal
         [type: bool, default=True]
-    :param filemode: tipo de escrita no arquivo de log [type: string, default='a' (append)]
-    
-    Retorno
-    -------
-    :return logger: objeto logger pré-configurado
+
+    :param file_handler:
+        Handler para armazenamento de log em arquivo
+        [type: bool, default=False]
+
+    :param filemode:
+        Modo de armazenamento de arquivo de log
+        [type: str, default='a'] (append)
+
+    Para mais informações,
+    consultar: https://docs.python.org/3/library/logging.html
+
+    Return
+    ------
+    :return logger:
+        Objeto logging devidamente configurado de acordo com os
+        parâmetros fornecidos pelo usuário
+        [type: logging.logger]
     """
 
-    # Setting level for the logger object
+    # Configurando level do objeto de log
     logger.setLevel(level)
 
-    # Creating a formatter
-    formatter = logging.Formatter(log_format, datefmt='%Y-%m-%d %H:%M:%S')
+    # Definindo formatação do objeto de log
+    formatter = logging.Formatter(format, datefmt=datefmt)
 
-    # Creating handlers
-    if flag_file_handler:
-        log_path = '/'.join(log_filepath.split('/')[:-1])
-        if not os.path.isdir(log_path):
-            os.makedirs(log_path)
+    # Criando e configurando stream handler
+    if stream_handler:
+        s_handler = logging.StreamHandler()
+        s_handler.setFormatter(formatter)
+        logger.addHandler(s_handler)
 
-        # Adding file_handler
-        file_handler = logging.FileHandler(log_filepath, mode=filemode, encoding='utf-8')
-        file_handler.setFormatter(formatter)
-        logger.addHandler(file_handler)
+    # Criando e configurando file handler
+    if file_handler:
+        log_dir = os.path.dirname(file)
+        if not os.path.isdir(log_dir):
+            os.makedirs(log_dir)
 
-    if flag_stream_handler:
-        # Adding stream_handler
-        stream_handler = logging.StreamHandler()
-        stream_handler.setFormatter(formatter)    
-        logger.addHandler(stream_handler)
+        f_handler = logging.FileHandler(file, mode=filemode, encoding='utf-8')
+        f_handler.setFormatter(formatter)
+        logger.addHandler(f_handler)
 
     return logger
-
-    

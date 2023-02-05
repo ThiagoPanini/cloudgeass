@@ -1,5 +1,5 @@
 <div align="center">
-    <br><img src="https://github.com/ThiagoPanini/cloudgeass/blob/config/repo-refactgor/docs/imgs/01-header-readme.png?raw=true" alt="cloudgeass-logo">
+    <br><img src="https://github.com/ThiagoPanini/cloudgeass/blob/config/repo-refactor/docs/imgs/01-header-readme.png?raw=true" alt="cloudgeass-logo">
 </div>
 
 <div align="center">  
@@ -41,3 +41,5 @@ ___
 **AWS**
 
 **Python**
+
+- [Packaging Python Projects](https://packaging.python.org/en/latest/tutorials/packaging-projects/)
