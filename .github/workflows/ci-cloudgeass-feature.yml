@@ -46,14 +46,6 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
 
-      - name: Build do Pacote
-        run: python -m build
-
-      - name: Publicação no PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          password: ${{ secrets.PYPI_API_TOKEN }}
-
   open-pr-to-main:
     name: open-pr-to-main
     runs-on: ubuntu-latest

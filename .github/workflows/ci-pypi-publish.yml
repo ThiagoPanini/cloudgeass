@@ -1,0 +1,42 @@
+name: "🚀 PyPI Package Publish"
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  ci-pypi-publish:
+    name: ci-pypi-publish
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Instalação do Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.10'
+
+      - name: Extrai nome da tag / versão
+        id: tag
+        run: echo ::set-output name=TAG_NAME::$(echo $GITHUB_REF | cut -d / -f 3)
+      
+      - name: Atualiza versão no setup.py
+        run: >-
+          sed -i "s/{{VERSION_PLACEHOLDER}}/${{ steps.tag.outputs.TAG_NAME }}/g" setup.py
+
+      - name: Build do Pacote
+        run: |
+          pip install --upgrade build
+          python -m build
+
+      - name: Publicação no PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          password: ${{ secrets.PYPI_API_TOKEN }}

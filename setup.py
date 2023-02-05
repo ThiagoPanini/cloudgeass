@@ -1,8 +1,5 @@
 """
-SCRIPT: setup.py.
-
-Arquivo de configuração da biblioteca como um todo
----------------------------------------------------
+Arquivo de configuração da biblioteca
 """
 # Importando bibliotecas
 from setuptools import setup, find_packages
@@ -14,7 +11,7 @@ with open("README.md", "r", encoding='utf-8') as f:
 # Criando setup
 setup(
     name='cloudgeass',
-    version='1.0.0',
+    version='{{VERSION_PLACEHOLDER}}',
     author='Thiago Panini',
     author_email='panini.development@gmail.com',
     packages=find_packages(),
@@ -32,8 +29,6 @@ setup(
     classifiers=[
         "Programming Language :: Python :: 3",
         "Development Status :: 3 - Alpha",
-        "Environment :: Console",
-        "Framework :: Jupyter",
         "Intended Audience :: Developers",
         "Natural Language :: Portuguese (Brazilian)",
         "License :: OSI Approved :: MIT License",
@@ -46,8 +41,3 @@ setup(
     ],
     python_requires=">=3.0.0"
 )
-
-# Hint: publicando Source Archive (tar.gz) e Built Distribution (.whl)
-# python3 setup.py sdist bdist_wheel
-# twine check dist/*
-# python -m twine upload --skip-existing dist/*

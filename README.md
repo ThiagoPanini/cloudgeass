@@ -38,8 +38,12 @@ ___
 
 ## Referências
 
-**AWS**
-
 **Python**
 
-- [Packaging Python Projects](https://packaging.python.org/en/latest/tutorials/packaging-projects/)
+- [Python - Packaging Python Projects](https://packaging.python.org/en/latest/tutorials/packaging-projects/)
+
+**Github**
+
+- [GitHub Actions - pypa/gh-action-pypi-publish](https://github.com/marketplace/actions/pypi-publish)
+- [Medium - Major, Minor and Patch](https://medium.com/fiverr-engineering/major-minor-patch-a5298e2e1798)
+- [Medium - Automate PyPI Releases with GitHub Actions](https://medium.com/@VersuS_/automate-pypi-releases-with-github-actions-4c5a9cfe947d)
