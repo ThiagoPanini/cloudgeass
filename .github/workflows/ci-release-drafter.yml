@@ -3,7 +3,7 @@ name: "📦 Release Drafter"
 on:
   push:
     branches:
-      - ci/release-drafter-test
+      - main
 
 permissions:
   contents: write
