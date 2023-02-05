@@ -13,7 +13,7 @@ with open("README.md", "r", encoding='utf-8') as f:
 # Criando setup
 setup(
     name='cloudgeass',
-    version='1.0.1',
+    version='1.0.2',
     author='Thiago Panini',
     author_email='panini.development@gmail.com',
     packages=find_packages(),
