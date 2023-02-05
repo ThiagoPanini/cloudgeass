@@ -1,8 +1,9 @@
-# Arquivos auxiliares de teste
-tmp/
-auxiliar/
-src/
-lambda_layers/
+# Notebooks e arquivos ipynb
+notebooks/
+**ipynb
+
+# Arquivos auxiliares do VSCode
+.vscode
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
