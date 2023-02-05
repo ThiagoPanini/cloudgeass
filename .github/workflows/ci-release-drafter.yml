@@ -22,7 +22,6 @@ jobs:
         with:
           config-name: configs/release-drafter.yml
 
-    steps:
       - name: Verifica resovled version
         run: |
           echo $RESOLVED_VERSION
