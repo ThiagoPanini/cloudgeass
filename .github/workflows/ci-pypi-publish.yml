@@ -13,7 +13,6 @@ jobs:
   ci-pypi-publish:
     name: ci-pypi-publish
     runs-on: ubuntu-latest
-    needs:
     
     steps:
       - name: Checkout
