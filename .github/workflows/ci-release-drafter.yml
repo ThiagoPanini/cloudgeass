@@ -24,4 +24,4 @@ jobs:
 
       - name: Verifica resolved version
         run: |
-          env
+          echo ${{ join(steps.update_relase_draft.outputs.*, '\n') }}
