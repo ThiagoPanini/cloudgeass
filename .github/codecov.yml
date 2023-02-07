@@ -1,3 +1,5 @@
+ignore:
+  - setup.py
 coverage:
   status:
     patch:
