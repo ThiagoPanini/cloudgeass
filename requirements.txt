@@ -5,3 +5,4 @@ pytest-cov
 moto
 boto3
 build
+pandas
