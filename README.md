@@ -1,5 +1,5 @@
 <div align="center">
-    <br><img src="https://github.com/ThiagoPanini/cloudgeass/blob/config/repo-refactor/docs/imgs/01-header-readme.png?raw=true" alt="cloudgeass-logo">
+    <br><img src="https://github.com/ThiagoPanini/cloudgeass/blob/feature/s3-module-improvement/docs/imgs/01-header-readme.png?raw=true" alt="cloudgeass-logo">
 </div>
 
 <div align="center">  
@@ -51,4 +51,6 @@ ___
 
 **Tests**
 - [Codecov - Setting Threshold](https://github.com/codecov/codecov-action/issues/554#issuecomment-1261250304)
-- [Codecov - Configuring codecov.yml](https://docs.codecov.com/docs/commit-status)
+- [Codecov - About the Codecov YAML](https://docs.codecov.com/docs/codecov-yaml)
+- [Codecov - Status Checks](https://docs.codecov.com/docs/commit-status)
+- [Codecov - codecov.yml Reference](https://docs.codecov.com/docs/codecovyml-reference)
