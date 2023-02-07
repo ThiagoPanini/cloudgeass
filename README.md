@@ -6,8 +6,8 @@
   <br>
   
   [![PyPI](https://img.shields.io/pypi/v/cloudgeass?color=purple)](https://pypi.org/project/cloudgeass/)
+    ![PyPI - Status](https://img.shields.io/pypi/status/cloudgeass?color=red)
   ![GitHub commit activity](https://img.shields.io/github/commit-activity/m/ThiagoPanini/cloudgeass?color=blue)
-  ![PyPI - Status](https://img.shields.io/pypi/status/cloudgeass?color=red)
   ![CI workflow](https://img.shields.io/github/actions/workflow/status/ThiagoPanini/cloudgeass/ci-cloudgeass-main.yml?label=ci)
   [![codecov](https://codecov.io/github/ThiagoPanini/cloudgeass/branch/main/graph/badge.svg?token=7HI1YGS4AA)](https://codecov.io/github/ThiagoPanini/cloudgeass)
 
@@ -24,7 +24,7 @@ ___
 
 ## O que é o cloudgeass?
 
-Cloudgeass é uma biblioteca Python criada para centralizar uma série de módulos, classes, métodos e funções prontas para serem utilizadas nos mais variados serviços da AWS. Inspirado em um [renomado anime japonês](https://en.wikipedia.org/wiki/Code_Geass), o **cloudgeass** visa proporcionar um maior controle aos seus usuários sobre atividades e operações comumente realizadas na AWS.
+Cloudgeass é uma biblioteca Python criada para centralizar uma série de módulos, classes, métodos e funções prontas para serem utilizadas nos mais variados serviços da AWS. Inspirado em um [renomado anime japonês](https://en.wikipedia.org/wiki/Code_Geass), o **cloudgeass** visa proporcionar um maior controle aos seus usuários sobre atividades e operações comumente realizadas na nuvem.
 
 > **Note**
 > A construção desta biblioteca foi retomada após mais de 1 ano em hiato. Suas funcionalidades estão sendo refatoradas e uma nova versão deverá ser lançada em breve.
@@ -35,7 +35,7 @@ ___
 
 - [Thiago Panini - LinkedIn](https://www.linkedin.com/in/thiago-panini/)
 - [paninitechlab @ hashnode](https://panini.hashnode.dev/)
-  
+
 ___
 
 ## Referências
@@ -55,3 +55,4 @@ ___
 - [Codecov - About the Codecov YAML](https://docs.codecov.com/docs/codecov-yaml)
 - [Codecov - Status Checks](https://docs.codecov.com/docs/commit-status)
 - [Codecov - codecov.yml Reference](https://docs.codecov.com/docs/codecovyml-reference)
+- [Codecov - Ignore Paths](https://docs.codecov.com/docs/ignoring-paths)

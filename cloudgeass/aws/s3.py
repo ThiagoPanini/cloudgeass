@@ -14,7 +14,6 @@ realizar as mais variadas atividades no S3.
           1.1 Importação das bibliotecas
 ---------------------------------------------------"""
 
-import logging
 from cloudgeass.utils.log import log_config
 
 import boto3
@@ -29,8 +28,7 @@ import pandas as pd
 """
 
 # Configurando objeto de logger
-logger = logging.getLogger(__file__)
-logger = log_config(logger)
+logger = log_config(logger_name=__file__)
 
 # Instanciando client e recurso do s3 para uso nas funções
 client = boto3.client("s3")
