@@ -24,7 +24,7 @@ from cloudgeass.aws.s3 import list_buckets
 ---------------------------------------------------"""
 
 
-@pytest.mark("list_buckets")
+@pytest.mark.list_buckets
 @mock_s3
 def test_funcao_list_buckets_retorna_uma_lista(mocked_s3_resource):
     """
@@ -42,7 +42,7 @@ def test_funcao_list_buckets_retorna_uma_lista(mocked_s3_resource):
     assert type(buckets) is list
 
 
-@pytest.mark("list_buckets")
+@pytest.mark.list_buckets
 @mock_s3
 def test_funcao_list_buckets_retorna_o_bucket_esperado(mocked_s3_resource):
     """
