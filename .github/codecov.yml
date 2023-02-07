@@ -1,7 +1,12 @@
 coverage:
   status:
+    patch:
+      default:
+        target: 50%
+        threshold: 5%
+        if_ci_failed: error
     project:
       default:
         target: 85%
         threshold: 5%
-        if_ci_failed: success
+        if_ci_failed: error
