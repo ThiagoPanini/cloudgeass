@@ -35,7 +35,7 @@ ___
 
 - [Thiago Panini - LinkedIn](https://www.linkedin.com/in/thiago-panini/)
 - [paninitechlab @ hashnode](https://panini.hashnode.dev/)
-  
+
 ___
 
 ## Referências

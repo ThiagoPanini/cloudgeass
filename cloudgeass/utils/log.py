@@ -36,6 +36,7 @@ def log_config(logger_name: str = __file__,
         nas mensagens de logs.
         [type: str, default="%Y-%m-%d %H:%M:%S"]
     """
+    print(logger_name)
 
     # Instanciando objeto de logging
     logger = logging.getLogger(logger_name)
