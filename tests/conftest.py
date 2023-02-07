@@ -55,6 +55,12 @@ def prepare_mocked_bucket(mocked_resource, mocked_client):
     return create_elements
 
 
+"""---------------------------------------------------
+-------- 2. DEFINIÇÃO DE FIXTURES DE MÓDULOS ---------
+       2.1 Funcionalidades do módulo test_s3.py
+---------------------------------------------------"""
+
+
 # Lista resultante do método list_buckets()
 @pytest.fixture()
 @mock_s3
