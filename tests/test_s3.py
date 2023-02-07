@@ -13,6 +13,7 @@ funcionalidades presentes no módulo s3 do cloudgeass.
 ---------------------------------------------------"""
 
 # Importando módulos para uso
+import pytest
 from moto import mock_s3
 from cloudgeass.aws.s3 import list_buckets
 
@@ -23,6 +24,7 @@ from cloudgeass.aws.s3 import list_buckets
 ---------------------------------------------------"""
 
 
+@pytest.mark("list_buckets")
 @mock_s3
 def test_funcao_list_buckets_retorna_uma_lista(mocked_s3_resource):
     """
@@ -31,9 +33,8 @@ def test_funcao_list_buckets_retorna_uma_lista(mocked_s3_resource):
     T: então o elemento resultante deve ser um objeto do tipo lista
     """
 
-    # Criando bucket s3 com recurso mockado
-    bucket_name = "cloudgeass-mocked-bucket"
-    mocked_s3_resource.create_bucket(Bucket=bucket_name)
+    # Criando bucket em ambiente mockado
+    mocked_s3_resource.create_bucket(Bucket="cloudgeass-mocked-bucket")
 
     # Executando método de listagem de buckets
     buckets = list_buckets(resource=mocked_s3_resource)
@@ -41,6 +42,7 @@ def test_funcao_list_buckets_retorna_uma_lista(mocked_s3_resource):
     assert type(buckets) is list
 
 
+@pytest.mark("list_buckets")
 @mock_s3
 def test_funcao_list_buckets_retorna_o_bucket_esperado(mocked_s3_resource):
     """
@@ -50,11 +52,10 @@ def test_funcao_list_buckets_retorna_o_bucket_esperado(mocked_s3_resource):
     T: então a lista resultante deve conter o bucket esperado
     """
 
-    # Criando bucket s3 com recurso mockado
-    bucket_name = "cloudgeass-mocked-bucket"
-    mocked_s3_resource.create_bucket(Bucket=bucket_name)
+    # Criando bucket em ambiente mockado
+    mocked_s3_resource.create_bucket(Bucket="cloudgeass-mocked-bucket")
 
     # Executando método de listagem de buckets
     buckets = list_buckets(resource=mocked_s3_resource)
 
-    assert buckets[0] == bucket_name
+    assert buckets[0] == "cloudgeass-mocked-bucket"
