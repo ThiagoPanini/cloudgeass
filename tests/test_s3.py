@@ -15,7 +15,10 @@ funcionalidades presentes no módulo s3 do cloudgeass.
 # Importando módulos para uso
 import pytest
 from moto import mock_s3
-from cloudgeass.aws.s3 import list_buckets
+
+from tests.configs.inputs import MOCKED_BUCKET_NAME
+
+from pandas import DataFrame
 
 
 """---------------------------------------------------
@@ -26,36 +29,36 @@ from cloudgeass.aws.s3 import list_buckets
 
 @pytest.mark.list_buckets
 @mock_s3
-def test_funcao_list_buckets_retorna_uma_lista(mocked_s3_resource):
+def test_funcao_list_buckets_retorna_uma_lista(bucket_list):
     """
     G: dado que o usuário deseja obter uma lista de buckets em sua conta
     W: quando o método list_buckets() de cloudgeass.aws.s3 for executado
     T: então o elemento resultante deve ser um objeto do tipo lista
     """
-
-    # Criando bucket em ambiente mockado
-    mocked_s3_resource.create_bucket(Bucket="cloudgeass-mocked-bucket")
-
-    # Executando método de listagem de buckets
-    buckets = list_buckets(resource=mocked_s3_resource)
-
-    assert type(buckets) is list
+    assert type(bucket_list) is list
 
 
 @pytest.mark.list_buckets
 @mock_s3
-def test_funcao_list_buckets_retorna_o_bucket_esperado(mocked_s3_resource):
+def test_funcao_list_buckets_retorna_o_bucket_esperado(bucket_list):
     """
     G: dado que o usuário deseja obter uma lista de buckets em sua conta
     W: quando o método list_buckets() de cloudgeass.aws.s3 for executado
        na ciência da existência de um bucket de nome específico
     T: então a lista resultante deve conter o bucket esperado
     """
+    assert bucket_list[0] == MOCKED_BUCKET_NAME
 
-    # Criando bucket em ambiente mockado
-    mocked_s3_resource.create_bucket(Bucket="cloudgeass-mocked-bucket")
 
-    # Executando método de listagem de buckets
-    buckets = list_buckets(resource=mocked_s3_resource)
-
-    assert buckets[0] == "cloudgeass-mocked-bucket"
+@pytest.mark.bucket_objects_report
+@mock_s3
+def test_report_de_objetos_do_bucket_gera_dataframe_pandas(
+    df_objects_report
+):
+    """
+    G: dado que o usuário deseja extrair um report de objetos em um bucket
+    W: quando o método bucket_objects_report() for executado com qualquer
+       configuração de parâmetros
+    T: então um objeto do tipo DataFrame do pandas deve ser retornado
+    """
+    assert type(df_objects_report) is DataFrame
