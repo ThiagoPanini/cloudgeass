@@ -3,6 +3,7 @@
 </div>
 
 <div align="center">  
+  <br>
   
   [![PyPI](https://img.shields.io/pypi/v/cloudgeass?color=purple)](https://pypi.org/project/cloudgeass/)
   ![GitHub commit activity](https://img.shields.io/github/commit-activity/m/ThiagoPanini/cloudgeass?color=blue)
