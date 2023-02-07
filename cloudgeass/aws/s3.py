@@ -98,7 +98,7 @@ def bucket_objects_report(
     df["SizeFormatted"] = df["Size"].apply(lambda x: categorize_file_size(x))
 
     # Definindo e aplicando ordenação de colunas do DataFrame
-    order_cols = ["BucketName", "Key", "ObjectType", "Size", "SizeFormatted", 
+    order_cols = ["BucketName", "Key", "ObjectType", "Size", "SizeFormatted",
                   "LastModified", "ETag", "StorageClass"]
     df_ordered = df.loc[:, order_cols]
 
