@@ -66,7 +66,7 @@ df_objects_report.head()
 O resultado é dado como um DataFrame do pandas capaz de ser utilizado de acordo com os propósitos do usuário:
 
 <div align="center">
-    <br><img src="https://github.com/ThiagoPanini/cloudgeass/blob/feature/s3-module-improvement/docs/imgs/readme-s3-example-bucket_objects_report.png?raw=true" alt="bucket_objects_report">
+    <br><img src="https://github.com/ThiagoPanini/cloudgeass/blob/main/docs/imgs/readme-s3-example-bucket_objects_report.png?raw=true" alt="bucket_objects_report">
 </div>
 
 
