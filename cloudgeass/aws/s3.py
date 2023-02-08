@@ -14,10 +14,11 @@ realizar as mais variadas atividades no S3.
           1.1 Importação das bibliotecas
 ---------------------------------------------------"""
 
-from cloudgeass.utils.log import log_config
-
 import boto3
 import pandas as pd
+
+from cloudgeass.utils.log import log_config
+from cloudgeass.utils.prep import categorize_file_size
 
 
 """
@@ -53,6 +54,33 @@ def bucket_objects_report(
     bucket_name: str, prefix: str = "", client=client
 ):
     """
+    Extraindo report de objetos presentes em um bucket S3.
+
+    Função criada para retornar ao usuário um DataFrame do pandas com uma
+    série de detalhes sobre os objetos armazenados em um bucket específico
+    na AWS.
+
+    Parâmetros
+    ----------
+    :param bucket_name:
+        Nome do bucket alvo da extração.
+        [type: str]
+
+    :param prefix:
+        Prefixo opcionalmente utilizado como filtro da extração.
+        [type: str, default=""]
+
+    :param client:
+        Client S3 utilizado para chamada do método list_objects_v2()
+        utilizado para obtenção dos objetos do bucket.
+        [default=boto3.client("s3")]
+
+    Retorno
+    -------
+    :return df_objects_report:
+        DataFrame do pandas contendo informações relevantes sobre os
+        objetos presentes no bucket alvo.
+        [type: pd.DataFrame]
     """
 
     # Realizando chamada de API para listagem de objetos de bucket
@@ -75,29 +103,12 @@ def bucket_objects_report(
     df["BucketName"] = bucket_name
     df["ObjectType"] = df["Key"].apply(lambda x: x.split(".")[-1])
 
-    # Definindo função para categorização de volume do objeto
-    def categorize_file_size(size_in_bytes):
-        if size_in_bytes < 1024:
-            return f"{size_in_bytes} B"
-        elif size_in_bytes < 1024 ** 2:
-            size_in_kb = size_in_bytes / 1024
-            return f"{size_in_kb:.2f} KB"
-        elif size_in_bytes < 1024 ** 3:
-            size_in_mb = size_in_bytes / (1024 ** 2)
-            return f"{size_in_mb:.2f} MB"
-        elif size_in_bytes < 1024 ** 4:
-            size_in_gb = size_in_bytes / (1024 ** 3)
-            return f"{size_in_gb:.2f} GB"
-        else:
-            size_in_tb = size_in_bytes / (1024 ** 4)
-            return f"{size_in_tb:.2f} TB"
-
-    # Aplicando função ao DataFrame
+    # Aplicando função de categorização de tamanho de objeto ao DataFrame
     df["SizeFormatted"] = df["Size"].apply(lambda x: categorize_file_size(x))
 
     # Definindo e aplicando ordenação de colunas do DataFrame
     order_cols = ["BucketName", "Key", "ObjectType", "Size", "SizeFormatted",
                   "LastModified", "ETag", "StorageClass"]
-    df_ordered = df.loc[:, order_cols]
+    df_objects_report = df.loc[:, order_cols]
 
-    return df_ordered
+    return df_objects_report
