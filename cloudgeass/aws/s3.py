@@ -33,7 +33,6 @@ logger = log_config(logger_name=__file__)
 
 # Instanciando client e recurso do s3 para uso nas funções
 client = boto3.client("s3")
-resource = boto3.resource("s3")
 
 
 """
@@ -45,8 +44,8 @@ resource = boto3.resource("s3")
 
 
 # Listando buckets já existentes em uma conta AWS
-def list_buckets(resource=resource):
-    return [b.name for b in resource.buckets.all()]
+def list_buckets(client=client):
+    return [b["Name"] for b in client.list_buckets()["Buckets"]]
 
 
 # Obtendo pandas DataFrame com detalhes de conteúdo de um bucket
@@ -96,8 +95,17 @@ def bucket_objects_report(
                      f"Exception: {e}")
         raise e
 
+    # Retornando conteúdo do bucket
+    try:
+        bucket_content = r["Contents"]
+
+    except KeyError:
+        logger.warning(f"Erro ao extrair conteúdo do bucket {bucket_name}. "
+                       f"Provavelmente o bucket encontra-se sem objetos.")
+        return None
+
     # Transformando resultado da chamada em DataFrame do pandas
-    df = pd.DataFrame(r["Contents"])
+    df = pd.DataFrame(bucket_content)
 
     # Adicionando nome do bucket e extraindo extensão do objeto
     df["BucketName"] = bucket_name
@@ -112,3 +120,65 @@ def bucket_objects_report(
     df_objects_report = df.loc[:, order_cols]
 
     return df_objects_report
+
+
+# Realizando a leitura de objetos como DataFrame do pandas
+def all_buckets_objects_report(
+    prefix: str = "", client=client, exclude_buckets=list()
+):
+    """
+    Retorna um report de todos os objetos de todos os buckets da conta.
+
+    O conteúdo desta função envolve a chamada às funções list_buckets() e
+    bucket_objects_report() deste mesmo módulo para, respectivamente,
+    obter a lista de nomes de buckets da conta, iterar sobre a mesma e
+    extrair um report de objetos de cada um dos buckets como um
+    DataFrame do pandas. A cada interação, o DataFrame resultante é
+    enriquecido com report individual de cada bucket.
+
+    :param prefix:
+        Prefixo opcionalmente utilizado como filtro da extração.
+        [type: str, default=""]
+
+    :param client:
+        Client S3 utilizado para chamada do método list_objects_v2()
+        utilizado para obtenção dos objetos do bucket.
+        [default=boto3.client("s3")]
+
+    :param exclude_buckets:
+        Lista de buckets a serem ignorados no processo de listagem
+        de objetos. A cada iteração do laço, buckets presentes nesta
+        lista não terão seus objetos adicionados ao report.
+        [type: list, default=list()]
+
+    Retorno
+    -------
+    :return df_report_all:
+        DataFrame do pandas contendo informações relevantes sobre os
+        objetos presentes em todos os buckets da conta.
+        [type: pd.DataFrame]
+    """
+
+    # Listando buckets da conta
+    all_buckets = list_buckets(client=client)
+
+    # Criando lista definitiva após subtração de elementos no exclude_bucket
+    buckets = [b for b in all_buckets if b not in exclude_buckets]
+
+    # Criando DataFrame vazio e iterando sobre buckets para listagem de objs
+    df_report = pd.DataFrame()
+    for bucket in buckets:
+        # Listando objetos do bucket
+        df_bucket_report = bucket_objects_report(
+            bucket_name=bucket,
+            prefix=prefix,
+            client=client
+        )
+
+        # Unindo ao DataFrame consolidado
+        df_report = pd.concat([df_report, df_bucket_report])
+
+    # Resetando index
+    df_report.reset_index(drop=True, inplace=True)
+
+    return df_report

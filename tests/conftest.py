@@ -14,7 +14,8 @@ import pytest
 import boto3
 from moto import mock_s3
 
-from cloudgeass.aws.s3 import list_buckets, bucket_objects_report
+from cloudgeass.aws.s3 import list_buckets, bucket_objects_report,\
+    all_buckets_objects_report
 
 from tests.configs.inputs import MOCKED_REGION, MOCKED_BUCKET_NAME,\
     MOCKED_BUCKET_CONTENT
@@ -64,12 +65,12 @@ def prepare_mocked_bucket(mocked_resource, mocked_client):
 # Lista resultante do método list_buckets()
 @pytest.fixture()
 @mock_s3
-def bucket_list(mocked_resource, prepare_mocked_bucket):
+def bucket_list(mocked_client, prepare_mocked_bucket):
     # Preparando ambiente mockado no s3
     prepare_mocked_bucket()
 
     # Gerando lista de buckets mockados no ambiente
-    return list_buckets(resource=mocked_resource)
+    return list_buckets(client=mocked_client)
 
 
 # DataFrame resultante do método bucket_objects_report()
@@ -82,4 +83,30 @@ def df_objects_report(mocked_client, prepare_mocked_bucket):
     # Gerando DataFrame com report de objetos
     return bucket_objects_report(
         bucket_name=MOCKED_BUCKET_NAME, client=mocked_client
+    )
+
+
+# DataFrame resultante do método all_buckets_objects_report()
+@pytest.fixture()
+@mock_s3
+def df_all_buckets_objects(mocked_client, prepare_mocked_bucket):
+    # Preparando ambiente mockado no s3
+    prepare_mocked_bucket()
+
+    # Gerando DataFrame com report de objetos de todos os buckets
+    return all_buckets_objects_report(client=mocked_client)
+
+
+# DataFrame resultante do método all_buckets_objects_report()
+@pytest.fixture()
+@mock_s3
+def df_all_buckets_objects_with_excluded_buckets(
+    mocked_client, prepare_mocked_bucket
+):
+    # Preparando ambiente mockado no s3
+    prepare_mocked_bucket()
+
+    # Gerando DataFrame com report de objetos de todos os buckets
+    return all_buckets_objects_report(
+        client=mocked_client, exclude_buckets=[MOCKED_BUCKET_NAME]
     )

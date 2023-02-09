@@ -56,7 +56,7 @@ from cloudgeass.aws.s3 import bucket_objects_report
 
 # Obtendo DataFrame com report de objetos de um bucket
 df_objects_report = bucket_objects_report(
-  bucket_name="terraglue-sor-data-596533897380-sa-east-1"
+  bucket_name="terraglue-sor-data-sa-east-1"
 )
 
 # Visualizando resultado
@@ -66,7 +66,7 @@ df_objects_report.head()
 O resultado é dado como um DataFrame do pandas capaz de ser utilizado de acordo com os propósitos do usuário:
 
 <div align="center">
-    <br><img src="https://github.com/ThiagoPanini/cloudgeass/blob/main/docs/imgs/readme-s3-example-bucket_objects_report.png?raw=true" alt="bucket_objects_report">
+    <img src="https://github.com/ThiagoPanini/cloudgeass/blob/main/docs/imgs/readme-s3-example-bucket_objects_report.png?raw=true" alt="bucket_objects_report">
 </div>
 
 
