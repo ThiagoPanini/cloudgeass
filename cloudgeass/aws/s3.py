@@ -132,7 +132,7 @@ def all_buckets_objects_report(
     O conteúdo desta função envolve a chamada às funções list_buckets() e
     bucket_objects_report() deste mesmo módulo para, respectivamente,
     obter a lista de nomes de buckets da conta, iterar sobre a mesma e
-    extrair um report de objetos de cada um dos buckets como um 
+    extrair um report de objetos de cada um dos buckets como um
     DataFrame do pandas. A cada interação, o DataFrame resultante é
     enriquecido com report individual de cada bucket.
 
