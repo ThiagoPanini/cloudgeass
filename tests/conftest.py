@@ -65,12 +65,12 @@ def prepare_mocked_bucket(mocked_resource, mocked_client):
 # Lista resultante do método list_buckets()
 @pytest.fixture()
 @mock_s3
-def bucket_list(mocked_resource, prepare_mocked_bucket):
+def bucket_list(mocked_client, prepare_mocked_bucket):
     # Preparando ambiente mockado no s3
     prepare_mocked_bucket()
 
     # Gerando lista de buckets mockados no ambiente
-    return list_buckets(resource=mocked_resource)
+    return list_buckets(client=mocked_client)
 
 
 # DataFrame resultante do método bucket_objects_report()
