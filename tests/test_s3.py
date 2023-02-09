@@ -137,3 +137,37 @@ def test_erro_ao_tentar_gerar_report_de_objetos_com_nome_de_bucket_incorreto(
             bucket_name=incorrect_bucket_name,
             client=mocked_client
         )
+
+
+@pytest.mark.all_buckets_objects_report
+@mock_s3
+def test_funcao_bucket_objects_report_retorna_um_dataframe_do_pandas(
+    df_all_buckets_objects
+):
+    """
+    G: dado que o usuário deseja obter um report completo contendo todos
+       os objetos de todos os buckets em sua conta
+    W: quando o método all_buckets_objects_report() for executado
+    T: então um objeto do tipo DataFrame do pandas deve ser retornado
+    """
+    assert type(df_all_buckets_objects) is DataFrame
+
+
+@pytest.mark.all_buckets_objects_report
+@mock_s3
+def test_funcao_bucket_objects_report_retorna_atributos_esperados(
+    df_all_buckets_objects
+):
+    """
+    G: dado que o usuário deseja obter um report completo contendo todos
+       os objetos de todos os buckets em sua conta
+    W: quando o método all_buckets_objects_report() for executado
+    T: então um conjunto esperado de atributos deve ser retornado
+    """
+
+    # Colunas esperadas do DataFrame
+    expected_cols = ['BucketName', 'Key', 'ObjectType', 'Size',
+                     'SizeFormatted', 'LastModified', 'ETag',
+                     'StorageClass']
+
+    assert list(df_all_buckets_objects.columns) == expected_cols
