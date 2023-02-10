@@ -20,12 +20,22 @@ MOCKED_REGION = "us-east-1"
 
 # Dicionário contendo definição de cenário a ser mockado no s3
 MOCKED_BUCKET_CONTENT = {
-    "cloudgeass-mock-bucket": {
-        "CsvFile1": {
+    "cloudgeass-mock-bucket-01": {
+        "file-001": {
             "Key": "anomesdia=20230117/file1.csv",
             "Body": fake_csv_data()
         },
-        "CsvFile2": {
+        "file-002": {
+            "Key": "anomesdia=20230108/file2.csv",
+            "Body": fake_csv_data()
+        }
+    },
+    "cloudgeass-mock-bucket-02": {
+        "file-001": {
+            "Key": "anomesdia=20230117/file1.csv",
+            "Body": fake_csv_data()
+        },
+        "file-002": {
             "Key": "anomesdia=20230108/file2.csv",
             "Body": fake_csv_data()
         }
