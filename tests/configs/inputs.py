@@ -8,28 +8,37 @@ utilizadas nos testes. O usuário deve atentar-se a todas
 as configurações e declarações de variáveis aqui
 realizadas para que os testes unitários possam ser
 executados de maneira adequada.
----------------------------------------------------"""
+---------------------------------------------------
+"""
+
+# Importando bibliotecas e módulos
+from tests.helpers.faker import fake_csv_data
 
 
 # Região usada no mock dos recursos
 MOCKED_REGION = "us-east-1"
 
-# Nome de bucket a ser mockado
-MOCKED_BUCKET_NAME = "cloudgeass-mock-bucket"
-
-# Dicionário para inserção de dados mockados em bucket
+# Dicionário contendo definição de cenário a ser mockado no s3
 MOCKED_BUCKET_CONTENT = {
-    MOCKED_BUCKET_NAME: {
+    "cloudgeass-mock-bucket": {
         "CsvFile1": {
-            "Key": "mocked_prefix/file1.csv",
-            "Body": "mock_col1,mock_col2,mock_col3"
+            "Key": "anomesdia=20230117/file1.csv",
+            "Body": fake_csv_data()
         },
         "CsvFile2": {
-            "Key": "mocked_prefix/file2.csv",
-            "Body": "mock_col1,mock_col2,mock_col3"
+            "Key": "anomesdia=20230108/file2.csv",
+            "Body": fake_csv_data()
         }
-    }
+    },
+    "cloudgeass-mock-empty-bucket": {}
 }
+
+# Lista de buckets não vazios pela própria definição
+NON_EMPTY_BUCKETS = [b for b in MOCKED_BUCKET_CONTENT.keys()
+                     if len(MOCKED_BUCKET_CONTENT[b]) > 0]
+
+# Nome específico de bucket usado nas fixtures e validações
+MOCKED_BUCKET_NAME = NON_EMPTY_BUCKETS[0]
 
 # Lista esperada de colunas em DataFrame report de objetos
 EXPECTED_DF_OBJECTS_REPORT_COLS = [
