@@ -71,7 +71,7 @@ def bucket_objects_report(
 
     :param client:
         Client S3 utilizado para chamada do método list_objects_v2()
-        utilizado para obtenção dos objetos do bucket.
+        para obtenção dos objetos do bucket.
         [default=boto3.client("s3")]
 
     Retorno
@@ -142,7 +142,7 @@ def all_buckets_objects_report(
 
     :param client:
         Client S3 utilizado para chamada do método list_objects_v2()
-        utilizado para obtenção dos objetos do bucket.
+        para obtenção dos objetos do bucket.
         [default=boto3.client("s3")]
 
     :param exclude_buckets:
@@ -182,3 +182,54 @@ def all_buckets_objects_report(
     df_report.reset_index(drop=True, inplace=True)
 
     return df_report
+
+
+# Lendo objeto do tipo CSV e transformando em DataFrame do pandas
+def pandas_df_from_csv(
+    bucket_name: str, object_key: str, client=client, **kwargs
+):
+    """
+    Leitura de objeto csv de bucket e transformação em DataFrame do pandas.
+
+    Função criada para facilitar o processo de requisição de um objeto
+    do tipo csv no s3 com base em um nome de bucket e uma chave de objeto.
+    O corpo da resposta da chamada é então transformado em um DataFrame do
+    pandas a partir do método pd.read_csv().
+
+    Parâmetros
+    ----------
+    :param bucket_name:
+        Nome do bucket onde o objeto a ser lido está armazenado.
+        [type: str]
+
+    :param object_key:
+        Chave do objeto csv a ser lido.
+        [type: str]
+
+    :param client:
+        Client S3 utilizado para chamada do método get_object()
+        para obtenção de objeto do bucket.
+        [default=boto3.client("s3")]
+
+    **kwargs
+    --------
+    Os argumentos adicionais por chave servem para mapear todas as
+    possibilidades de parametrização existentes no médodo pd.read_csv().
+    Dessa forma, os usuários poderão configurar a obtenção do DataFrame
+    de acordo com as características do objeto CSV lido do s3.
+
+    Retorno
+    -------
+    :return df:
+        DataFrame do pandas contendo os dados do arquivo csv lido.
+        [type: pd.DataFrame]
+    """
+
+    # Realizando chamada get_object()
+    r = client.get_object(
+        Bucket=bucket_name,
+        Key=object_key
+    )
+
+    # Transformando corpo de resposta em DataFrame
+    return pd.read_csv(r["Body"], **kwargs)
