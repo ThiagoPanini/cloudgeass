@@ -14,7 +14,6 @@ formatos
 
 # Importando bibliotecas
 from faker import Faker
-import io
 
 
 # Instanciando faker
@@ -27,7 +26,7 @@ def fake_csv_data(
     headers: list = ["col1", "col2", "col3"],
     num_rows: int = 10,
     separator: str = ","
-) -> io.BytesIO:
+) -> bytes:
     """
     Gera stream de bytes contendo uma simulação de arquivo CSV.
 
@@ -52,8 +51,8 @@ def fake_csv_data(
 
     Retorno
     -------
-    :return fake_data: stream binária contendo os dados gerados.
-        [type: io.BytesIO]
+    :return fake_data: dados gerados em formato de bytes.
+        [type: bytes]
     """
 
     # Gerando string simulando arquivo csv
@@ -62,4 +61,4 @@ def fake_csv_data(
     fake_str = "\n".join([separator.join(row) for row in fake_row])
     fake_data = separator.join(headers) + "\n" + fake_str
 
-    return io.BytesIO(bytes(fake_data, encoding="utf-8"))
+    return bytes(fake_data, encoding="utf-8")
