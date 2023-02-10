@@ -203,7 +203,7 @@ def test_funcao_all_buckets_objects_report_possui_nomes_esperados_de_buckets(
     # Extração de nome de bucket do DataFrame resultante
     bucket_names = list(set(df_all_buckets_objects["BucketName"].values))
 
-    assert bucket_names == NON_EMPTY_BUCKETS
+    assert set(bucket_names) == set(NON_EMPTY_BUCKETS)
 
 
 @pytest.mark.all_buckets_objects_report
