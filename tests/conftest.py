@@ -17,8 +17,8 @@ from moto import mock_s3
 from cloudgeass.aws.s3 import list_buckets, bucket_objects_report,\
     all_buckets_objects_report
 
-from tests.configs.inputs import MOCKED_REGION, MOCKED_BUCKET_NAME,\
-    MOCKED_BUCKET_CONTENT
+from tests.configs.inputs import MOCKED_REGION, MOCKED_BUCKET_CONTENT,\
+    MOCKED_BUCKET_NAME
 
 
 # Definindo resource s3 para operações de mock
@@ -41,16 +41,17 @@ def mocked_client():
 @pytest.fixture()
 def prepare_mocked_bucket(mocked_resource, mocked_client):
     def create_elements():
-        # Criando bucket mockado
-        mocked_resource.create_bucket(Bucket=MOCKED_BUCKET_NAME)
-
-        # Iterando por definição de conteúdo a ser mockado em bucket
+        # Iterando por dicionário de definição de mock no s3
         for bucket_name, content_definition in MOCKED_BUCKET_CONTENT.items():
-            for _, file_content in content_definition.items():
+            # Criando bucket s3 definido no dicionário
+            mocked_resource.create_bucket(Bucket=bucket_name)
+
+            # Iterando por definição de conteúdo para upload de objetos
+            for _, content in content_definition.items():
                 mocked_client.put_object(
                     Bucket=bucket_name,
-                    Body=file_content["Body"],
-                    Key=file_content["Key"]
+                    Body=content["Body"],
+                    Key=content["Key"]
                 )
 
     return create_elements
@@ -106,7 +107,7 @@ def df_all_buckets_objects_with_excluded_buckets(
     # Preparando ambiente mockado no s3
     prepare_mocked_bucket()
 
-    # Gerando DataFrame com report de objetos de todos os buckets
+    # Gerando DataFrame com report de objetos excluindo um bucket
     return all_buckets_objects_report(
         client=mocked_client, exclude_buckets=[MOCKED_BUCKET_NAME]
     )
