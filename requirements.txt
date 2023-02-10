@@ -6,3 +6,4 @@ moto
 boto3
 build
 pandas
+Faker
