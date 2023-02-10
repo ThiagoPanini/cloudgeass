@@ -33,11 +33,11 @@ MOCKED_BUCKET_CONTENT = {
     "cloudgeass-mock-empty-bucket": {}
 }
 
-# Lista de buckets não vazios pela própria definição
+# Lista de buckets não vazios definidos no dicionário
 NON_EMPTY_BUCKETS = [b for b in MOCKED_BUCKET_CONTENT.keys()
                      if len(MOCKED_BUCKET_CONTENT[b]) > 0]
 
-# Nome específico de bucket usado nas fixtures e validações
+# Nome específico de bucket usado na extração individual de report
 MOCKED_BUCKET_NAME = NON_EMPTY_BUCKETS[0]
 
 # Lista esperada de colunas em DataFrame report de objetos
