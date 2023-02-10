@@ -18,7 +18,8 @@ from moto import mock_s3
 
 from pandas import DataFrame
 
-from cloudgeass.aws.s3 import bucket_objects_report
+from cloudgeass.aws.s3 import bucket_objects_report,\
+    all_buckets_objects_report
 
 from tests.configs.inputs import MOCKED_BUCKET_CONTENT,\
     NON_EMPTY_BUCKETS, EXPECTED_DF_OBJECTS_REPORT_COLS
@@ -26,7 +27,7 @@ from tests.configs.inputs import MOCKED_BUCKET_CONTENT,\
 
 """---------------------------------------------------
 ------------ 2. DEFININDO SUÍTE DE TESTES ------------
-           2.1 Construindo testes unitários
+               2.1 Função list_buckets()
 ---------------------------------------------------"""
 
 
@@ -51,6 +52,12 @@ def test_funcao_list_buckets_retorna_o_bucket_esperado(bucket_list):
     T: então a lista resultante deve conter os buckets esperados
     """
     assert bucket_list == list(MOCKED_BUCKET_CONTENT.keys())
+
+
+"""---------------------------------------------------
+------------ 2. DEFININDO SUÍTE DE TESTES ------------
+          2.2 Função bucket_objects_report()
+---------------------------------------------------"""
 
 
 @pytest.mark.bucket_objects_report
@@ -123,6 +130,12 @@ def test_erro_ao_tentar_gerar_report_de_objetos_com_nome_de_bucket_incorreto(
         )
 
 
+"""---------------------------------------------------
+------------ 2. DEFININDO SUÍTE DE TESTES ------------
+        2.3 Função all_buckets_objects_report()
+---------------------------------------------------"""
+
+
 @pytest.mark.all_buckets_objects_report
 @mock_s3
 def test_funcao_all_buckets_objects_report_retorna_dataframe_do_pandas(
@@ -177,7 +190,7 @@ def test_funcao_all_buckets_objects_report_contem_lista_de_buckets_nao_vazios(
 @pytest.mark.all_buckets_objects_report
 @mock_s3
 def test_funcao_all_buckets_objects_report_possui_nomes_esperados_de_buckets(
-    df_objects_report
+    df_all_buckets_objects
 ):
     """
     G: dado que o usuário deseja obter um report completo contendo todos
@@ -188,6 +201,60 @@ def test_funcao_all_buckets_objects_report_possui_nomes_esperados_de_buckets(
     """
 
     # Extração de nome de bucket do DataFrame resultante
-    bucket_report_names = list(set(df_objects_report["BucketName"].values))
+    bucket_names = list(set(df_all_buckets_objects["BucketName"].values))
 
-    assert bucket_report_names == NON_EMPTY_BUCKETS
+    assert bucket_names == NON_EMPTY_BUCKETS
+
+
+@pytest.mark.all_buckets_objects_report
+@mock_s3
+def test_funcao_all_buckets_objects_report_com_lista_de_buckets_ignorados(
+    mocked_client, prepare_mocked_bucket
+):
+    """
+    G: dado que o usuário deseja obter um report completo contendo todos
+       os objetos de todos os buckets em sua conta
+    W: quando o método all_buckets_objects_report() for executado com uma
+       lista de buckets a serem ignorados pelo processo de extração
+    T: então os elementos contidos na lista de buckets ignorados NÃO devem
+       estar entre os buckets do DataFrame resultante
+    """
+
+    # Preparando ambiente
+    prepare_mocked_bucket()
+
+    # Estabelecendo um nome de bucket a ser ignorado
+    buckets_to_exclude = NON_EMPTY_BUCKETS[0]
+
+    # Extração de nome de bucket do DataFrame resultante
+    df_all_buckets_objects = all_buckets_objects_report(
+        client=mocked_client,
+        exclude_buckets=buckets_to_exclude
+    )
+
+    # Coletando lista de buckets distintos resultantes da função
+    bucket_names = list(set(df_all_buckets_objects["BucketName"].values))
+
+    assert buckets_to_exclude not in bucket_names
+
+
+"""---------------------------------------------------
+------------ 2. DEFININDO SUÍTE DE TESTES ------------
+            2.4 Função pandas_df_from_csv()
+---------------------------------------------------"""
+
+
+@pytest.mark.pandas_df_from_csv
+@mock_s3
+def test_funcao_pandas_df_from_csv_retorna_objeto_do_tipo_dataframe(
+    df_from_csv_object
+):
+    """
+    G: dado que o usuário deseja realizar a leitura de um objeto no
+       s3 presente no formato csv e transformá-lo em um DataFrame do
+       pandas
+    W: quando o método pandas_df_from_csv() for executado com a
+       parametrização padrão
+    T: então o objeto resultante deve ser um DataFrame do pandas
+    """
+    assert type(df_from_csv_object) is DataFrame
