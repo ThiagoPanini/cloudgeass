@@ -240,20 +240,20 @@ def test_funcao_all_buckets_objects_report_com_lista_de_buckets_ignorados(
 
 """---------------------------------------------------
 ------------ 2. DEFININDO SUÍTE DE TESTES ------------
-            2.4 Função pandas_df_from_csv()
+            2.4 Função read_csv_object()
 ---------------------------------------------------"""
 
 
-@pytest.mark.pandas_df_from_csv
+@pytest.mark.read_csv_object
 @mock_s3
-def test_funcao_pandas_df_from_csv_retorna_objeto_do_tipo_dataframe(
+def test_funcao_read_csv_object_retorna_objeto_do_tipo_dataframe(
     df_from_csv_object
 ):
     """
     G: dado que o usuário deseja realizar a leitura de um objeto no
        s3 presente no formato csv e transformá-lo em um DataFrame do
        pandas
-    W: quando o método pandas_df_from_csv() for executado com a
+    W: quando o método read_csv_object() for executado com a
        parametrização padrão
     T: então o objeto resultante deve ser um DataFrame do pandas
     """

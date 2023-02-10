@@ -185,7 +185,7 @@ def all_buckets_objects_report(
 
 
 # Lendo objeto do tipo CSV e transformando em DataFrame do pandas
-def pandas_df_from_csv(
+def read_csv_object(
     bucket_name: str, object_key: str, client=client, **kwargs
 ):
     """

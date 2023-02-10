@@ -15,7 +15,7 @@ import boto3
 from moto import mock_s3
 
 from cloudgeass.aws.s3 import list_buckets, bucket_objects_report,\
-    all_buckets_objects_report, pandas_df_from_csv
+    all_buckets_objects_report, read_csv_object
 
 from tests.configs.inputs import MOCKED_REGION, MOCKED_BUCKET_CONTENT,\
     MOCKED_BUCKET_NAME
@@ -110,7 +110,7 @@ def df_from_csv_object(mocked_client, prepare_mocked_bucket):
     object_key = MOCKED_BUCKET_CONTENT[MOCKED_BUCKET_NAME]["file-001"]["Key"]
 
     # Gerando DataFrame com base em dados mockados no s3
-    return pandas_df_from_csv(
+    return read_csv_object(
         bucket_name=bucket_name,
         object_key=object_key,
         client=mocked_client
