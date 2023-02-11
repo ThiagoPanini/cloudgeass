@@ -18,7 +18,9 @@ setup(
     author_email='panini.development@gmail.com',
     packages=find_packages(),
     install_requires=[
-        'boto3',
+        "boto3",
+        "pandas",
+        "s3fs"
     ],
     license='MIT',
     description='Operações úteis para o uso de serviços AWS',
