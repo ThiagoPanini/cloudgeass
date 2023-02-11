@@ -16,6 +16,7 @@ realizar as mais variadas atividades no S3.
 
 import boto3
 import pandas as pd
+import os
 
 from cloudgeass.utils.log import log_config
 from cloudgeass.utils.prep import categorize_file_size
@@ -184,52 +185,49 @@ def all_buckets_objects_report(
     return df_report
 
 
-# Lendo objeto do tipo CSV e transformando em DataFrame do pandas
-def read_csv_object(
-    bucket_name: str, object_key: str, client=client, **kwargs
-):
+# Lendo objeto do S3 com base em URI
+def read_s3_object(s3_uri: str, **kwargs):
     """
-    Leitura de objeto csv de bucket e transformação em DataFrame do pandas.
+    Realiza a leitura de objeto no S3 com base em URI fornecida.
 
-    Função criada para facilitar o processo de requisição de um objeto
-    do tipo csv no s3 com base em um nome de bucket e uma chave de objeto.
-    O corpo da resposta da chamada é então transformado em um DataFrame do
-    pandas a partir do método pd.read_csv().
+    Com esta função, o usuário poderá realizar a leitura de objetos
+    no S3 com o output consolidado como um DataFrame do pandas. As
+    regras estabelecidas na função visam identificar a extensão do
+    objeto a partir da URI para que, dessa forma, o método correto
+    de leitura e transformação em DataFrame possa ser chamado (ex:
+    pd.read_csv(), pd.read_json()).
 
     Parâmetros
     ----------
-    :param bucket_name:
-        Nome do bucket onde o objeto a ser lido está armazenado.
+    :param s3_uri:
+        URI do objeto no S3 a ser lido e transformado em DataFrame.
+        Exemplo: "s3://bucket-name/prefix/object-name.csv"
         [type: str]
-
-    :param object_key:
-        Chave do objeto csv a ser lido.
-        [type: str]
-
-    :param client:
-        Client S3 utilizado para chamada do método get_object()
-        para obtenção de objeto do bucket.
-        [default=boto3.client("s3")]
 
     **kwargs
     --------
     Os argumentos adicionais por chave servem para mapear todas as
     possibilidades de parametrização existentes no médodo pd.read_csv().
     Dessa forma, os usuários poderão configurar a obtenção do DataFrame
-    de acordo com as características do objeto CSV lido do s3.
+    de acordo com as características do objeto csv lido do s3.
 
     Retorno
     -------
     :return df:
-        DataFrame do pandas contendo os dados do arquivo csv lido.
+        DataFrame do pandas contendo os dados do objeto lido do s3.
         [type: pd.DataFrame]
     """
 
-    # Realizando chamada get_object()
-    r = client.get_object(
-        Bucket=bucket_name,
-        Key=object_key
-    )
+    # Extraindo parâmetros da URI
+    object_name = s3_uri.split("/")[-1]
+    object_ext = os.path.splitext(object_name)[-1]
 
-    # Transformando corpo de resposta em DataFrame
-    return pd.read_csv(r["Body"], **kwargs)
+    # Chamando método específico de leitura com base na extensão
+    if object_ext == ".csv":
+        return pd.read_csv(s3_uri, **kwargs)
+    elif object_ext == ".json":
+        return pd.read_json(s3_uri, **kwargs)
+    else:
+        logger.warning(f"Extensão {object_ext} ainda não habilitada "
+                       "para leitura e transformação em DataFrame")
+        return None
