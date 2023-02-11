@@ -19,7 +19,7 @@ from moto import mock_s3
 from pandas import DataFrame
 
 from cloudgeass.aws.s3 import bucket_objects_report,\
-    all_buckets_objects_report
+    all_buckets_objects_report, read_s3_object
 
 from tests.configs.inputs import MOCKED_BUCKET_CONTENT,\
     NON_EMPTY_BUCKETS, EXPECTED_DF_OBJECTS_REPORT_COLS
@@ -253,8 +253,8 @@ def test_funcao_read_s3_object_retorna_dataframe_ao_ler_objeto_csv(
     G: dado que o usuário deseja realizar a leitura de um objeto no
        s3 presente no formato CSV e transformá-lo em um DataFrame do
        pandas
-    W: quando o método read_s3_object() for executado com a
-       uma URI que indica a leitura de um objeto CSV de um bucket
+    W: quando o método read_s3_object() for executado com uma URI do S3
+       que indica a leitura de um objeto JSON de um bucket
     T: então o objeto resultante deve ser um DataFrame do pandas
     """
     assert type(df_csv_from_s3) is DataFrame
@@ -269,8 +269,46 @@ def test_funcao_read_s3_object_retorna_dataframe_ao_ler_objeto_json(
     G: dado que o usuário deseja realizar a leitura de um objeto no
        s3 presente no formato JSON e transformá-lo em um DataFrame do
        pandas
-    W: quando o método read_s3_object() for executado com a
-       uma URI que indica a leitura de um objeto JSON de um bucket
+    W: quando o método read_s3_object() for executado com uma URI do S3
+       que indica a leitura de um objeto JSON de um bucket
     T: então o objeto resultante deve ser um DataFrame do pandas
     """
     assert type(df_json_from_s3) is DataFrame
+
+
+@pytest.mark.read_s3_object
+@mock_s3
+def test_funcao_read_s3_object_retora_none_ao_ler_arquivo_com_extensao_png():
+    """
+    G: dado que o usuário deseja realizar a leitura de um objeto no
+       s3 presente em um foramto qualquer e transformá-lo em um DataFrame
+       do pandas
+    W: quando o método read_s3_object() for executado com uma URI do S3
+       que indica a leitura de um objeto com uma extensão ainda não
+       habilitada para transformação em DataFrame (ex: .png)
+    T: então a função não deve retornar nada (None)
+    """
+
+    # Definindo URI de teste a ser lida
+    file_uri = "s3://mocked-bucket/prefix/file.png"
+    assert read_s3_object(file_uri) is None
+
+
+@pytest.mark.read_s3_object
+@mock_s3
+def test_funcao_read_s3_object_retora_erro_com_uri_de_objeto_inexistente():
+    """
+    G: dado que o usuário deseja realizar a leitura de um objeto no
+       s3 presente em um foramto qualquer e transformá-lo em um DataFrame
+       do pandas
+    W: quando o método read_s3_object() for executado com uma URI do S3
+       que aponta para um objeto inexistente no bucket
+    T: então uma exceção FileNotFoundError deve ser lançada
+    """
+
+    # Definindo URI de teste a ser lida
+    error_uri = "s3://mocked-bucket/prefix/file.csv"
+
+    # Validando lançamento da exceção
+    with pytest.raises(FileNotFoundError):
+        _ = read_s3_object(error_uri)
