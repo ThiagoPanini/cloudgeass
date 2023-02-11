@@ -15,7 +15,7 @@ import boto3
 from moto import mock_s3
 
 from cloudgeass.aws.s3 import list_buckets, bucket_objects_report,\
-    all_buckets_objects_report, read_csv_object
+    all_buckets_objects_report, read_s3_object
 
 from tests.configs.inputs import MOCKED_REGION, MOCKED_BUCKET_CONTENT,\
     MOCKED_BUCKET_NAME
@@ -98,20 +98,33 @@ def df_all_buckets_objects(mocked_client, prepare_mocked_bucket):
     return all_buckets_objects_report(client=mocked_client)
 
 
-# DataFrame resultante da função csv_object_to_df()
+# DataFrame resultante de leitura de objeto CSV via read_s3_object()
 @pytest.fixture()
 @mock_s3
-def df_from_csv_object(mocked_client, prepare_mocked_bucket):
+def df_csv_from_s3(prepare_mocked_bucket):
     # Preparando ambiente mockado no s3
     prepare_mocked_bucket()
 
-    # Extraindo parâmetros para referência de objeto mockado
+    # Extraindo URI para leitura de objeto CSV
     bucket_name = MOCKED_BUCKET_NAME
-    object_key = MOCKED_BUCKET_CONTENT[MOCKED_BUCKET_NAME]["file-001"]["Key"]
+    object_key = MOCKED_BUCKET_CONTENT[MOCKED_BUCKET_NAME]["csv-001"]["Key"]
+    s3_uri = f"s3://{bucket_name}/{object_key}"
 
     # Gerando DataFrame com base em dados mockados no s3
-    return read_csv_object(
-        bucket_name=bucket_name,
-        object_key=object_key,
-        client=mocked_client
-    )
+    return read_s3_object(s3_uri=s3_uri)
+
+
+# DataFrame resultante de leitura de objeto JSON via read_s3_object()
+@pytest.fixture()
+@mock_s3
+def df_json_from_s3(prepare_mocked_bucket):
+    # Preparando ambiente mockado no s3
+    prepare_mocked_bucket()
+
+    # Extraindo URI para leitura de objeto JSON
+    bucket_name = MOCKED_BUCKET_NAME
+    object_key = MOCKED_BUCKET_CONTENT[MOCKED_BUCKET_NAME]["json-002"]["Key"]
+    s3_uri = f"s3://{bucket_name}/{object_key}"
+
+    # Gerando DataFrame com base em dados mockados no s3
+    return read_s3_object(s3_uri=s3_uri)

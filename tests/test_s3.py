@@ -240,21 +240,37 @@ def test_funcao_all_buckets_objects_report_com_lista_de_buckets_ignorados(
 
 """---------------------------------------------------
 ------------ 2. DEFININDO SUÍTE DE TESTES ------------
-            2.4 Função read_csv_object()
+              2.4 Função read_s3_object()
 ---------------------------------------------------"""
 
 
-@pytest.mark.read_csv_object
+@pytest.mark.read_s3_object
 @mock_s3
-def test_funcao_read_csv_object_retorna_objeto_do_tipo_dataframe(
-    df_from_csv_object
+def test_funcao_read_s3_object_retorna_dataframe_ao_ler_objeto_csv(
+    df_csv_from_s3
 ):
     """
     G: dado que o usuário deseja realizar a leitura de um objeto no
-       s3 presente no formato csv e transformá-lo em um DataFrame do
+       s3 presente no formato CSV e transformá-lo em um DataFrame do
        pandas
-    W: quando o método read_csv_object() for executado com a
-       parametrização padrão
+    W: quando o método read_s3_object() for executado com a
+       uma URI que indica a leitura de um objeto CSV de um bucket
     T: então o objeto resultante deve ser um DataFrame do pandas
     """
-    assert type(df_from_csv_object) is DataFrame
+    assert type(df_csv_from_s3) is DataFrame
+
+
+@pytest.mark.read_s3_object
+@mock_s3
+def test_funcao_read_s3_object_retorna_dataframe_ao_ler_objeto_json(
+    df_json_from_s3
+):
+    """
+    G: dado que o usuário deseja realizar a leitura de um objeto no
+       s3 presente no formato JSON e transformá-lo em um DataFrame do
+       pandas
+    W: quando o método read_s3_object() for executado com a
+       uma URI que indica a leitura de um objeto JSON de um bucket
+    T: então o objeto resultante deve ser um DataFrame do pandas
+    """
+    assert type(df_json_from_s3) is DataFrame
