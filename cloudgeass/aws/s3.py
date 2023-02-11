@@ -222,12 +222,17 @@ def read_s3_object(s3_uri: str, **kwargs):
     object_name = s3_uri.split("/")[-1]
     object_ext = os.path.splitext(object_name)[-1]
 
-    # Chamando método específico de leitura com base na extensão
-    if object_ext == ".csv":
-        return pd.read_csv(s3_uri, **kwargs)
-    elif object_ext == ".json":
-        return pd.read_json(s3_uri, **kwargs)
-    else:
-        logger.warning(f"Extensão {object_ext} ainda não habilitada "
-                       "para leitura e transformação em DataFrame")
-        return None
+    try:
+        # Chamando método específico de leitura com base na extensão
+        if object_ext == ".csv":
+            return pd.read_csv(s3_uri, **kwargs)
+        elif object_ext == ".json":
+            return pd.read_json(s3_uri, **kwargs)
+        else:
+            logger.warning(f"Extensão {object_ext} ainda não habilitada "
+                           "para leitura e transformação em DataFrame")
+            return None
+
+    except FileNotFoundError as fnfe:
+        logger.error(f"Arquivo inexistente ({s3_uri}). Exception: {fnfe}")
+        raise fnfe
