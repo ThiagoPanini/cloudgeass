@@ -12,7 +12,7 @@ executados de maneira adequada.
 """
 
 # Importando bibliotecas e módulos
-from tests.helpers.faker import fake_csv_data
+from tests.helpers.faker import fake_csv_data, fake_json_data
 
 
 # Região usada no mock dos recursos
@@ -21,23 +21,33 @@ MOCKED_REGION = "us-east-1"
 # Dicionário contendo definição de cenário a ser mockado no s3
 MOCKED_BUCKET_CONTENT = {
     "cloudgeass-mock-bucket-01": {
-        "file-001": {
+        "csv-001": {
             "Key": "anomesdia=20230117/file1.csv",
             "Body": fake_csv_data()
         },
-        "file-002": {
-            "Key": "anomesdia=20230108/file2.csv",
-            "Body": fake_csv_data()
+        "json-002": {
+            "Key": "anomesdia=20230108/file2.json",
+            "Body": fake_json_data()
         }
     },
     "cloudgeass-mock-bucket-02": {
-        "file-001": {
+        "csv-001": {
             "Key": "anomesdia=20230117/file1.csv",
             "Body": fake_csv_data()
         },
-        "file-002": {
-            "Key": "anomesdia=20230108/file2.csv",
+        "json-002": {
+            "Key": "anomesdia=20230108/file2.json",
+            "Body": fake_json_data()
+        }
+    },
+    "cloudgeass-mock-bucket-03": {
+        "csv-001": {
+            "Key": "anomes=202301/file1.csv",
             "Body": fake_csv_data()
+        },
+        "json-002": {
+            "Key": "anomes=202302/file2.json",
+            "Body": fake_json_data()
         }
     },
     "cloudgeass-mock-empty-bucket": {}
