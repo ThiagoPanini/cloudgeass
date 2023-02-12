@@ -12,7 +12,7 @@ executados de maneira adequada.
 """
 
 # Importando bibliotecas e módulos
-from tests.helpers.faker import fake_csv_data, fake_json_data
+from tests.helpers.faker import fake_data_buffer
 
 
 # Região usada no mock dos recursos
@@ -21,33 +21,59 @@ MOCKED_REGION = "us-east-1"
 # Dicionário contendo definição de cenário a ser mockado no s3
 MOCKED_BUCKET_CONTENT = {
     "cloudgeass-mock-bucket-01": {
-        "csv-001": {
-            "Key": "anomesdia=20230117/file1.csv",
-            "Body": fake_csv_data()
+        "file-001": {
+            "Key": "csv/anomesdia=20230117/file.csv",
+            "Body": fake_data_buffer(format="csv")
         },
-        "json-002": {
-            "Key": "anomesdia=20230108/file2.json",
-            "Body": fake_json_data()
+        "file-002": {
+            "Key": "csv/anomesdia=20230118/file.csv",
+            "Body": fake_data_buffer(format="csv")
+        },
+        "file-003": {
+            "Key": "csv/anomesdia=20230119/file.csv",
+            "Body": fake_data_buffer(format="csv")
         }
     },
     "cloudgeass-mock-bucket-02": {
-        "csv-001": {
-            "Key": "anomesdia=20230117/file1.csv",
-            "Body": fake_csv_data()
+        "file-001": {
+            "Key": "csv/anomes=202301/file.csv",
+            "Body": fake_data_buffer(format="csv")
         },
-        "json-002": {
-            "Key": "anomesdia=20230108/file2.json",
-            "Body": fake_json_data()
+        "file-002": {
+            "Key": "csv/anomes=202302/file.csv",
+            "Body": fake_data_buffer(format="csv")
+        },
+        "file-003": {
+            "Key": "csv/anomes=202303/file.csv",
+            "Body": fake_data_buffer(format="csv")
         }
     },
     "cloudgeass-mock-bucket-03": {
-        "csv-001": {
-            "Key": "anomes=202301/file1.csv",
-            "Body": fake_csv_data()
+        "file-001": {
+            "Key": "csv/20230117/file.csv",
+            "Body": fake_data_buffer(format="csv")
         },
-        "json-002": {
-            "Key": "anomes=202302/file2.json",
-            "Body": fake_json_data()
+        "file-002": {
+            "Key": "csv/20230118/file.csv",
+            "Body": fake_data_buffer(format="csv")
+        },
+        "file-003": {
+            "Key": "csv/20230119/file.csv",
+            "Body": fake_data_buffer(format="csv")
+        }
+    },
+    "cloudgeass-mock-bucket-04": {
+        "file-001": {
+            "Key": "csv/anomesdia=20230117/file.csv",
+            "Body": fake_data_buffer(format="csv")
+        },
+        "file-002": {
+            "Key": "json/anomesdia=20230117/file.json",
+            "Body": fake_data_buffer(format="json")
+        },
+        "file-003": {
+            "Key": "parquet/anomesdia=20230117/file.parquet",
+            "Body": fake_data_buffer(format="parquet")
         }
     },
     "cloudgeass-mock-empty-bucket": {}
@@ -58,7 +84,7 @@ NON_EMPTY_BUCKETS = [b for b in MOCKED_BUCKET_CONTENT.keys()
                      if len(MOCKED_BUCKET_CONTENT[b]) > 0]
 
 # Nome específico de bucket usado na extração individual de report
-MOCKED_BUCKET_NAME = NON_EMPTY_BUCKETS[0]
+EXAMPLE_BUCKET = NON_EMPTY_BUCKETS[0]
 
 # Lista esperada de colunas em DataFrame report de objetos
 EXPECTED_DF_OBJECTS_REPORT_COLS = [
