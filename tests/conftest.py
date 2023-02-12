@@ -105,9 +105,12 @@ def df_csv_from_s3(prepare_mocked_bucket):
     # Preparando ambiente mockado no s3
     prepare_mocked_bucket()
 
+    # Formato de objeto
+    file_ext = "csv"
+
     # Extraindo URI para leitura de objeto CSV
-    bucket_name = EXAMPLE_BUCKET
-    object_key = MOCKED_BUCKET_CONTENT[EXAMPLE_BUCKET]["csv-001"]["Key"]
+    bucket_name = "cloudgeass-mock-bucket-04"
+    object_key = f"{file_ext}/anomesdia=20230117/file.{file_ext}"
     s3_uri = f"s3://{bucket_name}/{object_key}"
 
     # Gerando DataFrame com base em dados mockados no s3
@@ -121,9 +124,31 @@ def df_json_from_s3(prepare_mocked_bucket):
     # Preparando ambiente mockado no s3
     prepare_mocked_bucket()
 
+    # Formato de objeto
+    file_ext = "json"
+
     # Extraindo URI para leitura de objeto JSON
-    bucket_name = EXAMPLE_BUCKET
-    object_key = MOCKED_BUCKET_CONTENT[EXAMPLE_BUCKET]["json-002"]["Key"]
+    bucket_name = "cloudgeass-mock-bucket-04"
+    object_key = f"{file_ext}/anomesdia=20230117/file.{file_ext}"
+    s3_uri = f"s3://{bucket_name}/{object_key}"
+
+    # Gerando DataFrame com base em dados mockados no s3
+    return read_s3_object(s3_uri=s3_uri)
+
+
+# DataFrame resultante de leitura de objeto PARQUET via read_s3_object()
+@pytest.fixture()
+@mock_s3
+def df_parquet_from_s3(prepare_mocked_bucket):
+    # Preparando ambiente mockado no s3
+    prepare_mocked_bucket()
+
+    # Formato de objeto
+    file_ext = "parquet"
+
+    # Extraindo URI para leitura de objeto JSON
+    bucket_name = "cloudgeass-mock-bucket-04"
+    object_key = f"{file_ext}/anomesdia=20230117/file.{file_ext}"
     s3_uri = f"s3://{bucket_name}/{object_key}"
 
     # Gerando DataFrame com base em dados mockados no s3

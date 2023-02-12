@@ -207,9 +207,8 @@ def read_s3_object(s3_uri: str, **kwargs):
     **kwargs
     --------
     Os argumentos adicionais por chave servem para mapear todas as
-    possibilidades de parametrização existentes no médodo pd.read_csv().
-    Dessa forma, os usuários poderão configurar a obtenção do DataFrame
-    de acordo com as características do objeto csv lido do s3.
+    possibilidades de parametrização existentes nos métodos
+    pd.read_csv(), pd.read_json() e pd.read_parquet().
 
     Retorno
     -------
@@ -228,6 +227,8 @@ def read_s3_object(s3_uri: str, **kwargs):
             return pd.read_csv(s3_uri, **kwargs)
         elif object_ext == ".json":
             return pd.read_json(s3_uri, **kwargs)
+        elif object_ext == ".parquet":
+            return pd.read_parquet(s3_uri, **kwargs)
         else:
             logger.warning(f"Extensão {object_ext} ainda não habilitada "
                            "para leitura e transformação em DataFrame")

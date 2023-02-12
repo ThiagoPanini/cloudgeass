@@ -245,7 +245,6 @@ def test_funcao_all_buckets_objects_report_com_lista_de_buckets_ignorados(
 
 
 @pytest.mark.read_s3_object
-@pytest.mark.skip(reason="Em validação")
 @mock_s3
 def test_funcao_read_s3_object_retorna_dataframe_ao_ler_objeto_csv(
     df_csv_from_s3
@@ -262,7 +261,6 @@ def test_funcao_read_s3_object_retorna_dataframe_ao_ler_objeto_csv(
 
 
 @pytest.mark.read_s3_object
-@pytest.mark.skip(reason="Em validação")
 @mock_s3
 def test_funcao_read_s3_object_retorna_dataframe_ao_ler_objeto_json(
     df_json_from_s3
@@ -276,6 +274,22 @@ def test_funcao_read_s3_object_retorna_dataframe_ao_ler_objeto_json(
     T: então o objeto resultante deve ser um DataFrame do pandas
     """
     assert type(df_json_from_s3) is DataFrame
+
+
+@pytest.mark.read_s3_object
+@mock_s3
+def test_funcao_read_s3_object_retorna_dataframe_ao_ler_objeto_parquet(
+    df_parquet_from_s3
+):
+    """
+    G: dado que o usuário deseja realizar a leitura de um objeto no
+       s3 presente no formato PARQUET e transformá-lo em um DataFrame do
+       pandas
+    W: quando o método read_s3_object() for executado com uma URI do S3
+       que indica a leitura de um objeto PARQUET de um bucket
+    T: então o objeto resultante deve ser um DataFrame do pandas
+    """
+    assert type(df_parquet_from_s3) is DataFrame
 
 
 @pytest.mark.read_s3_object
