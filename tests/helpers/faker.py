@@ -79,7 +79,7 @@ def fake_data_buffer(
 
     # Validando se o formato de saída remete a um arquivo CSV
     if format_prep == "csv":
-        bytes_data = bytes(df_fake.to_csv(index=False), 
+        bytes_data = bytes(df_fake.to_csv(index=False),
                            encoding="utf-8")
         buffer = io.BytesIO(bytes_data)
 
