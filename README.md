@@ -6,8 +6,12 @@
   <br>
   
   [![PyPI](https://img.shields.io/pypi/v/cloudgeass?color=purple)](https://pypi.org/project/cloudgeass/)
-    ![PyPI - Status](https://img.shields.io/pypi/status/cloudgeass?color=red)
-  ![GitHub commit activity](https://img.shields.io/github/commit-activity/m/ThiagoPanini/cloudgeass?color=blue)
+  ![PyPI - Downloads](https://img.shields.io/pypi/dm/cloudgeass?color=purple)
+  ![PyPI - Status](https://img.shields.io/pypi/status/cloudgeass?color=purple)
+  ![GitHub commit activity](https://img.shields.io/github/commit-activity/m/ThiagoPanini/cloudgeass?color=purple)
+  ![GitHub Last Commit](https://img.shields.io/github/last-commit/ThiagoPanini/cloudgeass?color=purple)
+  <br>
+
   ![CI workflow](https://img.shields.io/github/actions/workflow/status/ThiagoPanini/cloudgeass/ci-cloudgeass-main.yml?label=ci)
   [![codecov](https://codecov.io/github/ThiagoPanini/cloudgeass/branch/main/graph/badge.svg?token=7HI1YGS4AA)](https://codecov.io/github/ThiagoPanini/cloudgeass)
 
@@ -68,7 +72,6 @@ O resultado é dado como um DataFrame do pandas capaz de ser utilizado de acordo
 <div align="center">
     <img src="https://github.com/ThiagoPanini/cloudgeass/blob/main/docs/imgs/readme-s3-example-bucket_objects_report.png?raw=true" alt="bucket_objects_report">
 </div>
-
 
 ___
 
