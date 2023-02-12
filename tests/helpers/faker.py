@@ -15,7 +15,6 @@ formatos
 # Importando bibliotecas
 from faker import Faker
 import pandas as pd
-import io
 
 
 # Instanciando faker
@@ -24,21 +23,21 @@ Faker.seed(42)
 
 
 # Função para gerar dados fictícios nos formatos CSV, JSON ou PARQUET
-def fake_data_buffer(
+def fake_data(
     format: str = "csv",
     headers: list = ["col1", "col2", "col3"],
     n_rows: int = 10
 ):
     """
-    Gera buffer de dados fictícios simulando diferentes formatos de arquivos.
+    Gera dados fictícios simulando diferentes formatos de arquivos.
 
-    Com essa função, o usuário poderá obter um buffer de bytes de dados
+    Com essa função, o usuário poderá obter um dados (em bytes)
     gerados aleatoriamente através da biblioteca Faker para realizar as
     mais variadas validações e testes. A função utiliza um DataFrame do
-    pandas para guiar os diferentes formatos de buffer de saída. Como
-    exemplo, caso o usuário queira um buffer de arquivo CSV (format="csv"),
-    a resposta será dada através do método io.BytesIO(bytes(df.to_csv()),
-    onde df é o DataFrame pandas criado com dados fictícios.
+    pandas para guiar os diferentes formatos de saída. Como exemplo,
+    caso o usuário queira um objeto que simule um arquivo CSV (format="csv"),
+    a resposta será dada através do método bytes(df.to_csv()),
+    onde df é um DataFrame pandas criado com dados fictícios.
 
     Parâmetros
     ----------
@@ -81,20 +80,17 @@ def fake_data_buffer(
     if format_prep == "csv":
         bytes_data = bytes(df_fake.to_csv(index=False),
                            encoding="utf-8")
-        buffer = io.BytesIO(bytes_data)
 
     # Validando se o formato de saída remete a um arquivo JSON
     elif format_prep == "json":
         bytes_data = bytes(df_fake.to_json(orient="records"),
                            encoding="utf-8")
-        buffer = io.BytesIO(bytes_data)
 
     # Validando se o formato de saída remete a um arquivo PARQUET
     elif format_prep == "parquet":
         bytes_data = df_fake.to_parquet(compression="snappy")
-        buffer = io.BytesIO(bytes_data)
 
     else:
-        buffer = None
+        bytes_data = None
 
-    return buffer
+    return bytes_data
