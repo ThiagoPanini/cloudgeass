@@ -13,12 +13,15 @@ with open("README.md", "r", encoding='utf-8') as f:
 # Criando setup
 setup(
     name='cloudgeass',
-    version='1.0.5',
+    version='1.0.6',
     author='Thiago Panini',
     author_email='panini.development@gmail.com',
     packages=find_packages(),
     install_requires=[
-        'boto3',
+        "boto3",
+        "pandas",
+        "s3fs",
+        "pyarrow"
     ],
     license='MIT',
     description='Operações úteis para o uso de serviços AWS',

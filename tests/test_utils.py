@@ -24,7 +24,6 @@ from cloudgeass.utils.prep import categorize_file_size
 ---------------------------------------------------"""
 
 
-@pytest.mark.utils
 @pytest.mark.categorize_file_size
 def test_funcao_de_categorizacao_de_volume_retorna_bytes():
     """
@@ -43,7 +42,6 @@ def test_funcao_de_categorizacao_de_volume_retorna_bytes():
     assert categorize_file_size(test_size) == expected_output
 
 
-@pytest.mark.utils
 @pytest.mark.categorize_file_size
 def test_funcao_de_categorizacao_de_volume_retorna_kilobytes():
     """
@@ -62,7 +60,6 @@ def test_funcao_de_categorizacao_de_volume_retorna_kilobytes():
     assert categorize_file_size(test_size) == expected_output
 
 
-@pytest.mark.utils
 @pytest.mark.categorize_file_size
 def test_funcao_de_categorizacao_de_volume_retorna_megabytes():
     """
@@ -81,7 +78,6 @@ def test_funcao_de_categorizacao_de_volume_retorna_megabytes():
     assert categorize_file_size(test_size) == expected_output
 
 
-@pytest.mark.utils
 @pytest.mark.categorize_file_size
 def test_funcao_de_categorizacao_de_volume_retorna_gigabytes():
     """
@@ -100,7 +96,6 @@ def test_funcao_de_categorizacao_de_volume_retorna_gigabytes():
     assert categorize_file_size(test_size) == expected_output
 
 
-@pytest.mark.utils
 @pytest.mark.categorize_file_size
 def test_funcao_de_categorizacao_de_volume_retorna_terabytes():
     """

@@ -14,7 +14,7 @@ formatos
 
 # Importando bibliotecas
 from faker import Faker
-import io
+import pandas as pd
 
 
 # Instanciando faker
@@ -22,22 +22,29 @@ faker = Faker()
 Faker.seed(42)
 
 
-# Função para geração de csv fictício
-def fake_csv_data(
+# Função para gerar dados fictícios nos formatos CSV, JSON ou PARQUET
+def fake_data(
+    format: str = "csv",
     headers: list = ["col1", "col2", "col3"],
-    num_rows: int = 10,
-    separator: str = ","
-) -> io.BytesIO:
+    n_rows: int = 10
+):
     """
-    Gera stream de bytes contendo uma simulação de arquivo CSV.
+    Gera dados fictícios simulando diferentes formatos de arquivos.
 
-    Com essa função, o usuário poderá parametrização uma criação fictícia
-    de uma stream binária contendo uma string que simula o conteúdo de
-    um arquivo CSV. A função utiliza a biblioteca Faker e seu método
-    uuid4() para geração de strings aleatórias.
+    Com essa função, o usuário poderá obter um dados (em bytes)
+    gerados aleatoriamente através da biblioteca Faker para realizar as
+    mais variadas validações e testes. A função utiliza um DataFrame do
+    pandas para guiar os diferentes formatos de saída. Como exemplo,
+    caso o usuário queira um objeto que simule um arquivo CSV (format="csv"),
+    a resposta será dada através do método bytes(df.to_csv()),
+    onde df é um DataFrame pandas criado com dados fictícios.
 
     Parâmetros
     ----------
+    :param format:
+        Formato de arquivo a ser simulado pelo processo.
+        [type: str, default="csv", allowed=csv|json|parquet]
+
     :param headers:
         Lista de colunas utilizada como header dos dados gerados.
         [type: lista, default=["col1", "col2", "col3"]]
@@ -46,20 +53,44 @@ def fake_csv_data(
         Número de linhas de dados a serem gerados.
         [type: int, default=10]
 
-    :param separator:
-        Caractere separador dos atributos dos dados fictícios gerados.
+    **kwargs
+    --------
+    :param sep:
+        Caractere separador dos atributos dos dados fictícios gerados
+        em caso de format="csv".
         [type: str, default=","]
 
     Retorno
     -------
-    :return fake_data: stream binária contendo os dados gerados.
+    :return buffer: buffer de dados fictícios gerados.
         [type: io.BytesIO]
     """
 
-    # Gerando string simulando arquivo csv
-    fake_row = [[faker.uuid4() for _ in range(len(headers))]
-                for _ in range(num_rows)]
-    fake_str = "\n".join([separator.join(row) for row in fake_row])
-    fake_data = separator.join(headers) + "\n" + fake_str
+    # Gerando lista aninhada de valores fictícios usando Faker
+    fake_values = [[faker.uuid4() for _ in range(len(headers))]
+                   for _ in range(n_rows)]
 
-    return io.BytesIO(bytes(fake_data, encoding="utf-8"))
+    # Gerando DataFrame fictício
+    df_fake = pd.DataFrame(data=fake_values, columns=headers)
+
+    # Validando formato de saída antes dos direcionamentos
+    format_prep = format.lower().strip().replace(".", "")
+
+    # Validando se o formato de saída remete a um arquivo CSV
+    if format_prep == "csv":
+        bytes_data = bytes(df_fake.to_csv(index=False),
+                           encoding="utf-8")
+
+    # Validando se o formato de saída remete a um arquivo JSON
+    elif format_prep == "json":
+        bytes_data = bytes(df_fake.to_json(orient="records"),
+                           encoding="utf-8")
+
+    # Validando se o formato de saída remete a um arquivo PARQUET
+    elif format_prep == "parquet":
+        bytes_data = df_fake.to_parquet(compression="snappy")
+
+    else:
+        bytes_data = None
+
+    return bytes_data

@@ -16,6 +16,7 @@ realizar as mais variadas atividades no S3.
 
 import boto3
 import pandas as pd
+import os
 
 from cloudgeass.utils.log import log_config
 from cloudgeass.utils.prep import categorize_file_size
@@ -71,7 +72,7 @@ def bucket_objects_report(
 
     :param client:
         Client S3 utilizado para chamada do método list_objects_v2()
-        utilizado para obtenção dos objetos do bucket.
+        para obtenção dos objetos do bucket.
         [default=boto3.client("s3")]
 
     Retorno
@@ -142,7 +143,7 @@ def all_buckets_objects_report(
 
     :param client:
         Client S3 utilizado para chamada do método list_objects_v2()
-        utilizado para obtenção dos objetos do bucket.
+        para obtenção dos objetos do bucket.
         [default=boto3.client("s3")]
 
     :param exclude_buckets:
@@ -182,3 +183,57 @@ def all_buckets_objects_report(
     df_report.reset_index(drop=True, inplace=True)
 
     return df_report
+
+
+# Lendo objeto do S3 com base em URI
+def read_s3_object(s3_uri: str, **kwargs):
+    """
+    Realiza a leitura de objeto no S3 com base em URI fornecida.
+
+    Com esta função, o usuário poderá realizar a leitura de objetos
+    no S3 com o output consolidado como um DataFrame do pandas. As
+    regras estabelecidas na função visam identificar a extensão do
+    objeto a partir da URI para que, dessa forma, o método correto
+    de leitura e transformação em DataFrame possa ser chamado (ex:
+    pd.read_csv(), pd.read_json()).
+
+    Parâmetros
+    ----------
+    :param s3_uri:
+        URI do objeto no S3 a ser lido e transformado em DataFrame.
+        Exemplo: "s3://bucket-name/prefix/object-name.csv"
+        [type: str]
+
+    **kwargs
+    --------
+    Os argumentos adicionais por chave servem para mapear todas as
+    possibilidades de parametrização existentes nos métodos
+    pd.read_csv(), pd.read_json() e pd.read_parquet().
+
+    Retorno
+    -------
+    :return df:
+        DataFrame do pandas contendo os dados do objeto lido do s3.
+        [type: pd.DataFrame]
+    """
+
+    # Extraindo parâmetros da URI
+    object_name = s3_uri.split("/")[-1]
+    object_ext = os.path.splitext(object_name)[-1]
+
+    try:
+        # Chamando método específico de leitura com base na extensão
+        if object_ext == ".csv":
+            return pd.read_csv(s3_uri, **kwargs)
+        elif object_ext == ".json":
+            return pd.read_json(s3_uri, **kwargs)
+        elif object_ext == ".parquet":
+            return pd.read_parquet(s3_uri, **kwargs)
+        else:
+            logger.warning(f"Extensão {object_ext} ainda não habilitada "
+                           "para leitura e transformação em DataFrame")
+            return None
+
+    except FileNotFoundError as fnfe:
+        logger.error(f"Arquivo inexistente ({s3_uri})")
+        raise fnfe

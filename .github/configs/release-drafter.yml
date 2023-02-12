@@ -13,6 +13,7 @@ categories:
     labels:
       - feature 🚀
       - enhancement 🍀
+      - new-function 💎
 
   - title: 🐞 Bug Fixes
     labels:
@@ -61,6 +62,7 @@ version-resolver:
       - doc 🖍️
       - observability 👁️‍🗨️
       - config ⚙️
+      - new-function 💎
   
   default: patch
 

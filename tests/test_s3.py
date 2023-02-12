@@ -18,7 +18,8 @@ from moto import mock_s3
 
 from pandas import DataFrame
 
-from cloudgeass.aws.s3 import bucket_objects_report
+from cloudgeass.aws.s3 import bucket_objects_report,\
+    all_buckets_objects_report, read_s3_object
 
 from tests.configs.inputs import MOCKED_BUCKET_CONTENT,\
     NON_EMPTY_BUCKETS, EXPECTED_DF_OBJECTS_REPORT_COLS
@@ -26,7 +27,7 @@ from tests.configs.inputs import MOCKED_BUCKET_CONTENT,\
 
 """---------------------------------------------------
 ------------ 2. DEFININDO SUÍTE DE TESTES ------------
-           2.1 Construindo testes unitários
+               2.1 Função list_buckets()
 ---------------------------------------------------"""
 
 
@@ -51,6 +52,12 @@ def test_funcao_list_buckets_retorna_o_bucket_esperado(bucket_list):
     T: então a lista resultante deve conter os buckets esperados
     """
     assert bucket_list == list(MOCKED_BUCKET_CONTENT.keys())
+
+
+"""---------------------------------------------------
+------------ 2. DEFININDO SUÍTE DE TESTES ------------
+          2.2 Função bucket_objects_report()
+---------------------------------------------------"""
 
 
 @pytest.mark.bucket_objects_report
@@ -123,6 +130,12 @@ def test_erro_ao_tentar_gerar_report_de_objetos_com_nome_de_bucket_incorreto(
         )
 
 
+"""---------------------------------------------------
+------------ 2. DEFININDO SUÍTE DE TESTES ------------
+        2.3 Função all_buckets_objects_report()
+---------------------------------------------------"""
+
+
 @pytest.mark.all_buckets_objects_report
 @mock_s3
 def test_funcao_all_buckets_objects_report_retorna_dataframe_do_pandas(
@@ -177,7 +190,7 @@ def test_funcao_all_buckets_objects_report_contem_lista_de_buckets_nao_vazios(
 @pytest.mark.all_buckets_objects_report
 @mock_s3
 def test_funcao_all_buckets_objects_report_possui_nomes_esperados_de_buckets(
-    df_objects_report
+    df_all_buckets_objects
 ):
     """
     G: dado que o usuário deseja obter um report completo contendo todos
@@ -188,6 +201,130 @@ def test_funcao_all_buckets_objects_report_possui_nomes_esperados_de_buckets(
     """
 
     # Extração de nome de bucket do DataFrame resultante
-    bucket_report_names = list(set(df_objects_report["BucketName"].values))
+    bucket_names = list(set(df_all_buckets_objects["BucketName"].values))
 
-    assert bucket_report_names == NON_EMPTY_BUCKETS
+    assert set(bucket_names) == set(NON_EMPTY_BUCKETS)
+
+
+@pytest.mark.all_buckets_objects_report
+@mock_s3
+def test_funcao_all_buckets_objects_report_com_lista_de_buckets_ignorados(
+    mocked_client, prepare_mocked_bucket
+):
+    """
+    G: dado que o usuário deseja obter um report completo contendo todos
+       os objetos de todos os buckets em sua conta
+    W: quando o método all_buckets_objects_report() for executado com uma
+       lista de buckets a serem ignorados pelo processo de extração
+    T: então os elementos contidos na lista de buckets ignorados NÃO devem
+       estar entre os buckets do DataFrame resultante
+    """
+
+    # Preparando ambiente
+    prepare_mocked_bucket()
+
+    # Estabelecendo um nome de bucket a ser ignorado
+    buckets_to_exclude = NON_EMPTY_BUCKETS[0]
+
+    # Extração de nome de bucket do DataFrame resultante
+    df_all_buckets_objects = all_buckets_objects_report(
+        client=mocked_client,
+        exclude_buckets=buckets_to_exclude
+    )
+
+    # Coletando lista de buckets distintos resultantes da função
+    bucket_names = list(set(df_all_buckets_objects["BucketName"].values))
+
+    assert buckets_to_exclude not in bucket_names
+
+
+"""---------------------------------------------------
+------------ 2. DEFININDO SUÍTE DE TESTES ------------
+              2.4 Função read_s3_object()
+---------------------------------------------------"""
+
+
+@pytest.mark.read_s3_object
+@mock_s3
+def test_funcao_read_s3_object_retorna_dataframe_ao_ler_objeto_csv(
+    df_csv_from_s3
+):
+    """
+    G: dado que o usuário deseja realizar a leitura de um objeto no
+       s3 presente no formato CSV e transformá-lo em um DataFrame do
+       pandas
+    W: quando o método read_s3_object() for executado com uma URI do S3
+       que indica a leitura de um objeto JSON de um bucket
+    T: então o objeto resultante deve ser um DataFrame do pandas
+    """
+    assert type(df_csv_from_s3) is DataFrame
+
+
+@pytest.mark.read_s3_object
+@mock_s3
+def test_funcao_read_s3_object_retorna_dataframe_ao_ler_objeto_json(
+    df_json_from_s3
+):
+    """
+    G: dado que o usuário deseja realizar a leitura de um objeto no
+       s3 presente no formato JSON e transformá-lo em um DataFrame do
+       pandas
+    W: quando o método read_s3_object() for executado com uma URI do S3
+       que indica a leitura de um objeto JSON de um bucket
+    T: então o objeto resultante deve ser um DataFrame do pandas
+    """
+    assert type(df_json_from_s3) is DataFrame
+
+
+@pytest.mark.read_s3_object
+@mock_s3
+def test_funcao_read_s3_object_retorna_dataframe_ao_ler_objeto_parquet(
+    df_parquet_from_s3
+):
+    """
+    G: dado que o usuário deseja realizar a leitura de um objeto no
+       s3 presente no formato PARQUET e transformá-lo em um DataFrame do
+       pandas
+    W: quando o método read_s3_object() for executado com uma URI do S3
+       que indica a leitura de um objeto PARQUET de um bucket
+    T: então o objeto resultante deve ser um DataFrame do pandas
+    """
+    assert type(df_parquet_from_s3) is DataFrame
+
+
+@pytest.mark.read_s3_object
+@mock_s3
+def test_funcao_read_s3_object_retora_none_ao_ler_arquivo_com_extensao_png():
+    """
+    G: dado que o usuário deseja realizar a leitura de um objeto no
+       s3 presente em um foramto qualquer e transformá-lo em um DataFrame
+       do pandas
+    W: quando o método read_s3_object() for executado com uma URI do S3
+       que indica a leitura de um objeto com uma extensão ainda não
+       habilitada para transformação em DataFrame (ex: .png)
+    T: então a função não deve retornar nada (None)
+    """
+
+    # Definindo URI de teste a ser lida
+    file_uri = "s3://mocked-bucket/prefix/file.png"
+    assert read_s3_object(file_uri) is None
+
+
+@pytest.mark.read_s3_object
+@mock_s3
+def test_funcao_read_s3_object_retora_erro_com_uri_de_objeto_inexistente():
+    """
+    G: dado que o usuário deseja realizar a leitura de um objeto no
+       s3 presente em um foramto qualquer e transformá-lo em um DataFrame
+       do pandas
+    W: quando o método read_s3_object() for executado com uma URI do S3
+       que aponta para um objeto inexistente no bucket
+    T: então uma exceção FileNotFoundError deve ser lançada
+    """
+
+    # Definindo URI de teste a ser lida
+    error_uri = "s3://mocked-bucket/prefix/file.csv"
+
+    # Validando lançamento da exceção
+    with pytest.raises(FileNotFoundError):
+        _ = read_s3_object(error_uri)

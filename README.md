@@ -84,6 +84,7 @@ ___
 **Python**
 
 - [Python - Packaging Python Projects](https://packaging.python.org/en/latest/tutorials/packaging-projects/)
+- [Stack Overflow - Reading Pandas DataFrame from S3](https://stackoverflow.com/questions/37703634/how-to-import-a-text-file-on-aws-s3-into-pandas-without-writing-to-disk)
 
 **Github**
 
