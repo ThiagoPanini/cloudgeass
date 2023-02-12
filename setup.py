@@ -20,7 +20,8 @@ setup(
     install_requires=[
         "boto3",
         "pandas",
-        "s3fs"
+        "s3fs",
+        "pyarrow"
     ],
     license='MIT',
     description='Operações úteis para o uso de serviços AWS',
