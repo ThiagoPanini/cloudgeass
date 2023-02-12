@@ -313,13 +313,29 @@ def get_partition_value_from_prefix(
         partition_prefix = prefix_uri[partition_start_idx:].split("/")[0]
 
         # Extraindo informação de data de partição
-        partition_value = partition_prefix.split("=")[-1]
+        partition_value = int(partition_prefix.split("=")[-1])
 
     elif partition_mode_prep == "value":
         # Extraindo informação de data de partição com base em index
         partition_value = prefix_uri.split("/")[date_partition_idx]
 
-    return int(partition_value)
+        # Validando conversão para inteiro
+        try:
+            partition_value = int(partition_value)
+
+        except ValueError as ve:
+            logger.error(f"Erro ao tentar converter partição {partition_value}"
+                         " para inteiro. Verifique se os parâmetros da fução "
+                         "foram fornecidos de maneira adequada. Este tipo de "
+                         "erro pode estar associado ao tentar extrair um valor"
+                         " de partição com parâmetro partition_mode='value' "
+                         "quando o modo de armazenamento da função é "
+                         "'name=value'. Isto implica em tentar converter uma "
+                         "string do tipo 'nomeparticao=valorparticao' em "
+                         " inteiro, gerando assim a exceção.")
+            raise ve
+
+    return partition_value
 
 
 # Coleta último valor de partição com base em múltiplos prefixos de tabela
