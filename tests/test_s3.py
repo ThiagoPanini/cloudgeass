@@ -20,7 +20,7 @@ from pandas import DataFrame
 
 from cloudgeass.aws.s3 import bucket_objects_report,\
     all_buckets_objects_report, read_s3_object,\
-    get_partition_value_from_prefix
+    get_partition_value_from_prefix, get_last_partition
 
 from tests.configs.inputs import MOCKED_BUCKET_CONTENT,\
     NON_EMPTY_BUCKETS, EXPECTED_DF_OBJECTS_REPORT_COLS
@@ -333,7 +333,7 @@ def test_read_s3_object_retora_erro_com_uri_de_objeto_inexistente():
 
 """---------------------------------------------------
 ------------ 2. DEFININDO SUÍTE DE TESTES ------------
-      2.4 Função get_partition_value_from_prefix()
+      2.5 Função get_partition_value_from_prefix()
 ---------------------------------------------------"""
 
 
@@ -553,3 +553,45 @@ def test_erro_conversao_de_valor_de_particao_para_inteiro(
             prefix_uri=prefix_uri,
             partition_mode=partition_mode,
         )
+
+
+"""---------------------------------------------------
+------------ 2. DEFININDO SUÍTE DE TESTES ------------
+            2.6 Função get_last_partition()
+---------------------------------------------------"""
+
+
+@pytest.mark.get_last_partition
+@mock_s3
+def test_get_last_partition_com_particao_anomesdia(
+    mocked_client, prepare_mocked_bucket
+):
+    """
+    G: dado que o usuário deseja extraír o valor da última partição
+       de um prefixo de tabela armazenada no s3 com o padrão
+       anomesdia=valorparticao
+    W: quando o método get_last_partition() for executado
+    T: então o último valor de partição esperado deve ser retornado
+    """
+
+    # Preparando ambiente mockado
+    prepare_mocked_bucket()
+
+    # Definindo parâmetros a serem testados na função
+    bucket_name = "cloudgeass-mock-bucket-01"
+    table_prefix = "csv"
+    partition_mode = "name=value"
+    date_partition_name = "anomesdia"
+    expected_result = 20230119
+
+    # Extraindo última partição
+    last_partition = get_last_partition(
+        bucket_name=bucket_name,
+        table_prefix=table_prefix,
+        partition_mode=partition_mode,
+        date_partition_name=date_partition_name,
+        client=mocked_client
+    )
+
+    # Verificando resultado
+    assert last_partition == expected_result
