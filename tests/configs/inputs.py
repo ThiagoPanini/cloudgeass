@@ -12,7 +12,7 @@ executados de maneira adequada.
 """
 
 # Importando bibliotecas e módulos
-from tests.helpers.faker import fake_data_buffer
+from tests.helpers.faker import fake_data
 
 
 # Região usada no mock dos recursos
@@ -23,57 +23,57 @@ MOCKED_BUCKET_CONTENT = {
     "cloudgeass-mock-bucket-01": {
         "file-001": {
             "Key": "csv/anomesdia=20230117/file.csv",
-            "Body": fake_data_buffer(format="csv")
+            "Body": fake_data(format="csv")
         },
         "file-002": {
             "Key": "csv/anomesdia=20230118/file.csv",
-            "Body": fake_data_buffer(format="csv")
+            "Body": fake_data(format="csv")
         },
         "file-003": {
             "Key": "csv/anomesdia=20230119/file.csv",
-            "Body": fake_data_buffer(format="csv")
+            "Body": fake_data(format="csv")
         }
     },
     "cloudgeass-mock-bucket-02": {
         "file-001": {
             "Key": "csv/anomes=202301/file.csv",
-            "Body": fake_data_buffer(format="csv")
+            "Body": fake_data(format="csv")
         },
         "file-002": {
             "Key": "csv/anomes=202302/file.csv",
-            "Body": fake_data_buffer(format="csv")
+            "Body": fake_data(format="csv")
         },
         "file-003": {
             "Key": "csv/anomes=202303/file.csv",
-            "Body": fake_data_buffer(format="csv")
+            "Body": fake_data(format="csv")
         }
     },
     "cloudgeass-mock-bucket-03": {
         "file-001": {
             "Key": "csv/20230117/file.csv",
-            "Body": fake_data_buffer(format="csv")
+            "Body": fake_data(format="csv")
         },
         "file-002": {
             "Key": "csv/20230118/file.csv",
-            "Body": fake_data_buffer(format="csv")
+            "Body": fake_data(format="csv")
         },
         "file-003": {
             "Key": "csv/20230119/file.csv",
-            "Body": fake_data_buffer(format="csv")
+            "Body": fake_data(format="csv")
         }
     },
     "cloudgeass-mock-bucket-04": {
-        "file-001": {
+        "file-csv": {
             "Key": "csv/anomesdia=20230117/file.csv",
-            "Body": fake_data_buffer(format="csv")
+            "Body": fake_data(format="csv")
         },
-        "file-002": {
+        "file-json": {
             "Key": "json/anomesdia=20230117/file.json",
-            "Body": fake_data_buffer(format="json")
+            "Body": fake_data(format="json")
         },
-        "file-003": {
+        "file-parquet": {
             "Key": "parquet/anomesdia=20230117/file.parquet",
-            "Body": fake_data_buffer(format="parquet")
+            "Body": fake_data(format="parquet")
         }
     },
     "cloudgeass-mock-empty-bucket": {}
