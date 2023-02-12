@@ -234,5 +234,5 @@ def read_s3_object(s3_uri: str, **kwargs):
             return None
 
     except FileNotFoundError as fnfe:
-        logger.error(f"Arquivo inexistente ({s3_uri}). Exception: {fnfe}")
+        logger.error(f"Arquivo inexistente ({s3_uri})")
         raise fnfe
