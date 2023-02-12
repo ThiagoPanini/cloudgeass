@@ -8,3 +8,4 @@ build
 pandas
 Faker
 s3fs
+pyarrow
