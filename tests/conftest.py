@@ -18,7 +18,7 @@ from cloudgeass.aws.s3 import list_buckets, bucket_objects_report,\
     all_buckets_objects_report, read_s3_object
 
 from tests.configs.inputs import MOCKED_REGION, MOCKED_BUCKET_CONTENT,\
-    MOCKED_BUCKET_NAME
+    EXAMPLE_BUCKET
 
 
 # Definindo resource s3 para operações de mock
@@ -83,7 +83,7 @@ def df_objects_report(mocked_client, prepare_mocked_bucket):
 
     # Gerando DataFrame com report de objetos
     return bucket_objects_report(
-        bucket_name=MOCKED_BUCKET_NAME, client=mocked_client
+        bucket_name=EXAMPLE_BUCKET, client=mocked_client
     )
 
 
@@ -106,8 +106,8 @@ def df_csv_from_s3(prepare_mocked_bucket):
     prepare_mocked_bucket()
 
     # Extraindo URI para leitura de objeto CSV
-    bucket_name = MOCKED_BUCKET_NAME
-    object_key = MOCKED_BUCKET_CONTENT[MOCKED_BUCKET_NAME]["csv-001"]["Key"]
+    bucket_name = EXAMPLE_BUCKET
+    object_key = MOCKED_BUCKET_CONTENT[EXAMPLE_BUCKET]["csv-001"]["Key"]
     s3_uri = f"s3://{bucket_name}/{object_key}"
 
     # Gerando DataFrame com base em dados mockados no s3
@@ -122,8 +122,8 @@ def df_json_from_s3(prepare_mocked_bucket):
     prepare_mocked_bucket()
 
     # Extraindo URI para leitura de objeto JSON
-    bucket_name = MOCKED_BUCKET_NAME
-    object_key = MOCKED_BUCKET_CONTENT[MOCKED_BUCKET_NAME]["json-002"]["Key"]
+    bucket_name = EXAMPLE_BUCKET
+    object_key = MOCKED_BUCKET_CONTENT[EXAMPLE_BUCKET]["json-002"]["Key"]
     s3_uri = f"s3://{bucket_name}/{object_key}"
 
     # Gerando DataFrame com base em dados mockados no s3

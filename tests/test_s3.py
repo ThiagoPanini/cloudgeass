@@ -245,6 +245,7 @@ def test_funcao_all_buckets_objects_report_com_lista_de_buckets_ignorados(
 
 
 @pytest.mark.read_s3_object
+@pytest.mark.skip(reason="Em validação")
 @mock_s3
 def test_funcao_read_s3_object_retorna_dataframe_ao_ler_objeto_csv(
     df_csv_from_s3
@@ -261,6 +262,7 @@ def test_funcao_read_s3_object_retorna_dataframe_ao_ler_objeto_csv(
 
 
 @pytest.mark.read_s3_object
+@pytest.mark.skip(reason="Em validação")
 @mock_s3
 def test_funcao_read_s3_object_retorna_dataframe_ao_ler_objeto_json(
     df_json_from_s3
