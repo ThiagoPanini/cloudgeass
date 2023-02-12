@@ -355,7 +355,7 @@ def test_erro_get_partition_value_from_prefix_com_partition_mode_invalido(
 
     # Chamando função e verificando exceção lançada
     with pytest.raises(ValueError):
-        get_partition_value_from_prefix(
+        _ = get_partition_value_from_prefix(
             prefix_uri="teste/anomesdia=20230101/file.csv",
             partition_mode="name"  # Valor não aceito na função
         )
@@ -363,7 +363,71 @@ def test_erro_get_partition_value_from_prefix_com_partition_mode_invalido(
 
 @pytest.mark.get_partition_value_from_prefix
 @mock_s3
-def test_get_partition_value_from_prefix_retorna_particao_anomesdia(
+def test_erro_extracao_valor_de_particao_anomesdia_com_partition_name_anomes(
+    prepare_mocked_bucket
+):
+    """
+    G: dado que o usuário deseja extrair o valor de partição de um
+       prefixo de objeto no s3
+    W: quando a função get_partition_value_from_prefix() for executada
+       com partition_mode="name=value" e date_partition_name="anomes"
+       em um prefixo NÃO adequado aos parâmetros acima (ex: a partição
+       é anomesdia e não anomes)
+    T: então uma exceção ValueError deve ser lançada
+    """
+
+    # Preparando ambiente mockado
+    prepare_mocked_bucket()
+
+    # Definindo parâmetros a serem testados na função
+    prefix_uri = "csv/anomesdia=20230117/file.csv"
+    partition_mode = "name=value"
+    date_partition_name = "anomes"
+
+    # Chamando função e verificando exceção lançada
+    with pytest.raises(ValueError):
+        _ = get_partition_value_from_prefix(
+            prefix_uri=prefix_uri,
+            partition_mode=partition_mode,
+            date_partition_name=date_partition_name
+        )
+
+
+@pytest.mark.get_partition_value_from_prefix
+@mock_s3
+def test_erro_extracao_valor_de_particao_anomes_com_partition_name_anomesdia(
+    prepare_mocked_bucket
+):
+    """
+    G: dado que o usuário deseja extrair o valor de partição de um
+       prefixo de objeto no s3
+    W: quando a função get_partition_value_from_prefix() for executada
+       com partition_mode="name=value" e date_partition_name="anomesdia"
+       em um prefixo NÃO adequado aos parâmetros acima (ex: a partição
+       é anomes e não anomesdia)
+    T: então uma exceção ValueError deve ser lançada
+    """
+
+    # Preparando ambiente mockado
+    prepare_mocked_bucket()
+
+    # Definindo parâmetros a serem testados na função
+    prefix_uri = "csv/anomes=202303/file.csv"
+    partition_mode = "name=value"
+    date_partition_name = "anomesdia"
+
+    # Chamando função e verificando exceção lançada
+    with pytest.raises(ValueError):
+        _ = get_partition_value_from_prefix(
+            prefix_uri=prefix_uri,
+            partition_mode=partition_mode,
+            date_partition_name=date_partition_name
+        )
+
+
+@pytest.mark.get_partition_value_from_prefix
+@mock_s3
+def test_retorno_valor_de_particao_com_nome_de_particao_anomesdia(
     prepare_mocked_bucket
 ):
     """
@@ -382,6 +446,7 @@ def test_get_partition_value_from_prefix_retorna_particao_anomesdia(
     prefix_uri = "csv/anomesdia=20230117/file.csv"
     partition_mode = "name=value"
     date_partition_name = "anomesdia"
+    expected_result = 20230117
 
     # Extraindo valor de partição
     partition_value = get_partition_value_from_prefix(
@@ -391,4 +456,100 @@ def test_get_partition_value_from_prefix_retorna_particao_anomesdia(
     )
 
     # Validando resultado
-    assert partition_value == 20230117
+    assert partition_value == expected_result
+
+
+@pytest.mark.get_partition_value_from_prefix
+@mock_s3
+def test_retorno_valor_de_particao_com_nome_de_particao_anomes(
+    prepare_mocked_bucket
+):
+    """
+    G: dado que o usuário deseja extrair o valor de partição de um
+       prefixo de objeto no s3
+    W: quando a função get_partition_value_from_prefix() for executada
+       com partition_mode="name=value" e date_partition_name="anomes"
+       em um prefixo adequado aos parâmetros citados
+    T: então o valor de partição esperado deve ser retornado
+    """
+
+    # Preparando ambiente mockado
+    prepare_mocked_bucket()
+
+    # Definindo parâmetros a serem testados na função
+    prefix_uri = "csv/anomes=202303/file.csv"
+    partition_mode = "name=value"
+    date_partition_name = "anomes"
+    expected_result = 202303
+
+    # Extraindo valor de partição
+    partition_value = get_partition_value_from_prefix(
+        prefix_uri=prefix_uri,
+        partition_mode=partition_mode,
+        date_partition_name=date_partition_name
+    )
+
+    # Validando resultado
+    assert partition_value == expected_result
+
+
+@pytest.mark.get_partition_value_from_prefix
+@mock_s3
+def test_retorno_valor_da_particao_com_prefixo_contendo_apenas_valor(
+    prepare_mocked_bucket
+):
+    """
+    G: dado que o usuário deseja extrair o valor de partição de um
+       prefixo de objeto no s3
+    W: quando a função get_partition_value_from_prefix() for executada
+       com partition_mode="value" simulando tabelas que não possuem
+       o nome da partição explícito no prefixo do s3
+    T: então o valor de partição esperado deve ser retornado
+    """
+
+    # Preparando ambiente mockado
+    prepare_mocked_bucket()
+
+    # Definindo parâmetros a serem testados na função
+    prefix_uri = "csv/202303/file.csv"
+    partition_mode = "value"
+    expected_result = 202303
+
+    # Extraindo valor de partição
+    partition_value = get_partition_value_from_prefix(
+        prefix_uri=prefix_uri,
+        partition_mode=partition_mode,
+    )
+
+    # Validando resultado
+    assert partition_value == expected_result
+
+
+@pytest.mark.get_partition_value_from_prefix
+@mock_s3
+def test_erro_conversao_de_valor_de_particao_para_inteiro(
+    prepare_mocked_bucket
+):
+    """
+    G: dado que o usuário deseja extrair o valor de partição de um
+       prefixo de objeto no s3
+    W: quando a função get_partition_value_from_prefix() for executada
+       com partition_mode="value" em um prefixo NÃO adequado
+       (ex: a partição está armazenada no formato "name=value", como
+       por exemplo, anomesdia=20230101)
+    T: então uma exceção ValueError deve ser lançada
+    """
+
+    # Preparando ambiente mockado
+    prepare_mocked_bucket()
+
+    # Definindo parâmetros a serem testados na função
+    prefix_uri = "csv/anomesdia=20230101/file.csv"
+    partition_mode = "value"
+
+    # Simulando exceção
+    with pytest.raises(ValueError):
+        _ = get_partition_value_from_prefix(
+            prefix_uri=prefix_uri,
+            partition_mode=partition_mode,
+        )
