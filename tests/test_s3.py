@@ -19,7 +19,8 @@ from moto import mock_s3
 from pandas import DataFrame
 
 from cloudgeass.aws.s3 import bucket_objects_report,\
-    all_buckets_objects_report, read_s3_object
+    all_buckets_objects_report, read_s3_object,\
+    get_partition_value_from_prefix, get_last_partition
 
 from tests.configs.inputs import MOCKED_BUCKET_CONTENT,\
     NON_EMPTY_BUCKETS, EXPECTED_DF_OBJECTS_REPORT_COLS
@@ -33,7 +34,7 @@ from tests.configs.inputs import MOCKED_BUCKET_CONTENT,\
 
 @pytest.mark.list_buckets
 @mock_s3
-def test_funcao_list_buckets_retorna_uma_lista(bucket_list):
+def test_list_buckets_retorna_uma_lista(bucket_list):
     """
     G: dado que o usuário deseja obter uma lista de buckets em sua conta
     W: quando o método list_buckets() de cloudgeass.aws.s3 for executado
@@ -44,7 +45,7 @@ def test_funcao_list_buckets_retorna_uma_lista(bucket_list):
 
 @pytest.mark.list_buckets
 @mock_s3
-def test_funcao_list_buckets_retorna_o_bucket_esperado(bucket_list):
+def test_list_buckets_retorna_o_bucket_esperado(bucket_list):
     """
     G: dado que o usuário deseja obter uma lista de buckets em sua conta
     W: quando o método list_buckets() de cloudgeass.aws.s3 for executado
@@ -62,7 +63,7 @@ def test_funcao_list_buckets_retorna_o_bucket_esperado(bucket_list):
 
 @pytest.mark.bucket_objects_report
 @mock_s3
-def test_funcao_bucket_objects_report_gera_dataframe_pandas(
+def test_bucket_objects_report_gera_dataframe_pandas(
     df_objects_report
 ):
     """
@@ -76,7 +77,7 @@ def test_funcao_bucket_objects_report_gera_dataframe_pandas(
 
 @pytest.mark.bucket_objects_report
 @mock_s3
-def test_funcao_bucket_objects_report_possui_atributos_esperados(
+def test_bucket_objects_report_possui_atributos_esperados(
     df_objects_report
 ):
     """
@@ -91,7 +92,7 @@ def test_funcao_bucket_objects_report_possui_atributos_esperados(
 
 @pytest.mark.bucket_objects_report
 @mock_s3
-def test_funcao_bucket_objects_report_possui_apenas_um_nome_de_bucket(
+def test_bucket_objects_report_possui_apenas_um_nome_de_bucket(
     df_objects_report
 ):
     """
@@ -138,7 +139,7 @@ def test_erro_ao_tentar_gerar_report_de_objetos_com_nome_de_bucket_incorreto(
 
 @pytest.mark.all_buckets_objects_report
 @mock_s3
-def test_funcao_all_buckets_objects_report_retorna_dataframe_do_pandas(
+def test_all_buckets_objects_report_retorna_dataframe_do_pandas(
     df_all_buckets_objects
 ):
     """
@@ -152,7 +153,7 @@ def test_funcao_all_buckets_objects_report_retorna_dataframe_do_pandas(
 
 @pytest.mark.all_buckets_objects_report
 @mock_s3
-def test_funcao_all_buckets_objects_report_retorna_atributos_esperados(
+def test_all_buckets_objects_report_retorna_atributos_esperados(
     df_all_buckets_objects
 ):
     """
@@ -170,7 +171,7 @@ def test_funcao_all_buckets_objects_report_retorna_atributos_esperados(
 
 @pytest.mark.all_buckets_objects_report
 @mock_s3
-def test_funcao_all_buckets_objects_report_contem_lista_de_buckets_nao_vazios(
+def test_all_buckets_objects_report_contem_lista_de_buckets_nao_vazios(
     df_all_buckets_objects
 ):
     """
@@ -189,7 +190,7 @@ def test_funcao_all_buckets_objects_report_contem_lista_de_buckets_nao_vazios(
 
 @pytest.mark.all_buckets_objects_report
 @mock_s3
-def test_funcao_all_buckets_objects_report_possui_nomes_esperados_de_buckets(
+def test_all_buckets_objects_report_possui_nomes_esperados_de_buckets(
     df_all_buckets_objects
 ):
     """
@@ -208,7 +209,7 @@ def test_funcao_all_buckets_objects_report_possui_nomes_esperados_de_buckets(
 
 @pytest.mark.all_buckets_objects_report
 @mock_s3
-def test_funcao_all_buckets_objects_report_com_lista_de_buckets_ignorados(
+def test_all_buckets_objects_report_com_lista_de_buckets_ignorados(
     mocked_client, prepare_mocked_bucket
 ):
     """
@@ -246,7 +247,7 @@ def test_funcao_all_buckets_objects_report_com_lista_de_buckets_ignorados(
 
 @pytest.mark.read_s3_object
 @mock_s3
-def test_funcao_read_s3_object_retorna_dataframe_ao_ler_objeto_csv(
+def test_read_s3_object_retorna_dataframe_ao_ler_objeto_csv(
     df_csv_from_s3
 ):
     """
@@ -262,7 +263,7 @@ def test_funcao_read_s3_object_retorna_dataframe_ao_ler_objeto_csv(
 
 @pytest.mark.read_s3_object
 @mock_s3
-def test_funcao_read_s3_object_retorna_dataframe_ao_ler_objeto_json(
+def test_read_s3_object_retorna_dataframe_ao_ler_objeto_json(
     df_json_from_s3
 ):
     """
@@ -278,7 +279,7 @@ def test_funcao_read_s3_object_retorna_dataframe_ao_ler_objeto_json(
 
 @pytest.mark.read_s3_object
 @mock_s3
-def test_funcao_read_s3_object_retorna_dataframe_ao_ler_objeto_parquet(
+def test_read_s3_object_retorna_dataframe_ao_ler_objeto_parquet(
     df_parquet_from_s3
 ):
     """
@@ -294,7 +295,7 @@ def test_funcao_read_s3_object_retorna_dataframe_ao_ler_objeto_parquet(
 
 @pytest.mark.read_s3_object
 @mock_s3
-def test_funcao_read_s3_object_retora_none_ao_ler_arquivo_com_extensao_png():
+def test_read_s3_object_retora_none_ao_ler_arquivo_com_extensao_png():
     """
     G: dado que o usuário deseja realizar a leitura de um objeto no
        s3 presente em um foramto qualquer e transformá-lo em um DataFrame
@@ -312,7 +313,7 @@ def test_funcao_read_s3_object_retora_none_ao_ler_arquivo_com_extensao_png():
 
 @pytest.mark.read_s3_object
 @mock_s3
-def test_funcao_read_s3_object_retora_erro_com_uri_de_objeto_inexistente():
+def test_read_s3_object_retora_erro_com_uri_de_objeto_inexistente():
     """
     G: dado que o usuário deseja realizar a leitura de um objeto no
        s3 presente em um foramto qualquer e transformá-lo em um DataFrame
@@ -328,3 +329,269 @@ def test_funcao_read_s3_object_retora_erro_com_uri_de_objeto_inexistente():
     # Validando lançamento da exceção
     with pytest.raises(FileNotFoundError):
         _ = read_s3_object(error_uri)
+
+
+"""---------------------------------------------------
+------------ 2. DEFININDO SUÍTE DE TESTES ------------
+      2.5 Função get_partition_value_from_prefix()
+---------------------------------------------------"""
+
+
+@pytest.mark.get_partition_value_from_prefix
+@mock_s3
+def test_erro_get_partition_value_from_prefix_com_partition_mode_invalido(
+    prepare_mocked_bucket
+):
+    """
+    G: dado que o usuário deseja extrair o valor de partição de um
+       prefixo de objeto no s3
+    W: quando a função get_partition_value_from_prefix() for executada
+       com um valor inválido para o parâmetro partition_mode
+    T: então uma exceção ValueError deve ser lançada
+    """
+
+    # Preparando ambiente mockado
+    prepare_mocked_bucket()
+
+    # Chamando função e verificando exceção lançada
+    with pytest.raises(ValueError):
+        _ = get_partition_value_from_prefix(
+            prefix_uri="teste/anomesdia=20230101/file.csv",
+            partition_mode="name"  # Valor não aceito na função
+        )
+
+
+@pytest.mark.get_partition_value_from_prefix
+@mock_s3
+def test_erro_extracao_valor_de_particao_anomesdia_com_partition_name_anomes(
+    prepare_mocked_bucket
+):
+    """
+    G: dado que o usuário deseja extrair o valor de partição de um
+       prefixo de objeto no s3
+    W: quando a função get_partition_value_from_prefix() for executada
+       com partition_mode="name=value" e date_partition_name="anomes"
+       em um prefixo NÃO adequado aos parâmetros acima (ex: a partição
+       é anomesdia e não anomes)
+    T: então uma exceção ValueError deve ser lançada
+    """
+
+    # Preparando ambiente mockado
+    prepare_mocked_bucket()
+
+    # Definindo parâmetros a serem testados na função
+    prefix_uri = "csv/anomesdia=20230117/file.csv"
+    partition_mode = "name=value"
+    date_partition_name = "anomes"
+
+    # Chamando função e verificando exceção lançada
+    with pytest.raises(ValueError):
+        _ = get_partition_value_from_prefix(
+            prefix_uri=prefix_uri,
+            partition_mode=partition_mode,
+            date_partition_name=date_partition_name
+        )
+
+
+@pytest.mark.get_partition_value_from_prefix
+@mock_s3
+def test_erro_extracao_valor_de_particao_anomes_com_partition_name_anomesdia(
+    prepare_mocked_bucket
+):
+    """
+    G: dado que o usuário deseja extrair o valor de partição de um
+       prefixo de objeto no s3
+    W: quando a função get_partition_value_from_prefix() for executada
+       com partition_mode="name=value" e date_partition_name="anomesdia"
+       em um prefixo NÃO adequado aos parâmetros acima (ex: a partição
+       é anomes e não anomesdia)
+    T: então uma exceção ValueError deve ser lançada
+    """
+
+    # Preparando ambiente mockado
+    prepare_mocked_bucket()
+
+    # Definindo parâmetros a serem testados na função
+    prefix_uri = "csv/anomes=202303/file.csv"
+    partition_mode = "name=value"
+    date_partition_name = "anomesdia"
+
+    # Chamando função e verificando exceção lançada
+    with pytest.raises(ValueError):
+        _ = get_partition_value_from_prefix(
+            prefix_uri=prefix_uri,
+            partition_mode=partition_mode,
+            date_partition_name=date_partition_name
+        )
+
+
+@pytest.mark.get_partition_value_from_prefix
+@mock_s3
+def test_retorno_valor_de_particao_com_nome_de_particao_anomesdia(
+    prepare_mocked_bucket
+):
+    """
+    G: dado que o usuário deseja extrair o valor de partição de um
+       prefixo de objeto no s3
+    W: quando a função get_partition_value_from_prefix() for executada
+       com partition_mode="name=value" e date_partition_name="anomesdia"
+       em um prefixo adequado aos parâmetros citados
+    T: então o valor de partição esperado deve ser retornado
+    """
+
+    # Preparando ambiente mockado
+    prepare_mocked_bucket()
+
+    # Definindo parâmetros a serem testados na função
+    prefix_uri = "csv/anomesdia=20230117/file.csv"
+    partition_mode = "name=value"
+    date_partition_name = "anomesdia"
+    expected_result = 20230117
+
+    # Extraindo valor de partição
+    partition_value = get_partition_value_from_prefix(
+        prefix_uri=prefix_uri,
+        partition_mode=partition_mode,
+        date_partition_name=date_partition_name
+    )
+
+    # Validando resultado
+    assert partition_value == expected_result
+
+
+@pytest.mark.get_partition_value_from_prefix
+@mock_s3
+def test_retorno_valor_de_particao_com_nome_de_particao_anomes(
+    prepare_mocked_bucket
+):
+    """
+    G: dado que o usuário deseja extrair o valor de partição de um
+       prefixo de objeto no s3
+    W: quando a função get_partition_value_from_prefix() for executada
+       com partition_mode="name=value" e date_partition_name="anomes"
+       em um prefixo adequado aos parâmetros citados
+    T: então o valor de partição esperado deve ser retornado
+    """
+
+    # Preparando ambiente mockado
+    prepare_mocked_bucket()
+
+    # Definindo parâmetros a serem testados na função
+    prefix_uri = "csv/anomes=202303/file.csv"
+    partition_mode = "name=value"
+    date_partition_name = "anomes"
+    expected_result = 202303
+
+    # Extraindo valor de partição
+    partition_value = get_partition_value_from_prefix(
+        prefix_uri=prefix_uri,
+        partition_mode=partition_mode,
+        date_partition_name=date_partition_name
+    )
+
+    # Validando resultado
+    assert partition_value == expected_result
+
+
+@pytest.mark.get_partition_value_from_prefix
+@mock_s3
+def test_retorno_valor_da_particao_com_prefixo_contendo_apenas_valor(
+    prepare_mocked_bucket
+):
+    """
+    G: dado que o usuário deseja extrair o valor de partição de um
+       prefixo de objeto no s3
+    W: quando a função get_partition_value_from_prefix() for executada
+       com partition_mode="value" simulando tabelas que não possuem
+       o nome da partição explícito no prefixo do s3
+    T: então o valor de partição esperado deve ser retornado
+    """
+
+    # Preparando ambiente mockado
+    prepare_mocked_bucket()
+
+    # Definindo parâmetros a serem testados na função
+    prefix_uri = "csv/202303/file.csv"
+    partition_mode = "value"
+    expected_result = 202303
+
+    # Extraindo valor de partição
+    partition_value = get_partition_value_from_prefix(
+        prefix_uri=prefix_uri,
+        partition_mode=partition_mode,
+    )
+
+    # Validando resultado
+    assert partition_value == expected_result
+
+
+@pytest.mark.get_partition_value_from_prefix
+@mock_s3
+def test_erro_conversao_de_valor_de_particao_para_inteiro(
+    prepare_mocked_bucket
+):
+    """
+    G: dado que o usuário deseja extrair o valor de partição de um
+       prefixo de objeto no s3
+    W: quando a função get_partition_value_from_prefix() for executada
+       com partition_mode="value" em um prefixo NÃO adequado
+       (ex: a partição está armazenada no formato "name=value", como
+       por exemplo, anomesdia=20230101)
+    T: então uma exceção ValueError deve ser lançada
+    """
+
+    # Preparando ambiente mockado
+    prepare_mocked_bucket()
+
+    # Definindo parâmetros a serem testados na função
+    prefix_uri = "csv/anomesdia=20230101/file.csv"
+    partition_mode = "value"
+
+    # Simulando exceção
+    with pytest.raises(ValueError):
+        _ = get_partition_value_from_prefix(
+            prefix_uri=prefix_uri,
+            partition_mode=partition_mode,
+        )
+
+
+"""---------------------------------------------------
+------------ 2. DEFININDO SUÍTE DE TESTES ------------
+            2.6 Função get_last_partition()
+---------------------------------------------------"""
+
+
+@pytest.mark.get_last_partition
+@mock_s3
+def test_get_last_partition_com_particao_anomesdia(
+    mocked_client, prepare_mocked_bucket
+):
+    """
+    G: dado que o usuário deseja extraír o valor da última partição
+       de um prefixo de tabela armazenada no s3 com o padrão
+       anomesdia=valorparticao
+    W: quando o método get_last_partition() for executado
+    T: então o último valor de partição esperado deve ser retornado
+    """
+
+    # Preparando ambiente mockado
+    prepare_mocked_bucket()
+
+    # Definindo parâmetros a serem testados na função
+    bucket_name = "cloudgeass-mock-bucket-01"
+    table_prefix = "csv"
+    partition_mode = "name=value"
+    date_partition_name = "anomesdia"
+    expected_result = 20230119
+
+    # Extraindo última partição
+    last_partition = get_last_partition(
+        bucket_name=bucket_name,
+        table_prefix=table_prefix,
+        partition_mode=partition_mode,
+        date_partition_name=date_partition_name,
+        client=mocked_client
+    )
+
+    # Verificando resultado
+    assert last_partition == expected_result

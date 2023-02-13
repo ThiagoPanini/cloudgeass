@@ -13,6 +13,9 @@ categories:
     labels:
       - feature 🚀
       - enhancement 🍀
+
+  - title: 💎 Novas Funcionalidades
+    labels:
       - new-function 💎
 
   - title: 🐞 Bug Fixes
