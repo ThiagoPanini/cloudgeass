@@ -44,34 +44,155 @@ Em linhas gerais, a biblioteca **cloudgeass** é divida em diferentes módulos, 
 - 🪣 `cloudgeass.aws.s3` - funcionalidades para facilitar operações no S3 através do SDK `boto3`.
 - 🧼 `cloudgeass.aws.glue` - em ideação
 
-> **Note**
-> Futuramente, novos módulos serão inclusos na biblioteca, expandindo o leque de funcionalidades e permitindo aos usuários uma forma fácil e rápida de codificar suas operações na nuvem.
-
 
 ### O módulo s3
 
-A ideia por trás do módulo `cloudgeass.aws.s3` gira em torno do fornecimento de funções e blocos de código contendo operações comumente realizadas no S3.
+A ideia por trás do módulo `cloudgeass.aws.s3` gira em torno do fornecimento de funções e blocos de código contendo operações comumente realizadas no S3. Para navegar por todas as funcionalidades presentes, consulte o arquivo [s3.py](https://github.com/ThiagoPanini/cloudgeass/blob/main/cloudgeass/aws/s3.py) ou, se preferir, clique no _dropdown_ abaixo para assistir os vídeos de demonstrações.
 
-Para navegar por todas as funcionalidades presentes, consulte o arquivo [s3.py](https://github.com/ThiagoPanini/cloudgeass/blob/main/cloudgeass/aws/s3.py). Abaixo, um exemplo prático de utilização de uma funcionalidade capaz de retornar detalhes relevantes de todos os objetos de um *bucket* s3.
+> **Note**
+> Vídeos marcados com ⭐ indicam _features_ provavelmente relevantes para o contexto de Analytics e são as preferidas dos usuários!
+
+<details>
+    <summary>📽️ Listando buckets de uma conta com <code>list_buckets()</code></summary>
+    <br>
+  
+https://user-images.githubusercontent.com/38161178/218567983-cc852ca5-f5df-4cf7-9b59-7408e0f309fa.mp4
+
+**Código utilizado:**
 
 ```python
-# Importando módulo
+from cloudgeass.aws.s3 import list_buckets
+
+buckets = list_buckets()
+buckets
+```
+</details>
+
+<details>
+    <summary>📽️ Obtendo um report de objetos de um bucket com <code>bucket_objects_report()</code></summary>
+    <br>
+
+https://user-images.githubusercontent.com/38161178/218573417-2d705b06-2ab0-4441-b845-f6afe43b8f17.mp4  
+        
+**Código utilizado:**
+
+```python
 from cloudgeass.aws.s3 import bucket_objects_report
 
-# Obtendo DataFrame com report de objetos de um bucket
-df_objects_report = bucket_objects_report(
-  bucket_name="terraglue-sor-data-sa-east-1"
-)
+bucket_name = "nome-de-bucket-aws"
+df_objs_report = bucket_objects_report(bucket_name=bucket_name)
 
-# Visualizando resultado
-df_objects_report.head()
+df_objs_report.head(3)
 ```
+</details>
 
-O resultado é dado como um DataFrame do pandas capaz de ser utilizado de acordo com os propósitos do usuário:
 
-<div align="center">
-    <img src="https://github.com/ThiagoPanini/cloudgeass/blob/main/docs/imgs/readme-s3-example-bucket_objects_report.png?raw=true" alt="bucket_objects_report">
-</div>
+<details>
+    <summary>📽️ Obtendo um report de objetos apenas de um determinado prefixo (ou tabela no S3)</code></summary>
+    <br>
+
+https://user-images.githubusercontent.com/38161178/218575065-ef22a25a-4ead-4983-bf5f-fe2a5502608c.mp4
+        
+**Código utilizado:**
+
+```python
+from cloudgeass.aws.s3 import bucket_objects_report
+
+# Definindo nome de bucket e prefixo alvo da extração
+bucket_name = "nome-de-bucket-aws"
+prefix = "a-sample-prefix"
+
+df_objs_report = bucket_objects_report(bucket_name=bucket_name, prefix=prefix)
+
+df_objs_report.head(3)
+```
+</details>
+
+<details>
+    <summary>📽️ Obtendo um report de objetos de todos os buckets com <code>all_buckets_objects_report()</code></summary>
+    <br>
+
+https://user-images.githubusercontent.com/38161178/218576685-2215a62e-8b1f-4fb6-85b4-edf02d6706be.mp4
+        
+**Código utilizado:**
+
+```python
+from cloudgeass.aws.s3 import all_buckets_objects_report
+
+df_report = all_buckets_objects_report()
+df_report.head()
+```
+</details>
+
+<details>
+    <summary>📽️ Obtendo um report de objetos de todos os buckets ignorando alguns buckets</code></summary>
+    <br>
+
+https://user-images.githubusercontent.com/38161178/218577709-006b5d1c-51dc-4735-9230-cfb694126e4d.mp4
+        
+**Código utilizado:**
+
+```python
+from cloudgeass.aws.s3 import all_buckets_objects_report
+
+# Definindo lista de buckets a serem ignorados no report de objetos
+ignore_buckets = [
+    "terraglue-athena-query-results-569781470788-us-east-1",
+    "terraglue-glue-assets-569781470788-us-east-1",
+    "terraglue-sor-data-569781470788-us-east-1",
+    "terraglue-spec-data-569781470788-us-east-1"
+]
+
+# Obtendo report
+df_report = all_buckets_objects_report(exclude_buckets=ignore_buckets)
+df_report.head()
+```
+</details>
+
+<details>
+    <summary>📽️⭐ Lendo um objeto CSV, JSON ou PARQUET em um DataFrame do pandas com <code>read_s3_object()</code></summary>
+    <br>
+
+https://user-images.githubusercontent.com/38161178/218580090-385e4170-a76c-4b03-b00e-865b9e4ec05e.mp4
+        
+**Código utilizado:**
+
+```python
+from cloudgeass.aws.s3 import read_s3_object
+
+# Definindo variáveis para leitura de objeto no S3
+bucket_name = "nome-de-bucket"
+obj_prefix = "tbsot_ecommerce_br/anomesdia=20230213/run-1676319522273-part-block-0-0-r-00004-snappy.parquet"
+
+# Criando URI
+s3_uri_parquet = f"s3://{bucket_name}/{obj_prefix}"
+
+# Lendo objeto parquet
+df_parquet = read_s3_object(s3_uri_parquet)
+df_parquet.head()
+```
+</details>
+
+<details>
+    <summary>📽️⭐ Coletando última partição de tabela no S3 com <code>get_last_partition()</code></summary>
+    <br>
+         
+
+https://user-images.githubusercontent.com/38161178/218581540-82a4836b-9224-4646-a9ff-6dc6966b0132.mp4
+
+
+**Código utilizado:**
+
+```python
+from cloudgeass.aws.s3 import get_last_partition
+
+# Definindo variáveis para leitura de objeto no S3
+bucket_name = "terraglue-sot-data-569781470788-us-east-1"
+table_prefix = "tbsot_ecommerce_br"
+
+last_partition = get_last_partition(bucket_name, table_prefix)
+```
+</details>
 
 ___
 
