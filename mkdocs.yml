@@ -1,0 +1,88 @@
+# Informações do projeto
+site_name: cloudgeass
+site_url: https://github.com/ThiagoPanini/cloudgeass
+site_author: Thiago Panini
+site_description: >-
+  Funcionalidades relevantes para uso em aplicações construídas
+  e executadas em ambientes de cloud
+
+# Repositório
+repo_name: ThiagoPanini/cloudgeass
+repo_url: https://github.com/ThiagoPanini/cloudgeass
+
+# Copyright
+copyright: |
+  Copyright &copy; 2021 - 2023 <a href="https://github.com/ThiagoPanini"  target="_blank" rel="noopener">ThiagoPanini</a>
+
+# Definindo diretório de páginas em markdown
+docs_dir: docs/markdown
+
+# Configuração do tema
+theme:
+  name: material
+
+  # Apontando diretório adicional para customizações
+  custom_dir: docs/overrides
+
+  # Definindo ícone customizado no header
+  icon:
+    logo: custom/geass
+
+  # Definindo paleta de cores nas versões "Dia" e "Noite"
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/weather-sunny
+        name: Clique para alterar para modo noturno
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: deep purple
+      accent: deep purple
+      toggle:
+        icon: material/weather-night
+        name: Clique para alterar para modo claro
+
+  # Definindo features do template
+  features:
+    - navigation.tabs
+    - navigation.top
+    - navigation.instant
+    - navigation.footer
+    - navigation.indexes
+    - content.tabs.link
+    - content.tooltips
+    - search.share
+    - search.highlight
+    - search.suggest
+
+# Configurando navegação
+nav:
+  - Home:
+    - Cloudgeass: index.md
+    - Pré Requisitos: reqs.md
+    - Motivação: motivacao.md
+
+# Extensões do MkDocs
+markdown_extensions:
+  - pymdownx.tasklist  # Lista de tarefas
+  - pymdownx.emoji  # Emojis
+  - pymdownx.mark
+  - pymdownx.tilde
+  - pymdownx.highlight
+  - pymdownx.superfences
+  - pymdownx.details  # Customização de blocos de texto
+  - footnotes
+  - markdown.extensions.tables
+  - markdown.extensions.footnotes
+
+  # Habilita o uso de emojis e icones personalizados (ex: bootstrap)
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
+      options:
+        custom_icons:
+          - overrides/.icons
+
