@@ -1,0 +1,11 @@
+flake8
+pydocstyle
+pytest
+pytest-cov
+moto
+boto3
+build
+pandas
+Faker
+s3fs
+pyarrow

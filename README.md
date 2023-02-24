@@ -210,6 +210,16 @@ ___
 - [Python - Packaging Python Projects](https://packaging.python.org/en/latest/tutorials/packaging-projects/)
 - [Stack Overflow - Reading Pandas DataFrame from S3](https://stackoverflow.com/questions/37703634/how-to-import-a-text-file-on-aws-s3-into-pandas-without-writing-to-disk)
 
+**Docs**
+
+- [NumPy docstrings](https://numpydoc.readthedocs.io/en/latest/format.html)
+- [Eduardo Mendes - Live de Python 189 - MkDocs](https://www.youtube.com/watch?v=GW6nAJ1NHUQ&t=2s&ab_channel=EduardoMendes)
+- [MkDocs](https://www.mkdocs.org/)
+- [pmdown-extensions](https://facelessuser.github.io/pymdown-extensions/)
+- [GitHub - MkDocs Themes](https://github.com/mkdocs/mkdocs/wiki/MkDocs-Themes)
+- [GitHub - Material Theme for MkDocs](https://github.com/squidfunk/mkdocs-material)
+- [Material for MkDocs - Setup](https://squidfunk.github.io/mkdocs-material/setup/changing-the-colors/)
+
 **Github**
 
 - [GitHub Actions - pypa/gh-action-pypi-publish](https://github.com/marketplace/actions/pypi-publish)
@@ -217,6 +227,7 @@ ___
 - [Medium - Automate PyPI Releases with GitHub Actions](https://medium.com/@VersuS_/automate-pypi-releases-with-github-actions-4c5a9cfe947d)
 
 **Tests**
+
 - [Codecov - Setting Threshold](https://github.com/codecov/codecov-action/issues/554#issuecomment-1261250304)
 - [Codecov - About the Codecov YAML](https://docs.codecov.com/docs/codecov-yaml)
 - [Codecov - Status Checks](https://docs.codecov.com/docs/commit-status)
