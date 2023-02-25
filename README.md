@@ -1,5 +1,5 @@
 <div align="center">
-    <br><img src="https://github.com/ThiagoPanini/cloudgeass/blob/main/docs/imgs/01-header-readme.png?raw=true" alt="cloudgeass-logo">
+    <br><img src="https://github.com/ThiagoPanini/cloudgeass/blob/main/docs/assets/imgs/01-header-readme.png?raw=true" alt="cloudgeass-logo">
 </div>
 
 <div align="center">  
@@ -13,8 +13,8 @@
   <br>
 
   ![CI workflow](https://img.shields.io/github/actions/workflow/status/ThiagoPanini/cloudgeass/ci-cloudgeass-main.yml?label=ci)
-  [![codecov](https://codecov.io/github/ThiagoPanini/cloudgeass/branch/main/graph/badge.svg?token=7HI1YGS4AA)](https://codecov.io/github/ThiagoPanini/cloudgeass)
   [![Documentation Status](https://readthedocs.org/projects/cloudgeass/badge/?version=latest)](https://cloudgeass.readthedocs.io/pt/latest/?badge=latest)
+  [![codecov](https://codecov.io/github/ThiagoPanini/cloudgeass/branch/main/graph/badge.svg?token=7HI1YGS4AA)](https://codecov.io/github/ThiagoPanini/cloudgeass)
 
 </div>
 
@@ -34,7 +34,7 @@ ___
 Cloudgeass é uma biblioteca Python criada para centralizar uma série de módulos, classes, métodos e funções prontas para serem utilizadas nos mais variados serviços da AWS. Inspirado em um [renomado anime japonês](https://en.wikipedia.org/wiki/Code_Geass), o **cloudgeass** visa proporcionar um maior **controle** sobre atividades e operações comumente realizadas em aplicações criadas na nuvem.
 
 > **Note**
-> A construção desta biblioteca foi retomada após quase 2 anos em hiato. Suas funcionalidades estão sendo refatoradas e uma nova versão será construída e lançada aos poucos.
+> Agora o *cloudgeass* possui uma **documentação oficial** no readthedocs! Acesse o [seguinte link](https://cloudgeass.readthedocs.io/pt/latest/) e confira detalhes técnicos de usabilidade, exemplos práticos e muito mais!
 
 ___
 

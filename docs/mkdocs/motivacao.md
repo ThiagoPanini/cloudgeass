@@ -6,9 +6,11 @@ Desenvolver soluções utilizando serviços da AWS é, em geral, uma tarefa desa
 
 Após o primeiro contato com o [boto3](https://boto3.amazonaws.com/v1/documentation/api/latest/index.html), percebi o quão imenso foi o leque de opções aberto. A partir deste ponto, mergulhei em jornadas de desenvolvimento de aplicações, sejam elas utilizando Lambda, EC2, Glue ou qualquer outro serviço que envolvia uma camada computacional onde o *boto3* pudesse brilhar.
 
-Ao longo do tempo, notei que algumas operações codificadas com o citado SDK Python tinham características similares ou até mesmo idênticas. Por exemplo, a cada necessidade de listar objetos em um bucket S3 em uma nova aplicação, o mesmo código era simplesmente "copiado e colado". Esse foi o principal gatilho para questionar:
+Ao longo do tempo, notei que algumas operações codificadas com o citado SDK Python tinham características similares ou até mesmo idênticas. Por exemplo, a cada necessidade de listar objetos em um bucket S3 em uma nova aplicação, o mesmo código era simplesmente "copiado e colado". 
 
-> "Seria possível construir um conjunto de funcionalidades comuns do boto3 capazes de serem encapsuladas em uma nova biblioteca Python?"
+???+ quote "E assim surgiu o quesionamento:"
+
+    *"Seria possível construir um conjunto de funcionalidades comuns do boto3 capazes de serem encapsuladas em uma nova biblioteca Python?"*
 
 ## O Início do Projeto
 
