@@ -10,7 +10,7 @@ Ao longo do tempo, notei que algumas operações codificadas com o citado SDK Py
 
 > "Seria possível construir um conjunto de funcionalidades comuns do boto3 capazes de serem encapsuladas em uma nova biblioteca Python?"
 
-### O Início do Projeto
+## O Início do Projeto
 
 Buscando uma resposta para o questionamento acima, decidi mapear algumas ações comumente realizadas via *boto3* na AWS com uma boa margem de encapsulamento.
 
@@ -73,7 +73,13 @@ Imagine repetir este bloco de código sempre que uma necessidade do tipo se fize
 from cloudgeass.aws.s3 import bucket_objects_report
 
 # Obtendo report de objetos de um bucket s3
-bucket_objects = bucket_objets_report(bucket_name=bucket_name)
+bucket_objects = bucket_objects_report(bucket_name=bucket_name)
 ```
 
-Todas as boas práticas de código, como o tratamento de exceção e as mensagens de logs estariam prontamente codificadas e disponíveis para uso.
+O resultado é dado como um DataFrame do pandas com detalhes ricos sobre os objetos armazenados em um determinado bucket. Além disso, todas as boas práticas de código, como o tratamento de exceção e as mensagens de logs, estariam prontamente codificadas e disponíveis para uso.
+
+[![bucket_objects_report](https://github.com/ThiagoPanini/cloudgeass/blob/main/docs/imgs/readme-s3-example-bucket_objects_report.png?raw=true)](https://github.com/ThiagoPanini/cloudgeass/blob/main/docs/imgs/readme-s3-example-bucket_objects_report.png?raw=true)
+
+## Ao Inifinito e Além
+
+E assim, novas funcionalidades estão sendo pensadas, mapeadas, descobertas e implementadas de modo a suprir grande parte das necessidades mais comuns envolvendo operações na AWS.

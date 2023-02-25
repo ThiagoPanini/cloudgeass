@@ -15,11 +15,17 @@ Cloudgeass é uma biblioteca Python criada para centralizar uma série de módul
 
 <div align="center">  
   <br>
-  <a href="https://pypi.org/project/cloudgeass/"><img src="https://img.shields.io/pypi/v/cloudgeass?color=purple" alt="Shield cloudgeass PyPI version"></a>
+  <a href="https://pypi.org/project/cloudgeass/">
+    <img src="https://img.shields.io/pypi/v/cloudgeass?color=purple" alt="Shield cloudgeass PyPI version">
+  </a>
 
-  <a href="https://pypi.org/project/cloudgeass/"><img src="https://img.shields.io/pypi/dm/cloudgeass?color=purple" alt="Shield cloudgeass PyPI downloads"></a>
+  <a href="https://pypi.org/project/cloudgeass/">
+    <img src="https://img.shields.io/pypi/dm/cloudgeass?color=purple" alt="Shield cloudgeass PyPI downloads">
+  </a>
 
-  <a href="https://pypi.org/project/cloudgeass/"><img src="https://img.shields.io/pypi/status/cloudgeass?color=purple" alt="Shield cloudgeass PyPI status"></a>
+  <a href="https://pypi.org/project/cloudgeass/">
+    <img src="https://img.shields.io/pypi/status/cloudgeass?color=purple" alt="Shield cloudgeass PyPI status">
+  </a>
   
   <img src="https://img.shields.io/github/commit-activity/m/ThiagoPanini/cloudgeass?color=purple" alt="Shield github commit activity">
   
@@ -29,7 +35,13 @@ Cloudgeass é uma biblioteca Python criada para centralizar uma série de módul
   
   <img src="https://img.shields.io/github/actions/workflow/status/ThiagoPanini/cloudgeass/ci-cloudgeass-main.yml?label=ci" alt="Shield github CI workflow">
   
-  <a href="https://codecov.io/github/ThiagoPanini/cloudgeass"><img src="https://codecov.io/github/ThiagoPanini/cloudgeass/branch/main/graph/badge.svg?token=7HI1YGS4AA" alt="Shield cloudgeass CodeCov"></a>
+  <a href="https://codecov.io/github/ThiagoPanini/cloudgeass">
+    <img src="https://codecov.io/github/ThiagoPanini/cloudgeass/branch/main/graph/badge.svg?token=7HI1YGS4AA" alt="Shield cloudgeass CodeCov">
+  </a>
+
+  <a href='https://cloudgeass.readthedocs.io/pt/latest/?badge=latest'>
+    <img src='https://readthedocs.org/projects/cloudgeass/badge/?version=latest' alt='Documentation Status' />
+  </a>
 
 </div>
 
@@ -76,26 +88,11 @@ pip install cloudgeass
     
     Para mais informações, o [excelente artigo do blog Real Python](https://realpython.com/python-virtual-environments-a-primer/) poderá esclarecer uma série de dúvidas envolvendo a criação e o uso de ambientes virtuais Python.
 
-## Exemplo Básico de Uso
+## O Poder do cloudgeass
 
 Agora que o *cloudgeass* foi instalado com sucesso, todo o seu leque de funcionalidades se encontra disponível para utilização e suas funções e métodos poderão ser importadas em aplicações Python.
 
-Como um exemplo básico de utilização, o bloco de código abaixo pode ser utilizado para coletar a última partição de data de uma tabela externa armazenada no S3 com base em seu prefixo:
-
-???+ example "Coletando a última partição de uma tabela no S3"
-    ```python
-    # Importando função
-    from cloudgeass.aws.s3 import get_last_partition
-
-    # Definindo variáveis para parametrização da função
-    bucket_name = "example-bucket"
-    table_prefix = "tbl_name"
-
-    # Coletando última partição
-    last_partition = get_last_partition(bucket_name, table_prefix)
-    ```
-
-Curioso para mais exemplos? Não deixe de navegar pelas funcionalidades da biblioteca nesta mesma documentação para encontrar maiores detalhes.
+:material-alert-decagram: Não deixe de assistir as demonstrações práticas de grande parte daquilo que o *cloudgeass* pode oferecer! Imagino que você possa se surpreender com as vantagens envolvidas em seu uso!
 
 ## Contatos
 
