@@ -64,16 +64,20 @@ nav:
     - Cloudgeass: index.md
     - Pré Requisitos: reqs.md
     - Motivação: motivacao.md
+  - Features:
+    - Organização da Biblioteca: features/organizacao.md
+    - O Módulo S3: features/s3.md
 
 # Extensões do MkDocs
 markdown_extensions:
-  - pymdownx.tasklist  # Lista de tarefas
-  - pymdownx.emoji  # Emojis
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.emoji
   - pymdownx.mark
   - pymdownx.tilde
   - pymdownx.highlight
   - pymdownx.superfences
-  - pymdownx.details  # Customização de blocos de texto
+  - pymdownx.details
   - footnotes
   - markdown.extensions.tables
   - markdown.extensions.footnotes
