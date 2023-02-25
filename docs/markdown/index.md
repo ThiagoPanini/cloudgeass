@@ -88,31 +88,11 @@ pip install cloudgeass
     
     Para mais informações, o [excelente artigo do blog Real Python](https://realpython.com/python-virtual-environments-a-primer/) poderá esclarecer uma série de dúvidas envolvendo a criação e o uso de ambientes virtuais Python.
 
-## Exemplo Básico de Uso
+## O Poder do cloudgeass
 
 Agora que o *cloudgeass* foi instalado com sucesso, todo o seu leque de funcionalidades se encontra disponível para utilização e suas funções e métodos poderão ser importadas em aplicações Python.
 
-Como um exemplo de utilização, imagine um cenário onde necessita-se coletar a última partição de data existente em uma tabela armazenada no S3 com particionamento existente no formato `%Y%m%d` (ex: `anomesdia=20230101`).
-
-Considerando que a tabela de exemplo possui múltiplas partições, o bloco de código abaixo tem a função de extrair o valor mais recente encontrado.
-
-```python
-# Importando função
-from cloudgeass.aws.s3 import get_last_partition
-
-# Definindo variáveis para parametrização da função
-bucket_name = "example-bucket"
-table_prefix = "tbl_name"
-
-# Coletando última partição
-last_partition = get_last_partition(bucket_name, table_prefix)
-```
-
-???+ tip "Os ganhos implícitos neste simples exemplo"
-    Com uma funcionalidade deste tipo, os usuários podem realizar uma série de validações relacionadas à tabelas particionadas no S3. Seria possível, por exemplo, decidir sobre iniciar ou não um job do Glue com base na atualização de uma determinada origem.
-
-
-Curioso para mais exemplos? Não deixe de navegar pelas funcionalidades da biblioteca nesta mesma documentação para encontrar maiores detalhes.
+:material-alert-decagram: Não deixe de assistir as demonstrações práticas de grande parte daquilo que o *cloudgeass* pode oferecer! Imagino que você possa se surpreender com as vantagens envolvidas em seu uso!
 
 ## Contatos
 
