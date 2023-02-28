@@ -68,6 +68,7 @@ nav:
   - Features:
     - Organização da Biblioteca: features/organizacao.md
     - O Módulo S3: features/s3.md
+  - FAQ: faq/faq.md
 
 # Extensões do MkDocs
 markdown_extensions:
@@ -83,6 +84,8 @@ markdown_extensions:
   - markdown.extensions.tables
   - markdown.extensions.footnotes
   - attr_list
+  - toc:
+      permalink: true
   - pymdownx.emoji:
       emoji_index: !!python/name:materialx.emoji.twemoji
       emoji_generator: !!python/name:materialx.emoji.to_svg
