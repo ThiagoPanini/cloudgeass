@@ -10,6 +10,26 @@
     transform: scale(1.15);
   }
 }
+
+@keyframes new {
+  0%,
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+
+  50% {
+    transform: scale(1.15) rotate(10deg);
+  }
+}
+
 .heart {
   animation: heart 1000ms infinite;
+}
+
+.mdx-pulse {
+  animation: new 2000ms infinite;
+}
+
+.warning {
+  color: #eef21d;
 }
