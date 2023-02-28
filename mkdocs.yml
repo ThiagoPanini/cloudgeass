@@ -15,14 +15,14 @@ copyright: |
   Copyright &copy; 2021 - 2023 <a href="https://github.com/ThiagoPanini"  target="_blank" rel="noopener">ThiagoPanini</a>
 
 # Definindo diretório de páginas em markdown
-docs_dir: docs/markdown
+docs_dir: docs/mkdocs
 
 # Configuração do tema
 theme:
   name: material
 
   # Apontando diretório adicional para customizações
-  custom_dir: docs/overrides
+  custom_dir: docs/assets
 
   # Definindo ícone customizado no header
   icon:
@@ -57,6 +57,7 @@ theme:
     - search.share
     - search.highlight
     - search.suggest
+    - content.code.copy
 
 # Configurando navegação
 nav:
@@ -67,6 +68,7 @@ nav:
   - Features:
     - Organização da Biblioteca: features/organizacao.md
     - O Módulo S3: features/s3.md
+  - FAQ: faq/faq.md
 
 # Extensões do MkDocs
 markdown_extensions:
@@ -81,8 +83,9 @@ markdown_extensions:
   - footnotes
   - markdown.extensions.tables
   - markdown.extensions.footnotes
-
-  # Habilita o uso de emojis e icones personalizados (ex: bootstrap)
+  - attr_list
+  - toc:
+      permalink: true
   - pymdownx.emoji:
       emoji_index: !!python/name:materialx.emoji.twemoji
       emoji_generator: !!python/name:materialx.emoji.to_svg
@@ -90,3 +93,6 @@ markdown_extensions:
         custom_icons:
           - overrides/.icons
 
+# Definindo customizações personalizadas
+extra_css:
+  - stylesheets/extra.css

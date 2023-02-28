@@ -5,7 +5,7 @@
 Cloudgeass é uma biblioteca Python criada para centralizar uma série de módulos, classes, métodos e funções prontas para serem utilizadas nos mais variados serviços da AWS. Inspirado em um [renomado anime japonês](https://en.wikipedia.org/wiki/Code_Geass), o cloudgeass visa proporcionar um maior controle sobre atividades e operações comumente realizadas em aplicações criadas na nuvem.
 
 <div align="center">
-    <br><img src="https://github.com/ThiagoPanini/cloudgeass/blob/feature/create-docs-page-with-mkdocs/docs/imgs/cloudgeass-logo.png?raw=true" alt="cloudgeass-logo" width=200 height=200>
+    <br><img src="https://github.com/ThiagoPanini/cloudgeass/blob/feature/create-docs-page-with-mkdocs/docs/assets/imgs/cloudgeass-logo.png?raw=true" alt="cloudgeass-logo" width=200 height=200>
 </div>
 
 <div align="center">
@@ -34,13 +34,13 @@ Cloudgeass é uma biblioteca Python criada para centralizar uma série de módul
   <br>
   
   <img src="https://img.shields.io/github/actions/workflow/status/ThiagoPanini/cloudgeass/ci-cloudgeass-main.yml?label=ci" alt="Shield github CI workflow">
-  
-  <a href="https://codecov.io/github/ThiagoPanini/cloudgeass">
-    <img src="https://codecov.io/github/ThiagoPanini/cloudgeass/branch/main/graph/badge.svg?token=7HI1YGS4AA" alt="Shield cloudgeass CodeCov">
-  </a>
 
   <a href='https://cloudgeass.readthedocs.io/pt/latest/?badge=latest'>
     <img src='https://readthedocs.org/projects/cloudgeass/badge/?version=latest' alt='Documentation Status' />
+  </a>
+  
+  <a href="https://codecov.io/github/ThiagoPanini/cloudgeass">
+    <img src="https://codecov.io/github/ThiagoPanini/cloudgeass/branch/main/graph/badge.svg?token=7HI1YGS4AA" alt="Shield cloudgeass CodeCov">
   </a>
 
 </div>
@@ -92,7 +92,7 @@ pip install cloudgeass
 
 Agora que o *cloudgeass* foi instalado com sucesso, todo o seu leque de funcionalidades se encontra disponível para utilização e suas funções e métodos poderão ser importadas em aplicações Python.
 
-:material-alert-decagram: Não deixe de assistir as demonstrações práticas de grande parte daquilo que o *cloudgeass* pode oferecer! Imagino que você possa se surpreender com as vantagens envolvidas em seu uso!
+:material-alert-decagram:{ .mdx-pulse .warning } Não deixe de assistir as [demonstrações práticas](https://cloudgeass.readthedocs.io/pt/latest/features/organizacao/) de grande parte daquilo que o *cloudgeass* pode oferecer! Imagino que você possa se surpreender com as vantagens envolvidas em seu uso!
 
 ## Contatos
 
