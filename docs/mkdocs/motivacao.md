@@ -80,7 +80,7 @@ bucket_objects = bucket_objects_report(bucket_name=bucket_name)
 
 O resultado é dado como um DataFrame do pandas com detalhes ricos sobre os objetos armazenados em um determinado bucket. Além disso, todas as boas práticas de código, como o tratamento de exceção e as mensagens de logs, estariam prontamente codificadas e disponíveis para uso.
 
-[![bucket_objects_report](https://github.com/ThiagoPanini/cloudgeass/blob/main/docs/imgs/readme-s3-example-bucket_objects_report.png?raw=true)](https://github.com/ThiagoPanini/cloudgeass/blob/main/docs/imgs/readme-s3-example-bucket_objects_report.png?raw=true)
+[![bucket_objects_report](https://github.com/ThiagoPanini/cloudgeass/blob/main/docs/assets/imgs/readme-s3-example-bucket_objects_report.png?raw=true)](https://github.com/ThiagoPanini/cloudgeass/blob/main/docs/assets/imgs/readme-s3-example-bucket_objects_report.png?raw=true)
 
 ## Ao Inifinito e Além
 

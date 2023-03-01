@@ -19,4 +19,4 @@ ___
 
 Visando alcançar o maior número de usuários possível, uma série de demonstrações práticas foram gravadas para exemplificar algumas das principais funcionalidades do *cloudgeass*. Não deixe de assistir!
 
-:material-alert-decagram:{ .mdx-pulse .warning } [Funcionalidades envolvendo o S3](https://cloudgeass.readthedocs.io/pt/latest/features/s3/)
+:material-alert-decagram:{ .mdx-pulse .warning } [Funcionalidades envolvendo o S3](./s3.md)

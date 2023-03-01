@@ -68,6 +68,8 @@ nav:
   - Features:
     - Organização da Biblioteca: features/organizacao.md
     - O Módulo S3: features/s3.md
+  - Documentação Oficial:
+    - s3.py: mkdocstrings/s3-docs.md
   - FAQ: faq/faq.md
 
 # Extensões do MkDocs
@@ -96,3 +98,7 @@ markdown_extensions:
 # Definindo customizações personalizadas
 extra_css:
   - stylesheets/extra.css
+
+# Definindo plugins
+plugins:
+  - mkdocstrings

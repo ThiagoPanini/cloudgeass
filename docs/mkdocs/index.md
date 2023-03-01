@@ -55,7 +55,7 @@ A última versão da biblioteca *cloudgeass* já está publicada no [PyPI](https
 pip install cloudgeass
 ```
 
-??? tip "Dica: sobre ambientes virtuais Python"
+??? tip "Sobre ambientes virtuais Python"
     Em geral, uma boa prática relacionada a criação de novos projetos Python diz respeito à criação e uso de [ambientes virtuais](https://docs.python.org/3/library/venv.html) (ou *virtual environments*, no inglês). Criar um *venv* para cada projeto Python iniciado permite, entre outras vantagens, ter em mãos um ambiente isolado com um controle mais refinado sobre as dependências utilizadas.
 
     ??? example "Criando ambientes virtuais"
@@ -92,7 +92,7 @@ pip install cloudgeass
 
 Agora que o *cloudgeass* foi instalado com sucesso, todo o seu leque de funcionalidades se encontra disponível para utilização e suas funções e métodos poderão ser importadas em aplicações Python.
 
-:material-alert-decagram:{ .mdx-pulse .warning } Não deixe de assistir as [demonstrações práticas](https://cloudgeass.readthedocs.io/pt/latest/features/organizacao/) de grande parte daquilo que o *cloudgeass* pode oferecer! Imagino que você possa se surpreender com as vantagens envolvidas em seu uso!
+:material-alert-decagram:{ .mdx-pulse .warning } Não deixe de assistir as [demonstrações práticas](./features/organizacao.md) de grande parte daquilo que o *cloudgeass* pode oferecer! Imagino que você possa se surpreender com as vantagens envolvidas em seu uso!
 
 ## Contatos
 
