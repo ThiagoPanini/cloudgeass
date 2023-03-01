@@ -1,19 +1,17 @@
 """
-MÓDULO: s3.py
-
-OBJETIVO:
----------
 Módulo responsável por alocar desenvolvimentos relacionados à
 utilização do boto3 para o gerencimento de operações do S3 na
 AWS. Aqui será possível encontrar funcionalidades prontas para
 realizar as mais variadas atividades no S3.
---------------------------------------------------------------
 
-------------------------------------------------------
----------- 1. PREPARAÇÃO INICIAL DO SCRIPT -----------
-          1.1 Importação das bibliotecas
----------------------------------------------------"""
+Ao longo deste módulo, será possível encontrar funções definidas
+e documentadas visando proporcionar a melhor experiência ao
+usuário!
 
+___
+"""
+
+# Importando bibliotecas
 import boto3
 import pandas as pd
 import os
@@ -22,13 +20,6 @@ from cloudgeass.utils.log import log_config
 from cloudgeass.utils.prep import categorize_file_size
 
 
-"""
----------------------------------------------------
------------- 1. CONFIGURAÇÕES INICIAIS ------------
-     1.2 Definindo logs e variáveis do projeto
----------------------------------------------------
-"""
-
 # Configurando objeto de logger
 logger = log_config(logger_name=__file__)
 
@@ -36,51 +27,64 @@ logger = log_config(logger_name=__file__)
 client = boto3.client("s3")
 
 
-"""
----------------------------------------------------
------------- 2. SIMPLE STORAGE SERVICE ------------
-       2.1 Definindo funcionalidades comuns
----------------------------------------------------
-"""
-
-
 # Lista buckets já existentes em uma conta AWS
-def list_buckets(client=client):
+def list_buckets(client=client) -> list:
+    """
+    Retorna uma lista de nomes de buckets em uma conta AWS.
+
+    Examples:
+        ```python
+        # Importando função
+        from cloudgeass.aws.s3 import list_buckets
+
+        # Listando buckets s3
+        buckets = list_buckets()
+        ```
+
+    Args:
+        client (botocore.client.S3): Client s3 instanciado via boto3
+
+    Returns:
+        Lista contendo nomes de buckets s3 existentes em uma conta
+    """
     return [b["Name"] for b in client.list_buckets()["Buckets"]]
 
 
 # Obtém pandas DataFrame com detalhes de conteúdo de um bucket
 def bucket_objects_report(
     bucket_name: str, prefix: str = "", client=client
-):
+) -> pd.DataFrame:
     """
-    Extraindo report de objetos presentes em um bucket S3.
+    Extração de report de objetos presentes em um bucket S3.
 
     Função criada para retornar ao usuário um DataFrame do pandas com uma
     série de detalhes sobre os objetos armazenados em um bucket específico
     na AWS.
 
-    Parâmetros
-    ----------
-    :param bucket_name:
-        Nome do bucket alvo da extração.
-        [type: str]
+    Examples:
+        ```python
+        # Importando função
+        from cloudgeass.aws.s3 import bucket_objects_report
 
-    :param prefix:
-        Prefixo opcionalmente utilizado como filtro da extração.
-        [type: str, default=""]
+        # Obtendo report de objetos em um bucket
+        df_bucket_objects = bucket_objects_report(
+            bucket_name="some-bucket-name"
+        )
 
-    :param client:
-        Client S3 utilizado para chamada do método list_objects_v2()
-        para obtenção dos objetos do bucket.
-        [default=boto3.client("s3")]
+        # Obtendo report de objetos apenas de uma "tabela"
+        df_table_objects = bucket_objects_report (
+            bucket_name="another-bucket-name",
+            prefix="database/table"
+        )
+        ```
 
-    Retorno
-    -------
-    :return df_objects_report:
-        DataFrame do pandas contendo informações relevantes sobre os
-        objetos presentes no bucket alvo.
-        [type: pd.DataFrame]
+    Args:
+        bucket_name (str): Nome do bucket alvo da análise de objetos
+        prefix (str): Prefixo opcional para filtragem do report
+        client (botocore.client.S3): Client s3 instanciado via boto3
+
+    Returns:
+        DataFrame pandas com informações sobre objetos extraídos
     """
 
     # Realizando chamada de API para listagem de objetos de bucket
@@ -125,10 +129,10 @@ def bucket_objects_report(
 
 # Realiza a leitura de objetos como DataFrame do pandas
 def all_buckets_objects_report(
-    prefix: str = "", client=client, exclude_buckets=list()
-):
+    prefix: str = "", exclude_buckets: list = list(), client=client
+) -> pd.DataFrame:
     """
-    Retorna um report de todos os objetos de todos os buckets da conta.
+    Extração de report de objetos presentes em todos os buckets de uma conta.
 
     O conteúdo desta função envolve a chamada às funções list_buckets() e
     bucket_objects_report() deste mesmo módulo para, respectivamente,
@@ -137,27 +141,27 @@ def all_buckets_objects_report(
     DataFrame do pandas. A cada interação, o DataFrame resultante é
     enriquecido com report individual de cada bucket.
 
-    :param prefix:
-        Prefixo opcionalmente utilizado como filtro da extração.
-        [type: str, default=""]
+    Examples:
+        ```python
+        # Importando função
+        from cloudgeass.aws.s3 import all_buckets_objects_report
 
-    :param client:
-        Client S3 utilizado para chamada do método list_objects_v2()
-        para obtenção dos objetos do bucket.
-        [default=boto3.client("s3")]
+        # Obtendo report de objetos de todos os buckets da conta
+        df_all_buckets_objects = all_buckets_objects_report()
 
-    :param exclude_buckets:
-        Lista de buckets a serem ignorados no processo de listagem
-        de objetos. A cada iteração do laço, buckets presentes nesta
-        lista não terão seus objetos adicionados ao report.
-        [type: list, default=list()]
+        # Eliminando alguns buckets do report de objetos
+        df_all_buckets_objects = bucket_objects_report (
+            exclude_buckets=["some-bucket-name", "another-bucket-name"]
+        )
+        ```
 
-    Retorno
-    -------
-    :return df_report_all:
-        DataFrame do pandas contendo informações relevantes sobre os
-        objetos presentes em todos os buckets da conta.
-        [type: pd.DataFrame]
+    Args:
+        prefix (str): Prefixo opcional para filtragem do report
+        exclude_buckets (list): Lista de buckets ignorados no report
+        client (botocore.client.S3): Client s3 instanciado via boto3
+
+    Returns:
+        DataFrame pandas com informações sobre objetos extraídos
     """
 
     # Listando buckets da conta
@@ -186,7 +190,7 @@ def all_buckets_objects_report(
 
 
 # Lendo objeto do S3 com base em URI
-def read_s3_object(s3_uri: str, **kwargs):
+def read_s3_object(s3_uri: str, **kwargs) -> pd.DataFrame:
     """
     Realiza a leitura de objeto no S3 com base em URI fornecida.
 
@@ -197,24 +201,39 @@ def read_s3_object(s3_uri: str, **kwargs):
     de leitura e transformação em DataFrame possa ser chamado (ex:
     pd.read_csv(), pd.read_json()).
 
-    Parâmetros
-    ----------
-    :param s3_uri:
-        URI do objeto no S3 a ser lido e transformado em DataFrame.
-        Exemplo: "s3://bucket-name/prefix/object-name.csv"
-        [type: str]
+    Note: Sobre os argumentos de chave e valor:
+        Argumentos adicionais de chave e valor (**kwargs) podem ser
+        utilizados na chamada da função para parametrizar e
+        configurar especifidades dos arquivos a serem lidos e
+        transformados em DataFrames do pandas.
 
-    **kwargs
-    --------
-    Os argumentos adicionais por chave servem para mapear todas as
-    possibilidades de parametrização existentes nos métodos
-    pd.read_csv(), pd.read_json() e pd.read_parquet().
+    Examples:
+        ```python
+        # Importando função
+        from cloudgeass.aws.s3 import read_s3_object
 
-    Retorno
-    -------
-    :return df:
-        DataFrame do pandas contendo os dados do objeto lido do s3.
-        [type: pd.DataFrame]
+        # Realizando a leitura de um objeto do tipo PARQUET
+        parquet_uti = "s3://some-bucket-name/some-prefix/file.parquet"
+        df_parquet = read_s3_object(s3_uri=parquet_uri)
+
+        # Realizando a leitura de um objeto do tipo CSV
+        csv_uri = "s3://some-bucket-name/some-prefix/file.csv"
+        df_csv = read_s3_object(s3_uri=csv_uri, sep=";")
+
+        # Realizando a leitura de um objeto do tipo JSON
+        json_uri = "s3://some-bucket-name/some-prefix/file.json"
+        df_json = read_s3_object(s3_uri=json_uri, orient="records")
+        ```
+
+    Args:
+        s3_uri (str): URI do objeto no S3 a ser lido como im DataFrame pandas
+        **kwargs (dict): parametrização das funções de leitura de DataFrame
+
+    Returns:
+        DataFrame do pandas contendo os dados do objeto lido do s3
+
+    Raises:
+        FileNotFoundError: Erro quando a URI aponta para um objeto inexistente
     """
 
     # Extraindo parâmetros da URI
@@ -245,54 +264,62 @@ def get_partition_value_from_prefix(
     partition_mode: str = "name=value",
     date_partition_name: str = "anomesdia",
     date_partition_idx: int = -2
-):
+) -> int:
     """
     Coleta o valor da partição de data com base em um prefixo de objeto.
 
-    Parâmetros
-    ----------
-    :param prefix_uri:
-        Prefixo de URI de objeto no s3 alvo da extração.
-        [type: str]
+    Esta função foi criada para facilitar e modularizar a operação
+    existente na função `get_last_partition()`, também deste módulo.
+    Seu objetivo é considerar diferentes cenários para extração do
+    valor de uma partição com base no seu formato de prefixo.
 
-    :param partition_mode:
-        Indica a forma como a partição de data está configurada no
-        prefixo e é utilizado para guiar o modo de extraçãodo valor da
-        partição com base no padrão fornecido. As opções são:
+    Examples:
+        ```python
+        # Importando função
+        from cloudgeass.aws.s3 import get_partition_value_from_prefix
 
-        - "name=value": indica que a partição de data está armazenada
-          em um formato contendo o nome e o valor (ex: anomesdia=20230101)
+        # Extraindo valor da partição com prefixo contendo nome e valor
+        example_prefix = "table-name/anomesdia=20230101/file.parquet"
+        partition_value = get_partition_value_from_prefix(
+            prefix_uri=example_prefix,
+            partition_mode="name=value",
+            date_partition_name="anomesdia"
+        )
+        # Resultado: 20230101
 
-        - "value": indica que a partição de data está armazenada em
-          um formato contendo apenas seu valor (ex: 20230101)
+        # Extraindo valor da partição com prefixo contendo apenas valor
+        another_prefix = "table-name/20230102/file.parquet"
+        partition_value = get_partition_value_from_prefix(
+            prefix_uri=example_prefix,
+            partition_mode="value",
+            date_partition_idx=-2
+        )
+        # Resultado: 20230102
+        ```
 
-        [type: str, default="name=value", allowed="name=value"|"value"]
+    Args:
+        prefix_uri (str):
+            Prefixo de objeto no s3 extraído de tabela particionada
 
-    :param date_partition_name:
-        Indica o nome da partição a ser procurada no prefixo.Este parâmetro
-        é utilizado apenas quando partition_mode="name=value".
-        [type: str, default="anomesdia"]
+        partition_mode (str):
+            Checar documentação da função
+            [get_last_partition()][cloudgeass.aws.s3.get_last_partition]
 
-    :param date_partition_idx:
-        Índice a partição a ser extraída do prefixo com referência posterior
-        ao processo de split por barra (.split("/")). Este parâmetro é
-        utilizado apenas quando partition_mode="value" e serve para
-        endereçar possíveis casos onde existem múltiplas partições em
-        uma tabela. Como exemplo, date_partition_idx=-2 indica que a
-        informação de data será coletada a partir do último prefixo
-        antes dos nomes dos arquivos (prefix.split("/")[-2]).
+        date_partition_name (str):
+            Checar documentação da função
+            [get_last_partition()][cloudgeass.aws.s3.get_last_partition]
 
-        Se a informação de partição de data a ser coletada não segue
-        este padrão (se está em um nível anterior, por exemplo), o
-        usuário deve fornecer diferentes valores para este parâmetro
-        (ex: -3, -4).
-        [type: int, default=-2]
+        date_partition_idx (int):
+            Checar documentação da função
+            [get_last_partition()][cloudgeass.aws.s3.get_last_partition]
 
-    Retorno
-    -------
-    :return partition_value:
-        Valor da partição extraída do prefixo de objeto como um inteiro.
-        [type: int]
+    Returns:
+        Valor da partição extraída do prefixo de objeto como um inteiro
+
+    Raises:
+        ValueError: Ao tentar converter um valor de partição não\
+        "parseável" em inteiro ou ao não encontrar o nome da partição\
+        no prefix quando partition_mode="name=value"
     """
 
     # Validando preenchimento de parâmetro partition_mode
@@ -313,27 +340,27 @@ def get_partition_value_from_prefix(
         partition_prefix = prefix_uri[partition_start_idx:].split("/")[0]
 
         # Extraindo informação de data de partição
-        partition_value = int(partition_prefix.split("=")[-1])
+        partition_value_raw = partition_prefix.split("=")[-1]
 
     elif partition_mode_prep == "value":
         # Extraindo informação de data de partição com base em index
-        partition_value = prefix_uri.split("/")[date_partition_idx]
+        partition_value_raw = prefix_uri.split("/")[date_partition_idx]
 
-        # Validando conversão para inteiro
-        try:
-            partition_value = int(partition_value)
+    # Validando conversão para inteiro
+    try:
+        partition_value = int(partition_value_raw)
 
-        except ValueError as ve:
-            logger.error(f"Erro ao tentar converter partição {partition_value}"
-                         " para inteiro. Verifique se os parâmetros da fução "
-                         "foram fornecidos de maneira adequada. Este tipo de "
-                         "erro pode estar associado ao tentar extrair um valor"
-                         " de partição com parâmetro partition_mode='value' "
-                         "quando o modo de armazenamento da função é "
-                         "'name=value'. Isto implica em tentar converter uma "
-                         "string do tipo 'nomeparticao=valorparticao' em "
-                         " inteiro, gerando assim a exceção.")
-            raise ve
+    except ValueError as ve:
+        logger.error(f"Erro ao tentar converter partição {partition_value_raw}"
+                     " para inteiro. Verifique se os parâmetros da fução "
+                     "foram fornecidos de maneira adequada. Este tipo de "
+                     "erro pode estar associado ao tentar extrair um valor "
+                     "de partição com parâmetro partition_mode='value' "
+                     "quando o modo de armazenamento da função é "
+                     "'name=value'. Isto implica em tentar converter uma "
+                     "string do tipo 'nomeparticao=valorparticao' em "
+                     "inteiro, gerando assim a exceção.")
+        raise ve
 
     return partition_value
 
@@ -346,7 +373,7 @@ def get_last_partition(
     date_partition_name: str = "anomesdia",
     date_partition_idx: int = -2,
     client=client
-):
+) -> int:
     """
     Coleta da última partição de uma tabela no S3.
 
@@ -355,69 +382,74 @@ def get_last_partition(
     dos valores de partição de múltiplos prefixos e uma consequente ordenação
     dos resultados.
 
-    Como regra de construção, esta função consolida chamadas para outras
-    funções do módulo na seguinte sequência:
-        - bucket_objects_report() para obter report de objetos do bucket
-        - get_partition_value_from_prefix() para obter valores de partição
+    Note: Observação sobre a funcionalidade consolidada:
+        Como regra de construção, esta função consolida chamadas para outras
+        funções do módulo na seguinte sequência:
 
-    Os valores obtidos em get_partition_value_from_prefix(), para cada prefixo
-    de objeto extraído em bucket_objects_report() são então armazenados em uma
-    lista e ordenados. O valor resultante desta função é o último elemento
-    da lista, considerando que este seja o inteiro mais recente considerando
-    os formatos de data iguais a %Y%m%d (anomesdia) ou %Y%m (anomes).
+        - `bucket_objects_report()` para obter report de objetos do bucket
+        - `get_partition_value_from_prefix()` p/ obter valores de partição
 
-    Parâmetros
-    ----------
-    :param bucket_name:
-        Nome do bucket alvo do processo de extração de prefixos de objeto.
-        [type: str]
+        Cada prefixo objeto extraído em `bucket_objects_report()`, passa pelo
+        processo de extração de valor de partição em consolidado em
+        `get_partition_value_from_prefix()`. Os resultados são armazenados em
+        uma lista e ordenados. O valor resultante desta função é o último
+        elemento da lista, considerando que este seja o inteiro mais recente
+        considerando os formatos de data iguais a %Y%m%d (anomesdia) ou
+        %Y%m (anomes).
 
-    :param prefix:
-        Parâmetro que indica a extração de objetos de um bucket com base
-        apenas em um prefixo. Normalmente, este parâmetro pode ser fornecido
-        como o nome da tabela armazenada dentro do bucket, permitindo que
-        o valor de partição obtido seja referente apenas à tabela (prefixo)
-        fornecido.
-        [type: str]
+    Examples:
+        ```python
+        # Importando função
+        from cloudgeass.aws.s3 import get_last_partition
 
-    :param partition_mode:
-        Indica a forma como a partição de data está configurada no
-        prefixo e é utilizado para guiar o modo de extraçãodo valor da
-        partição com base no padrão fornecido. As opções são:
+        # Coletando última partição de tabela particionada
+        last_partition = get_last_partition(
+            bucket_name="some-bucket-name",
+            table_prefix"some-table-prefix",
+            partition_mode="name=value",
+            date_partition_name="anomesdia"
+        )
+        ```
 
-        - "name=value": indica que a partição de data está armazenada
-          em um formato contendo o nome e o valor (ex: anomesdia=20230101)
+    Args:
+        bucket_name (str):
+            Nome do bucket onde a tabela particionada se encontra
 
-        - "value": indica que a partição de data está armazenada em
-          um formato contendo apenas seu valor (ex: 20230101)
+        table_prefix (str):
+            Prefixo de localização da tabela no bucket. Normalmente, este
+            prefixo pode ser indicado simplesmente como o nome da tabela.
+            Entretanto, existem cenários onde a tabela particionada encontra-se
+            em uma série de outros prefixos dentro do mesmo bucket
+            (ex: database/table) e, nesses casos, table_prefix deve indicar
+            todo o caminho exatamente anterior ao início dos prefixos de
+            partição
 
-        [type: str, default="name=value", allowed="name=value"|"value"]
+        partition_mode (str):
+            Indica a forma como a partição de data está configurada no
+            prefixo e é utilizado para guiar o modo de extraçãodo valor da
+            partição com base no padrão fornecido. As opções são:
 
-    :param date_partition_name:
-        Indica o nome da partição a ser procurada no prefixo.Este parâmetro
-        é utilizado apenas quando partition_mode="name=value".
-        [type: str, default="anomesdia"]
+            - "name=value": indica que a partição de data está armazenada
+            em um formato contendo o nome e o valor (ex: anomesdia=20230101)
 
-    :param date_partition_idx:
-        Índice a partição a ser extraída do prefixo com referência posterior
-        ao processo de split por barra (.split("/")). Este parâmetro é
-        utilizado apenas quando partition_mode="value" e serve para
-        endereçar possíveis casos onde existem múltiplas partições em
-        uma tabela. Como exemplo, date_partition_idx=-2 indica que a
-        informação de data será coletada a partir do último prefixo
-        antes dos nomes dos arquivos (prefix.split("/")[-2]).
+            - "value": indica que a partição de data está armazenada em
+            um formato contendo apenas seu valor (ex: 20230101)
 
-        Se a informação de partição de data a ser coletada não segue
-        este padrão (se está em um nível anterior, por exemplo), o
-        usuário deve fornecer diferentes valores para este parâmetro
-        (ex: -3, -4).
-        [type: int, default=-2]
+        date_partition_name (str):
+            Nome da partição a ser procurada no prefixo. Este parâmetro é
+            utilizado apenas quando partition_mode="name=value"
 
-    Retorno
-    -------
-    :return last_partition:
+        date_partition_idx (int):
+            Indica o índice de localização do valor da partição com
+            referência posterior ao processo de split por barra do
+            prefixo alvo (prefix_uri.split("/")). Este parâmetro é
+            utilizado apenas quando partition_mode="value"
+
+        client (botocore.client.S3):
+            Client s3 instanciado via boto3
+
+    Returns:
         Último valor de partição extraído no processo.
-        [type: int]
     """
 
     # Coletando DataFrame de objetos do buckes
