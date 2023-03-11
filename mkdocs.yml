@@ -70,6 +70,7 @@ nav:
     - O Módulo S3: features/s3.md
   - Documentação Oficial:
     - s3.py: mkdocstrings/s3-docs.md
+    - utils: mkdocstrings/utils-docs.md
   - FAQ: faq/faq.md
 
 # Extensões do MkDocs
