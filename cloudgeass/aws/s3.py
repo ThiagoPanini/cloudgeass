@@ -1,12 +1,11 @@
 """
-Módulo responsável por alocar desenvolvimentos relacionados à
-utilização do boto3 para o gerencimento de operações do S3 na
-AWS. Aqui será possível encontrar funcionalidades prontas para
-realizar as mais variadas atividades no S3.
+Módulo responsável por alocar desenvolvimentos relacionados à utilização do
+boto3 para o gerencimento de operações do S3 na AWS. Aqui será possível
+encontrar funcionalidades prontas para realizar as mais variadas atividades
+no S3.
 
-Ao longo deste módulo, será possível encontrar funções definidas
-e documentadas visando proporcionar a melhor experiência ao
-usuário!
+Ao longo deste módulo, será possível encontrar funções definidas e documentadas
+visando proporcionar a melhor experiência ao usuário!
 
 ___
 """

@@ -1,8 +1,9 @@
 """
----------------------------------------------------
------------- 1. CONFIGURAÇÕES INICIAIS ------------
-               1.2 Configurando logs
----------------------------------------------------
+Módulo responsável por auxiliar na configuração de objetos de log instanciados
+via Python e utilizados no decorrer dos módulos e funções para proporcionar um
+melhor observability dos processos.
+
+___
 """
 
 # Importando bibliotecas
@@ -10,31 +11,34 @@ import logging
 
 
 # Função para configuração de log
-def log_config(logger_name: str = __file__,
-               logger_level: int = logging.INFO,
-               logger_date_format: str = "%Y-%m-%d %H:%M:%S") -> None:
+def log_config(
+    logger_name: str = __file__,
+    logger_level: int = logging.INFO,
+    logger_date_format: str = "%Y-%m-%d %H:%M:%S"
+) -> logging.Logger:
     """
-    Configuração de logs.
+    Criação e configuração de objeto logger para registros de logs.
 
-    Função criada para facilitar a criação de configuração
-    de uma instância de Logger do Python utilizada no
-    decorrer da aplicação Spark para registros de logs
-    das atividades e das funcionalidades desenvolvidas.
+    Função criada para facilitar a criação de configuração de uma instância de
+    Logger do Python utilizada no decorrer da aplicação Spark para registros de
+    logs das atividades e das funcionalidades desenvolvidas.
 
-    Parâmetros
-    ----------
-    :param logger_name:
-        Nome da instância de logger.
-        [type: str, default="glue_logger"]
+    Examples:
+        ```python
+        # Importando módulo
+        from cloudgeass.utils.log import log_config
 
-    :param logger_level:
-        Nível dos registros de log configurado.
-        [type: int, default=logging.INFO]
+        # Instanciando e configurando logger
+        logger = log_config(logger)
+        ```
 
-    :param logger_date_format:
-        Formato de data configurado para representação
-        nas mensagens de logs.
-        [type: str, default="%Y-%m-%d %H:%M:%S"]
+    Args:
+        logger_name (str): Referência do objeto logger criado
+        logger_level (int): Tipo padrão do logger configurado
+        logger_date_format (str): Formato padrão de datas das mensagens
+
+    Returns:
+        Objeto logger já configurado para o usuário
     """
 
     # Instanciando objeto de logging
