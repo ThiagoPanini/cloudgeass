@@ -21,7 +21,7 @@ client = boto3.client("secretsmanager")
 
 
 # Coletando o valor de um segredo através de seu ID
-def get_secret(secret_id: str, client=client) -> str:
+def get_secret_string(secret_id: str, client=client) -> str:
     """Coleta de string de segredo existente no Secrets Manager.
 
     Com esta funcionalidade, os usuários podem passar um ID de segredo e obter,
