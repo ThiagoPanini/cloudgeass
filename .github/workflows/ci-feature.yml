@@ -1,13 +1,14 @@
-name: "⚙️ CI cloudgeass - main"
+name: "⚙️ CI feature branch"
 
 on:
-  pull_request:
+  push:
     branches:
-      - main
+      - feature**
 
 permissions:
   id-token: write
   contents: read
+  pull-requests: write
 
 jobs:
   ci-python:
@@ -44,4 +45,24 @@ jobs:
         uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-  
+
+  open-pr-to-main:
+    name: open-pr-to-main
+    runs-on: ubuntu-latest
+    needs:
+      - ci-python
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Cria PR para main
+        uses: repo-sync/pull-request@v2
+        with:
+          source_branch: ${{ github.ref }}
+          destination_branch: "main"
+          pr_title: "pr(main): ${{ github.ref }} -> main"
+          pr_template: ".github/pull_request_template.md"
+          pr_assignee: "ThiagoPanini"
+          pr_label: "github-bot 🤖"
+          github_token: ${{ secrets.GITHUB_TOKEN }}

@@ -1,4 +1,4 @@
-name: "🚀 PyPI Package Publish"
+name: "🚀 PyPI Publish and Release Drafter"
 
 on:
   push:
@@ -7,7 +7,8 @@ on:
 
 permissions:
   id-token: write
-  contents: read
+  contents: write
+  pull-requests: write
 
 jobs:
   ci-pypi-publish:
@@ -32,5 +33,17 @@ jobs:
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           password: ${{ secrets.PYPI_API_TOKEN }}
+    
+  update-release-draft:
+    name: update-relase-draft
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Cria novo draft de release
+        uses: release-drafter/release-drafter@v5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          config-name: configs/release-drafter.yml
 
       
