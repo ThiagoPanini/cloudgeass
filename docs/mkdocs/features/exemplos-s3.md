@@ -2,7 +2,7 @@
 
 ## Objetivo
 
-A ideia por trás do módulo `cloudgeass.aws.s3` gira em torno do fornecimento de funções e blocos de código contendo operações comumente realizadas no serviço Amazon S3 da AWS. Para navegar por todas as funcionalidades presentes, consulte o arquivo [s3.py](https://github.com/ThiagoPanini/cloudgeass/blob/main/cloudgeass/aws/s3.py) ou, se preferir, clique nas janelas abaixo para assistir demonstrações práticas.
+A ideia por trás do módulo `cloudgeass.aws.s3` gira em torno do fornecimento de funções e blocos de código contendo operações comumente realizadas no serviço Amazon S3 da AWS. Para navegar por todas as funcionalidades presentes, consulte o [documentação oficial do módulo](../mkdocstrings/s3-docs.md) ou, se preferir, clique nas janelas abaixo para assistir demonstrações práticas.
 
 ## Exemplos Práticos
 
@@ -32,6 +32,10 @@ Nada melhor do que ver na prática tudo o que foi explicado até aqui! As funcio
     buckets
     ```
 
+    ___
+
+    :thinking: Saiba mais em [list_buckets()](../../mkdocstrings/s3-docs/#cloudgeass.aws.s3.list_buckets)
+
 
 ??? example "Obtendo um report de objetos de um bucket com `buckets_objects_report()`"
 
@@ -59,6 +63,11 @@ Nada melhor do que ver na prática tudo o que foi explicado até aqui! As funcio
 
     df_objs_report.head(3)
     ```
+
+    ___
+
+    :thinking: Saiba mais em [bucket_objects_report()](../../mkdocstrings/s3-docs/#cloudgeass.aws.s3.bucket_objects_report)
+
 
 
 ??? example "Obtendo um report de objetos apenas de um determinado prefixo (ou tabela no S3)"
@@ -89,6 +98,10 @@ Nada melhor do que ver na prática tudo o que foi explicado até aqui! As funcio
     df_objs_report.head(3)
     ```
 
+    ___
+
+    :thinking: Saiba mais em [bucket_objects_report()](../../mkdocstrings/s3-docs/#cloudgeass.aws.s3.bucket_objects_report)
+
 
 ??? example "Obtendo um report de objetos de todos os buckets com `all_buckets_objects_report()`"
 
@@ -115,6 +128,9 @@ Nada melhor do que ver na prática tudo o que foi explicado até aqui! As funcio
     df_report.head()
     ```
 
+    ___
+
+    :thinking: Saiba mais em [all_buckets_objects_report()](../../mkdocstrings/s3-docs/#cloudgeass.aws.s3.all_buckets_objects_report)
 
 
 ??? example "Obtendo um report de objetos de todos os buckets ignorando alguns buckets"
@@ -150,6 +166,11 @@ Nada melhor do que ver na prática tudo o que foi explicado até aqui! As funcio
     df_report.head()
     ```
 
+    ___
+
+    :thinking: Saiba mais em [all_buckets_objects_report()](../../mkdocstrings/s3-docs/#cloudgeass.aws.s3.all_buckets_objects_report)
+
+
 ??? example ":star:{ .heart } Lendo um objeto CSV, JSON ou PARQUET em um DataFrame do pandas com `read_s3_object()`"
 
     :clapper: **Demonstração:**
@@ -184,6 +205,10 @@ Nada melhor do que ver na prática tudo o que foi explicado até aqui! As funcio
     df_parquet.head()
     ```
 
+    ___
+
+    :thinking: Saiba mais em [read_s3_object()](../../mkdocstrings/s3-docs/#cloudgeass.aws.s3.read_s3_object)
+
 
 ??? example ":star:{ .heart } Coletando última partição de tabela no S3 com `get_last_partition()`"
 
@@ -212,6 +237,11 @@ Nada melhor do que ver na prática tudo o que foi explicado até aqui! As funcio
 
     last_partition = get_last_partition(bucket_name, table_prefix)
     ```
+
+    ___
+
+    :thinking: Saiba mais em [get_last_partition()](../../mkdocstrings/s3-docs/#cloudgeass.aws.s3.get_last_partition)
+
 
 ## Saiba Mais
 
