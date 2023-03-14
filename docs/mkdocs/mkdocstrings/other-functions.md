@@ -1,7 +1,5 @@
 # Funcionalidades Úteis de Uso na Biblioteca
 
-## log.py
-
 ::: cloudgeass.utils.log
     default_handler: python
     options:
@@ -9,8 +7,6 @@
         members_order: "source"
 
 ___
-
-# prep.py
 
 ::: cloudgeass.utils.prep
     default_handler: python
