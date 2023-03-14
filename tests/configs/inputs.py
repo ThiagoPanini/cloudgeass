@@ -1,18 +1,22 @@
-"""
-SCRIPT: configs/inputs.py
+"""Configuração de inputs utilizados na criação e validação dos testes.
 
-CONTEXTO E OBJETIVO:
---------------------
-Arquivo de configuração de parâmetros e variáveis
-utilizadas nos testes. O usuário deve atentar-se a todas
-as configurações e declarações de variáveis aqui
-realizadas para que os testes unitários possam ser
-executados de maneira adequada.
----------------------------------------------------
+O objetivo deste arquivo é consolidar variáveis que representam inputs
+do usuário para configuração das fixtures e validação de funcionalidades
+nos testes unitários. A ideia é centralizar variáveis importantes para
+proporcionar um local único de gerenciamento de validações nas etapas de
+testes.
+
+___
 """
 
 # Importando bibliotecas e módulos
 from tests.helpers.faker import fake_data
+
+
+"""---------------------------------------------------
+-------- 1. DEFINIÇÃO DE INPUTS DE VALIDAÇÃO ---------
+         1.1 Inputs utilizados no módulo s3
+---------------------------------------------------"""
 
 
 # Região usada no mock dos recursos
@@ -91,3 +95,15 @@ EXPECTED_DF_OBJECTS_REPORT_COLS = [
     "BucketName", "Key", "ObjectType", "Size", "SizeFormatted",
     "LastModified", "ETag", "StorageClass"
 ]
+
+
+"""---------------------------------------------------
+-------- 1. DEFINIÇÃO DE INPUTS DE VALIDAÇÃO ---------
+       1.2 Inputs utilizados no módulo secrets
+---------------------------------------------------"""
+
+# Referência nominal do segredo a ser mockado
+MOCKED_SECRET_NAME = "some-secret-name"
+
+# Valor do segredo a ser mockado
+MOCKED_SECRET_VALUE = "some-secret-value"

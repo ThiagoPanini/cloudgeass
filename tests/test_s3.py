@@ -1,16 +1,11 @@
+"""Consolidação de testes unitários do módulo s3.py
+
+O objetivo deste arquivo é consolidar uma suíte de testes capaz de
+testar e validar todas as funcionalidades presentes no módulo s3
+da biblioteca cloudgeass.
+
+___
 """
-SCRIPT: test_s3.py
-
-OBJETIVO:
----------
-Consolidar uma suíte de testes capaz de testar e validar
-funcionalidades presentes no módulo s3 do cloudgeass.
-------------------------------------------------------
-
-------------------------------------------------------
----------- 1. PREPARAÇÃO INICIAL DO SCRIPT -----------
-          1.1 Importação das bibliotecas
----------------------------------------------------"""
 
 # Importando módulos para uso
 import pytest
@@ -27,8 +22,8 @@ from tests.configs.inputs import MOCKED_BUCKET_CONTENT,\
 
 
 """---------------------------------------------------
------------- 2. DEFININDO SUÍTE DE TESTES ------------
-               2.1 Função list_buckets()
+------------ 1. DEFININDO SUÍTE DE TESTES ------------
+               1.1 Função list_buckets()
 ---------------------------------------------------"""
 
 
@@ -56,8 +51,8 @@ def test_list_buckets_retorna_o_bucket_esperado(bucket_list):
 
 
 """---------------------------------------------------
------------- 2. DEFININDO SUÍTE DE TESTES ------------
-          2.2 Função bucket_objects_report()
+------------ 1. DEFININDO SUÍTE DE TESTES ------------
+          1.2 Função bucket_objects_report()
 ---------------------------------------------------"""
 
 
@@ -108,7 +103,7 @@ def test_bucket_objects_report_possui_apenas_um_nome_de_bucket(
 @pytest.mark.bucket_objects_report
 @mock_s3
 def test_erro_ao_tentar_gerar_report_de_objetos_com_nome_de_bucket_incorreto(
-    mocked_client, prepare_mocked_bucket
+    s3_client, prepare_mocked_bucket
 ):
     """
     G: dado que o usuário deseja extrair um report de objetos em um bucket
@@ -127,13 +122,13 @@ def test_erro_ao_tentar_gerar_report_de_objetos_com_nome_de_bucket_incorreto(
     with pytest.raises(Exception):
         bucket_objects_report(
             bucket_name=incorrect_bucket_name,
-            client=mocked_client
+            client=s3_client
         )
 
 
 """---------------------------------------------------
------------- 2. DEFININDO SUÍTE DE TESTES ------------
-        2.3 Função all_buckets_objects_report()
+------------ 1. DEFININDO SUÍTE DE TESTES ------------
+        1.3 Função all_buckets_objects_report()
 ---------------------------------------------------"""
 
 
@@ -210,7 +205,7 @@ def test_all_buckets_objects_report_possui_nomes_esperados_de_buckets(
 @pytest.mark.all_buckets_objects_report
 @mock_s3
 def test_all_buckets_objects_report_com_lista_de_buckets_ignorados(
-    mocked_client, prepare_mocked_bucket
+    s3_client, prepare_mocked_bucket
 ):
     """
     G: dado que o usuário deseja obter um report completo contendo todos
@@ -229,7 +224,7 @@ def test_all_buckets_objects_report_com_lista_de_buckets_ignorados(
 
     # Extração de nome de bucket do DataFrame resultante
     df_all_buckets_objects = all_buckets_objects_report(
-        client=mocked_client,
+        client=s3_client,
         exclude_buckets=buckets_to_exclude
     )
 
@@ -240,8 +235,8 @@ def test_all_buckets_objects_report_com_lista_de_buckets_ignorados(
 
 
 """---------------------------------------------------
------------- 2. DEFININDO SUÍTE DE TESTES ------------
-              2.4 Função read_s3_object()
+------------ 1. DEFININDO SUÍTE DE TESTES ------------
+              1.4 Função read_s3_object()
 ---------------------------------------------------"""
 
 
@@ -332,8 +327,8 @@ def test_read_s3_object_retora_erro_com_uri_de_objeto_inexistente():
 
 
 """---------------------------------------------------
------------- 2. DEFININDO SUÍTE DE TESTES ------------
-      2.5 Função get_partition_value_from_prefix()
+------------ 1. DEFININDO SUÍTE DE TESTES ------------
+      1.5 Função get_partition_value_from_prefix()
 ---------------------------------------------------"""
 
 
@@ -556,15 +551,15 @@ def test_erro_conversao_de_valor_de_particao_para_inteiro(
 
 
 """---------------------------------------------------
------------- 2. DEFININDO SUÍTE DE TESTES ------------
-            2.6 Função get_last_partition()
+------------ 1. DEFININDO SUÍTE DE TESTES ------------
+            1.6 Função get_last_partition()
 ---------------------------------------------------"""
 
 
 @pytest.mark.get_last_partition
 @mock_s3
 def test_get_last_partition_com_particao_anomesdia(
-    mocked_client, prepare_mocked_bucket
+    s3_client, prepare_mocked_bucket
 ):
     """
     G: dado que o usuário deseja extraír o valor da última partição
@@ -590,7 +585,7 @@ def test_get_last_partition_com_particao_anomesdia(
         table_prefix=table_prefix,
         partition_mode=partition_mode,
         date_partition_name=date_partition_name,
-        client=mocked_client
+        client=s3_client
     )
 
     # Verificando resultado

@@ -67,9 +67,11 @@ nav:
     - Motivação: motivacao.md
   - Features:
     - Organização da Biblioteca: features/organizacao.md
-    - O Módulo S3: features/s3.md
+    - Operações no S3: features/exemplos-s3.md
   - Documentação Oficial:
     - s3.py: mkdocstrings/s3-docs.md
+    - secrets.py: mkdocstrings/secrets-docs.md
+    - Funcionalidades Úteis: mkdocstrings/other-functions.md
   - FAQ: faq/faq.md
 
 # Extensões do MkDocs

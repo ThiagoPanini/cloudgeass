@@ -1,0 +1,220 @@
+# O Módulo S3
+
+## Objetivo
+
+A ideia por trás do módulo `cloudgeass.aws.s3` gira em torno do fornecimento de funções e blocos de código contendo operações comumente realizadas no serviço Amazon S3 da AWS. Para navegar por todas as funcionalidades presentes, consulte o arquivo [s3.py](https://github.com/ThiagoPanini/cloudgeass/blob/main/cloudgeass/aws/s3.py) ou, se preferir, clique nas janelas abaixo para assistir demonstrações práticas.
+
+## Exemplos Práticos
+
+Nada melhor do que ver na prática tudo o que foi explicado até aqui! As funcionalidades preferidas dos usuários estão marcadas com uma estrela (:star:)
+
+??? example "Listando buckets de uma conta com `list_buckets()`"
+
+    :clapper: **Demonstração:**
+
+    ![](https://raw.githubusercontent.com/ThiagoPanini/cloudgeass/main/docs/assets/gifs/cloudgeass-aws-s3-list_buckets.gif)
+
+    A função `list_buckets()` permite que usuários obtenham uma relação de todos os buckets existentes em uma conta AWS através de uma única linha de código. Em geral, esta função pode ser combinada com uma série de outras funcionalidades dependendo dos objetivos estabelecidos na aplicação.
+
+    ???+ success "Vantagens e benefícios da funcionalidade"
+    
+        - [x] Encapsulamento da criação do *client* s3 e preparação de uma lista Python com nomes dos buckets
+        - [x] Iterar sobre buckets de uma conta AWS para análises em geral
+
+    ___
+
+    :snake: **Código utilizado:**
+
+    ```python
+    from cloudgeass.aws.s3 import list_buckets
+
+    buckets = list_buckets()
+    buckets
+    ```
+
+
+??? example "Obtendo um report de objetos de um bucket com `buckets_objects_report()`"
+
+    :clapper: **Demonstração:**
+
+    ![](https://raw.githubusercontent.com/ThiagoPanini/cloudgeass/main/docs/assets/gifs/cloudgeass-aws-s3-bucket_objects_report_1.gif)
+
+    A função `bucket_objects_report()` serve como uma facilitadora aos usuários que desejam ter em mãos uma forma rápida e didática para analisar objetos armazenados em um determinado bucket.
+    
+    ???+ success "Vantagens e benefícios da funcionalidade"
+    
+        - [x] Analisar periodicamente uma relação de objetos existentes
+        - [x] Consolidar indicadores de relacionados à extensão ou ao volume dos objetos armazenados
+        - [x] Obter um report já em um objeto DataFrame do pandas, facilitando possíveis etapas posteriores de tratamento dos dados 
+    
+    ___
+
+    :snake: **Código utilizado:**
+
+    ```python
+    from cloudgeass.aws.s3 import bucket_objects_report
+
+    bucket_name = "nome-de-bucket-aws"
+    df_objs_report = bucket_objects_report(bucket_name=bucket_name)
+
+    df_objs_report.head(3)
+    ```
+
+
+??? example "Obtendo um report de objetos apenas de um determinado prefixo (ou tabela no S3)"
+
+    :clapper: **Demonstração:**
+    
+    ![](https://raw.githubusercontent.com/ThiagoPanini/cloudgeass/main/docs/assets/gifs/cloudgeass-aws-s3-bucket_objects_report_2.gif)
+
+    Em um outro aspecto de aplicação da função `bucket_objects_report()`, nem sempre todos os objetos de um bucket único precisam ser alvo de análise. Dito isso, é possível filtrar objetos existentes apenas em um determinado prefixo do bucket.
+
+    ???+ success "Vantagens e benefícios da funcionalidade"
+    
+        - [x] Analisar objetos presentes apenas em um determinado prefixo de um bucket S3
+        - [x] Restringir análises mantendo as mesmas oportunidades de indicadores e retiradas de insights
+    ___
+
+    :snake: **Código utilizado:**
+
+    ```python
+    from cloudgeass.aws.s3 import bucket_objects_report
+
+    # Definindo nome de bucket e prefixo alvo da extração
+    bucket_name = "nome-de-bucket-aws"
+    prefix = "a-sample-prefix"
+
+    df_objs_report = bucket_objects_report(bucket_name=bucket_name, prefix=prefix)
+
+    df_objs_report.head(3)
+    ```
+
+
+??? example "Obtendo um report de objetos de todos os buckets com `all_buckets_objects_report()`"
+
+    :clapper: **Demonstração:**
+
+    ![](https://raw.githubusercontent.com/ThiagoPanini/cloudgeass/main/docs/assets/gifs/cloudgeass-aws-s3-all_buckets_objects_report-1.gif)
+
+    Em alguns casos, o objetivo de análise de objetos não se restringe apenas a buckets singulares. Se a proposta de uso for obter um report completo de todos os objetos existentes em todos os buckets de uma conta AWS, a função `all_buckets_objects_report()` tem a resposta certa. Atuando como uma combinação entre as funções `list_buckets()` e `bucket_objects_report()`, esta funcionalidade permite uma análise completa do serviço S3 ao usuário.
+
+    ???+ success "Vantagens e benefícios da funcionalidade"
+
+        - [x] Obtenção de um report completo de todos os objetos existentes em todos os buckets S3 de uma conta
+        - [x] Análise completa do serviço S3 em termos de armazenamento
+        - [x] Obter um report já em um objeto DataFrame do pandas, facilitando possíveis etapas posteriores de tratamento dos dados 
+
+    ___
+
+    :snake: **Código utilizado:**
+
+    ```python
+    from cloudgeass.aws.s3 import all_buckets_objects_report
+
+    df_report = all_buckets_objects_report()
+    df_report.head()
+    ```
+
+
+
+??? example "Obtendo um report de objetos de todos os buckets ignorando alguns buckets"
+
+    :clapper: **Demonstração:**
+
+    ![](https://raw.githubusercontent.com/ThiagoPanini/cloudgeass/main/docs/assets/gifs/cloudgeass-aws-s3-all_buckets_objects_report-2.gif)
+
+    Em casos onde necessita-se obter um report de objetos de diversos buckets no S3, mas não todos, a função `all_buckets_objects_report()` pode ser paramtetrizada com uma lista de buckets a serem ignorados do processo de análise.
+
+    ???+ success "Vantagens e benefícios da funcionalidade"
+
+        - [x] Obtenção de um report refinado contendo apenas alguns buckets específicos
+        - [x] Obter um report já em um objeto DataFrame do pandas, facilitando possíveis etapas posteriores de tratamento dos dados 
+  
+    ___
+
+    :snake: **Código utilizado:**
+
+    ```python
+    from cloudgeass.aws.s3 import all_buckets_objects_report
+
+    # Definindo lista de buckets a serem ignorados no report de objetos
+    ignore_buckets = [
+        "terraglue-athena-query-results-569781470788-us-east-1",
+        "terraglue-glue-assets-569781470788-us-east-1",
+        "terraglue-sor-data-569781470788-us-east-1",
+        "terraglue-spec-data-569781470788-us-east-1"
+    ]
+
+    # Obtendo report
+    df_report = all_buckets_objects_report(exclude_buckets=ignore_buckets)
+    df_report.head()
+    ```
+
+??? example ":star:{ .heart } Lendo um objeto CSV, JSON ou PARQUET em um DataFrame do pandas com `read_s3_object()`"
+
+    :clapper: **Demonstração:**
+
+    ![](https://raw.githubusercontent.com/ThiagoPanini/cloudgeass/main/docs/assets/gifs/cloudgeass-aws-s3-read_s3_object.gif)
+
+    Com a função `read_s3_objects()`, o usuário poderá passar URIs de objetos no S3 e obter, de forma automática, DataFrames do pandas para posteriores análises. Esta é uma funcionalidade extremamente eficiente que permite aos usuários construir fluxos de dados de forma simples e rápida.
+
+    ???+ success "Vantagens e benefícios da funcionalidade"
+
+        - [x] Validação automática da extensão do arquivo a partir da URI fornecida
+        - [x] Chamada de métodos específicos do pandas para leitura de arquivos conforme extensão (ex: `pd.read_csv()`, `pd.read_json()`, `pd.read_parquet()`)
+        - [x] Obtenção de dados em um formato de DataFrame do pandas, facilitando posteriores tratativas e análises
+        - [x] Possibilidades de conversão de formato de arquivos no S3 de forma rápida e eficaz (ex: ler arquivo CSV e escrever arquivo PARQUET)
+  
+    ___
+
+    :snake: **Código utilizado:**
+
+    ```python
+    from cloudgeass.aws.s3 import read_s3_object
+
+    # Definindo variáveis para leitura de objeto no S3
+    bucket_name = "nome-de-bucket"
+    obj_prefix = "tbsot_ecommerce_br/anomesdia=20230213/run-1676319522273-part-block-0-0-r-00004-snappy.parquet"
+
+    # Criando URI
+    s3_uri_parquet = f"s3://{bucket_name}/{obj_prefix}"
+
+    # Lendo objeto parquet
+    df_parquet = read_s3_object(s3_uri_parquet)
+    df_parquet.head()
+    ```
+
+
+??? example ":star:{ .heart } Coletando última partição de tabela no S3 com `get_last_partition()`"
+
+    :clapper: **Demonstração:**
+
+    ![](https://raw.githubusercontent.com/ThiagoPanini/cloudgeass/main/docs/assets/gifs/cloudgeass-aws-s3-get_last_partition.gif)
+
+    A função `get_last_partition()` é voltada para usuários que, de alguma forma, estão trabalhando com o S3 em um formato próximo ao de um Data Lake servindo como repositório de armazenamento de tabelas. Com ela, é possível iterar sobre um prefixo de partição que indica um formato de data (ex: `anomes` ou `anomesdia`) e identificar, de forma automática, a partição mais recente existente em um dado prefixo de tabela.
+
+    ???+ success "Vantagens e benefícios da funcionalidade"
+
+        - [x] Identificação do valor da última partição existente em um prefixo de tabela no S3
+        - [x] Parametrização de um nome específico de partição para ordenação dos seus respectivos valores em busca do maior valor encontrado
+        - [x] Possibilidade de servir como gatilho de execução de processos com base no valor encontrado para a última partição
+
+    ___
+
+    :snake: **Código utilizado:**
+
+    ```python
+    from cloudgeass.aws.s3 import get_last_partition
+
+    # Definindo variáveis para leitura de objeto no S3
+    bucket_name = "terraglue-sot-data-569781470788-us-east-1"
+    table_prefix = "tbsot_ecommerce_br"
+
+    last_partition = get_last_partition(bucket_name, table_prefix)
+    ```
+
+## Saiba Mais
+
+Deseja conhecer detalhes aprofundados sobre os códigos disponibilizados? Não deixe de acessar a seção contendo a documentação oficial do módulo s3!
+
+:material-alert-decagram:{ .mdx-pulse .warning } [Documentação oficial: s3.py](../mkdocstrings/s3-docs.md)
