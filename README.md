@@ -12,7 +12,7 @@
   ![GitHub Last Commit](https://img.shields.io/github/last-commit/ThiagoPanini/cloudgeass?color=purple)
   <br>
 
-  ![CI workflow](https://img.shields.io/github/actions/workflow/status/ThiagoPanini/cloudgeass/ci-cloudgeass-main.yml?label=ci)
+  ![CI workflow](https://img.shields.io/github/actions/workflow/status/ThiagoPanini/cloudgeass/ci-main.yml?label=ci)
   [![Documentation Status](https://readthedocs.org/projects/cloudgeass/badge/?version=latest)](https://cloudgeass.readthedocs.io/pt/latest/?badge=latest)
   [![codecov](https://codecov.io/github/ThiagoPanini/cloudgeass/branch/main/graph/badge.svg?token=7HI1YGS4AA)](https://codecov.io/github/ThiagoPanini/cloudgeass)
 
