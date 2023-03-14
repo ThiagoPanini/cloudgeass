@@ -45,7 +45,7 @@ def get_secret_string(secret_id: str, client=client) -> str:
         Valor do segredo identificado pelo ID em formato de string
 
     Raises:
-        ValueError: Exceção ao obter falha na tentativa de ralizar a chamada\
+        Exception: Exceção ao obter falha na tentativa de ralizar a chamada\
         client.get_secret_value()
     """
 
