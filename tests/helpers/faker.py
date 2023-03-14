@@ -1,15 +1,11 @@
-"""
-SCRIPT: helpers/faker.py
+"""Script auxiliar para facilitar a geração de dados fictícios.
 
-CONTEXTO E OBJETIVO:
---------------------
-Script auxiliar utilizado para consolidar processos
-de geração de dados fictícios a serem aproveitados
-em outras etapas de validação e de testes. As
-funcionalidades aqui desenvolvidas utilizarão dublês
-de teste para simulação de dados nos mais variados
-formatos
----------------------------------------------------
+O objetivo deste script é auxiliar utilizado para consolidar processos de
+geração de dados fictícios a serem aproveitados em outras etapas de validação
+e de testes. As funcionalidades aqui desenvolvidas utilizarão dublês de teste
+para simulação de dados nos mais variados formatos.
+
+___
 """
 
 # Importando bibliotecas
@@ -27,43 +23,36 @@ def fake_data(
     format: str = "csv",
     headers: list = ["col1", "col2", "col3"],
     n_rows: int = 10
-):
+) -> bytes:
     """
     Gera dados fictícios simulando diferentes formatos de arquivos.
 
-    Com essa função, o usuário poderá obter um dados (em bytes)
-    gerados aleatoriamente através da biblioteca Faker para realizar as
-    mais variadas validações e testes. A função utiliza um DataFrame do
-    pandas para guiar os diferentes formatos de saída. Como exemplo,
-    caso o usuário queira um objeto que simule um arquivo CSV (format="csv"),
-    a resposta será dada através do método bytes(df.to_csv()),
-    onde df é um DataFrame pandas criado com dados fictícios.
+    Com essa função, o usuário poderá obter um dados (em bytes) gerados
+    aleatoriamente através da biblioteca Faker para realizar as mais variadas
+    validações e testes. A função utiliza um DataFrame do pandas para guiar os
+    diferentes formatos de saída. Como exemplo, caso o usuário queira um
+    objeto que simule um arquivo CSV (format="csv"), a resposta será dada
+    através do método bytes(df.to_csv()), onde df é um DataFrame pandas criado
+    com dados fictícios.
 
-    Parâmetros
-    ----------
-    :param format:
-        Formato de arquivo a ser simulado pelo processo.
-        [type: str, default="csv", allowed=csv|json|parquet]
+    Examples:
+        ```python
+        from tests.helpers.faker import fake_data
 
-    :param headers:
-        Lista de colunas utilizada como header dos dados gerados.
-        [type: lista, default=["col1", "col2", "col3"]]
+        mocked_data = fake_data(format="parquet")
+        ```
 
-    :param num_rows:
-        Número de linhas de dados a serem gerados.
-        [type: int, default=10]
+    Args:
+        format (str): Formato dos dados resultantes.
+        headers (list): Lista de headers a serem mockados.
+        n_rows (int): Número de registros dos dados resultantes.
 
-    **kwargs
-    --------
-    :param sep:
-        Caractere separador dos atributos dos dados fictícios gerados
-        em caso de format="csv".
-        [type: str, default=","]
+    Keyword Args:
+        sep (str): Separador em caso de `format="csv"`
 
-    Retorno
-    -------
-    :return buffer: buffer de dados fictícios gerados.
-        [type: io.BytesIO]
+    Returns:
+        Bytes representando dados fictícios gerados a partir das configurações\
+        parametrizadas pelo usuário na chamada da função.
     """
 
     # Gerando lista aninhada de valores fictícios usando Faker
