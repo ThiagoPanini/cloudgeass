@@ -26,10 +26,10 @@ ___
 
 > :fontawesome-solid-circle-question:{ .mdx-pulse .question } Como funciona a lógica de obtenção da partição mais recente de uma tabela no S3 com base em seu prefixo?
 
-De forma resumida, o processo consolidado na função `get_last_partition()` do [módulo s3](../features/s3.md) considera a execução de três operações básicas:
+De forma resumida, o processo consolidado na função `get_last_partition()` do [módulo s3](../features/exemplos-s3.md) considera a execução de três operações básicas:
 
 ??? info "1. Listagem de todas as chaves de objetos"
-    Em casa de ferreiro, o espeto não pode ser de pau. Na funcionalidade de coleta de última partição de uma tabela, a listagem de todos objetos é feita através da função `bucket_objects_report()`, também do módulo s3 (verifique um vídeo de usabilidade no [link](../features/s3.md#exemplos-práticos)). A única "exigência" para a obtenção desta listagem é que a função `bucket_objects_report()` seja configurada para extrair objetos apenas de um determinado prefixo, simulando uma espécie de listagem de todos os arquivos (incluindo partições) de uma determinada tabela.
+    Em casa de ferreiro, o espeto não pode ser de pau. Na funcionalidade de coleta de última partição de uma tabela, a listagem de todos objetos é feita através da função `bucket_objects_report()`, também do módulo s3 (verifique um vídeo de usabilidade no [link](../features/exemplos-s3.md#exemplos-práticos)). A única "exigência" para a obtenção desta listagem é que a função `bucket_objects_report()` seja configurada para extrair objetos apenas de um determinado prefixo, simulando uma espécie de listagem de todos os arquivos (incluindo partições) de uma determinada tabela.
 
     ```python
     # Coletando DataFrame de objetos do buckets

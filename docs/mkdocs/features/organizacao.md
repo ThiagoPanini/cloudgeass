@@ -6,8 +6,8 @@ Antes de navegar pelas diferentes possibilidades da biblioteca *cloudgeass*, é 
 
 Atualmente, os módulos disponíveis na biblioteca são:
 
-- :bucket: `cloudgeass.aws.s3`: funcionalidades criadas para facilitar operações no S3
-- :key: `cloudgeass.aws.secrets`: funcionalidades criadas para facilitar operações no Secrets Manager
+- :bucket: `cloudgeass.aws.s3`: funcionalidades para operações no S3
+- :key: `cloudgeass.aws.secrets`: funcionalidades para operações no Secrets Manager
 - :soap: `cloudgeass.aws.glue`: :warning: *em ideação*
 
 ???+ note "Sobre a ideia de futuro da biblioteca"
