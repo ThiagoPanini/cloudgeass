@@ -1,4 +1,4 @@
-# Frequently Access Questions
+# Frequently Asked Questions
 
 ## Usabilidade
 
