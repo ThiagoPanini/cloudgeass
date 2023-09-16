@@ -38,8 +38,7 @@ jobs:
           pydocstyle --match-dir ./app/src/*.py
 
       - name: Testes Unitários com pytest
-        run: |
-          export AWS_DEFAULT_REGION=us-east-1 
+        run:
           pytest -vv --color=yes --cov=./ --cov-report=xml
 
       - name: Cobertura dos Testes - codecov
