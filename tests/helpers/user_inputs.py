@@ -18,6 +18,12 @@ from tests.helpers.faker import fake_data
 # A region name to mock resources while testing
 MOCKED_REGION = "us-east-1"
 
+
+""" -------------------------------------------------
+    USER INPUTS: S3Client class
+    Defining variables for testing cloudgeass.aws.s3
+------------------------------------------------- """
+
 # A complete definition of buckets to be mocked and its contents
 MOCKED_BUCKET_CONTENT = {
     "cloudgeass-mock-bucket-01": {
@@ -78,3 +84,28 @@ MOCKED_BUCKET_CONTENT = {
     },
     "cloudgeass-mock-empty-bucket": {}
 }
+
+
+# List of non empty buckets
+NON_EMPTY_BUCKETS = [
+    b for b in MOCKED_BUCKET_CONTENT.keys()
+    if len(MOCKED_BUCKET_CONTENT[b]) > 0
+]
+
+# List of empty buckets
+EMPTY_BUCKETS = [
+    b for b in MOCKED_BUCKET_CONTENT.keys()
+    if len(MOCKED_BUCKET_CONTENT[b]) == 0
+]
+
+# A non empty bucket name
+NON_EMPTY_BUCKET_NAME = NON_EMPTY_BUCKETS[0]
+
+# A empty bucket name
+EMPTY_BUCKET_NAME = EMPTY_BUCKETS[0]
+
+# A list of expected columns of bucket_objects_report() method return
+EXPECTED_OBJECTS_REPORT_COLS = [
+    "BucketName", "Key", "ObjectType", "Size", "SizeFormatted", "LastModified",
+    "ETag", "StorageClass"
+]

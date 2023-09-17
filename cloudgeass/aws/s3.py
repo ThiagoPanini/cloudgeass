@@ -13,8 +13,10 @@ ___
 # Importando bibliotecas
 import boto3
 import logging
+import pandas as pd
 
 from cloudgeass.utils.log import log_config
+from cloudgeass.utils.prep import categorize_file_size
 
 
 class S3Client():
@@ -82,6 +84,13 @@ class S3Client():
         """
         Lists the names of all S3 buckets associated with the client.
 
+        Returns:
+            list: A list of bucket names.
+
+        Raises:
+            botocore.exceptions.ClientError: If there's an error while making\
+                the request.
+
         Examples:
         ```python
         # Importing the class
@@ -91,26 +100,101 @@ class S3Client():
         s3 = S3Client()
         buckets = s3.list_buckets()
         ```
+        """
+
+        self.logger.debug("Retrieving the list of S3 bucket names")
+        buckets = [
+            b["Name"] for b in self.client.list_buckets()["Buckets"]
+        ]
+        self.logger.debug(f"There are {len(buckets)} buckets in the list")
+
+        return buckets
+
+    def bucket_objects_report(self,
+                              bucket_name: str,
+                              prefix: str = "") -> pd.DataFrame:
+        """
+        Retrieve a report of objects within a specified S3 bucket.
+
+        This method receives a bucket name and an optional bucket prefix to
+        return a report in a pandas DataFrame format with all information
+        about objects within the bucket and the given prefix.
+
+        Args:
+            bucket_name (str): The name of the S3 bucket.
+            prefix (str, optional): A prefix to filter objects.
 
         Returns:
-            list: A list of bucket names.
+            pd.DataFrame: A DataFrame containing information about the objects.
 
         Raises:
             botocore.exceptions.ClientError: If there's an error while making\
                 the request.
+
+        Note:
+            This method lists objects in the specified S3 bucket and creates a
+            DataFrame with relevant information. The DataFrame includes columns
+            for 'BucketName', 'Key', 'ObjectType', 'Size', 'SizeFormatted',
+            'LastModified', 'ETag', and 'StorageClass'. The 'ObjectType' column
+            is determined by the file extension of the object key.
+            The 'SizeFormatted' column provides a human-readable representation
+            of the file size.
+
+        Examples:
+        ```python
+        # Importing the class
+        from cloudgeass.aws.s3 import S3Client
+
+        # Setting up an object and getting the list of buckets with an account
+        s3 = S3Client()
+        df_objects_report = s3.bucket_objects_report(
+            bucket_name="some-bucket-name",
+            prefix="some-optional-prefix"
+        )
+        ```
+            >>> report_df = bucket_objects_report('my-bucket', prefix='data/')
         """
 
+        self.logger.debug(f"Retrieving objects from {bucket_name}/{prefix}")
         try:
-            self.logger.debug("Retrieving the list of S3 bucket names")
-            # Retrieving bucket names using list comprehension
-            buckets = [
-                b["Name"] for b in self.client.list_buckets()["Buckets"]
-            ]
-            self.logger.debug(f"There are {len(buckets)} buckets in the list")
-
-            return buckets
+            r = self.client.list_objects_v2(
+                Bucket=bucket_name,
+                Prefix=prefix
+            )
 
         except Exception as e:
-            self.logger.error("Error on trying to retrieve a list of S3 "
-                              f"buckets. Exception: {e}")
+            self.logger.error("Error on calling client.list_objects_v2() "
+                              f"method with Bucket={bucket_name} and prefix="
+                              f"{prefix}. Exception: {e}")
             raise e
+
+        self.logger.debug("Getting bucket content from response['Contents']")
+        try:
+            bucket_content = r["Contents"]
+
+        except KeyError:
+            self.logger.warning(f"There's no 'Contents' key on list_objects_v2"
+                                " method response. This means that there are "
+                                f"no objects on {bucket_name}/{prefix}")
+            return None
+
+        # Transforming the contents response in a pandas DataFrame
+        df = pd.DataFrame(bucket_content)
+
+        # Adding the bucket name and getting the object file extension
+        df["BucketName"] = bucket_name
+        df["ObjectType"] = df["Key"].apply(lambda x: x.split(".")[-1])
+
+        # Applying a categorization function to get the file size
+        df["SizeFormatted"] = df["Size"].apply(
+            lambda x: categorize_file_size(x)
+        )
+
+        # Sorting DataFrame columns
+        order_cols = [
+            "BucketName", "Key", "ObjectType", "Size", "SizeFormatted",
+            "LastModified", "ETag", "StorageClass"
+        ]
+        df_objects_report = df.loc[:, order_cols]
+
+        return df_objects_report
