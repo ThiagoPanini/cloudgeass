@@ -110,9 +110,11 @@ class S3Client():
 
         return buckets
 
-    def bucket_objects_report(self,
-                              bucket_name: str,
-                              prefix: str = "") -> pd.DataFrame:
+    def bucket_objects_report(
+        self,
+        bucket_name: str,
+        prefix: str = ""
+    ) -> pd.DataFrame:
         """
         Retrieve a report of objects within a specified S3 bucket.
 
@@ -152,7 +154,6 @@ class S3Client():
             prefix="some-optional-prefix"
         )
         ```
-            >>> report_df = bucket_objects_report('my-bucket', prefix='data/')
         """
 
         self.logger.debug(f"Retrieving objects from {bucket_name}/{prefix}")
@@ -198,3 +199,68 @@ class S3Client():
         df_objects_report = df.loc[:, order_cols]
 
         return df_objects_report
+
+    def all_buckets_objects_report(
+        self,
+        prefix: str = "",
+        exclude_buckets: list = list()
+    ) -> pd.DataFrame:
+        """
+        Retrieve a report of objects from all buckets in the AWS account.
+
+        Args:
+            prefix (str, optional):
+                A prefix to filter objects.
+
+            exclude_buckets (list, optional):
+                List of bucket names to exclude from the report..
+
+        Returns:
+            pd.DataFrame: A DataFrame containing information about the objects
+            from all specified buckets.
+
+        Raises:
+            botocore.exceptions.ClientError: If there's an error while making\
+                the request.
+
+        Note:
+            This method lists calls self.list_buckets() to get a list of all
+            buckets within an account and loops over this list to call
+            self.bucket_objects_report() for each bucket in order to retrieve a
+            pandas DataFrame with information about objects. At the end, all
+            individual DataFrames are concatenated together to form the return
+            for this method.
+
+        Examples:
+        ```python
+        # Importing the class
+        from cloudgeass.aws.s3 import S3Client
+
+        # Setting up an object and getting the list of buckets with an account
+        s3 = S3Client()
+        df_all_buckets_report = s3.all_buckets_objects_report()
+        ```
+        """
+
+        # Retrieving all buckets within an account
+        all_buckets = self.list_buckets()
+
+        # Removing buckets according to a filter list
+        buckets = [b for b in all_buckets if b not in exclude_buckets]
+
+        # Creating an empty DataFrame and looping over all buckets
+        df_report = pd.DataFrame()
+        for bucket in buckets:
+            # Retrieving objects from the bucket
+            df_bucket_report = self.bucket_objects_report(
+                bucket_name=bucket,
+                prefix=prefix
+            )
+
+            # Appending to the final DataFrame
+            df_report = pd.concat([df_report, df_bucket_report])
+
+        # Reseting index
+        df_report.reset_index(drop=True, inplace=True)
+
+        return df_report

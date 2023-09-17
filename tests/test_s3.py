@@ -144,3 +144,48 @@ def test_bucket_objects_report_method_returns_none_when_called_on_empty_bucket(
     prepare_mocked_bucket()
 
     assert s3.bucket_objects_report(EMPTY_BUCKET_NAME) is None
+
+
+@pytest.mark.s3
+@pytest.mark.all_buckets_objects_report
+@mock_s3
+def test_all_buckets_objects_report_returns_a_pandas_dataframe(
+    s3, prepare_mocked_bucket
+):
+    """
+    G: Given that users want to retrieve a DataFrame with info of all objects
+       from all S3 buckets within an account
+    W: When the method all_buckets_objects_report() is called
+    T: Then the return must be a pandas DataFrame
+    """
+
+    # Preparing a mocked s3 environment with buckets and files
+    prepare_mocked_bucket()
+
+    assert isinstance(s3.all_buckets_objects_report(), pd.DataFrame)
+
+
+@pytest.mark.s3
+@pytest.mark.all_buckets_objects_report
+@mock_s3
+def test_all_buckets_objects_report_has_more_rows_than_single_bucket_report(
+    s3, prepare_mocked_bucket
+):
+    """
+    G: Given that users want to retrieve a DataFrame with info of all objects
+       from all S3 buckets within an account
+    W: When the method all_buckets_objects_report() is called
+    T: Then the number of rows of the returned DataFrame must be higher than
+       the number of rows of a DataFrame retrieve from bucket_objects_report()
+       method (since we are talking about a complete report from all buckets
+       versus a report from a single bucket)
+    """
+
+    # Preparing a mocked s3 environment with buckets and files
+    prepare_mocked_bucket()
+
+    # Getting all buckets report and a single bucket report
+    df_all_buckets_report = s3.all_buckets_objects_report()
+    df_bucket_report = s3.bucket_objects_report(NON_EMPTY_BUCKET_NAME)
+
+    assert len(df_all_buckets_report) > len(df_bucket_report)
