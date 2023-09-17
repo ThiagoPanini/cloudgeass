@@ -1,6 +1,7 @@
 # Notebooks e arquivos ipynb
 notebooks/
 **ipynb
+tmp/
 
 # Arquivos auxiliares do VSCode
 .vscode

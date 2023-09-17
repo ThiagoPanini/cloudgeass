@@ -1,28 +1,24 @@
-"""Configuração de inputs utilizados na criação e validação dos testes.
+"""Centralizing all user inputs for helping on fixtures and test cases.
 
-O objetivo deste arquivo é consolidar variáveis que representam inputs
-do usuário para configuração das fixtures e validação de funcionalidades
-nos testes unitários. A ideia é centralizar variáveis importantes para
-proporcionar um local único de gerenciamento de validações nas etapas de
-testes.
+This file aims to put together all variables used on fixture definitions and
+test cases that requires user inputs as a way to configure or validate
+something.
+
+The idea behind this file is to have everything related to user inputs on
+test cases in a single place. This makes easier to handle, give maintenance,
+support and improvements for building new test cases.
 
 ___
 """
 
-# Importando bibliotecas e módulos
+# Importing libraries
 from tests.helpers.faker import fake_data
 
 
-"""---------------------------------------------------
--------- 1. DEFINIÇÃO DE INPUTS DE VALIDAÇÃO ---------
-         1.1 Inputs utilizados no módulo s3
----------------------------------------------------"""
-
-
-# Região usada no mock dos recursos
+# A region name to mock resources while testing
 MOCKED_REGION = "us-east-1"
 
-# Dicionário contendo definição de cenário a ser mockado no s3
+# A complete definition of buckets to be mocked and its contents
 MOCKED_BUCKET_CONTENT = {
     "cloudgeass-mock-bucket-01": {
         "file-001": {
@@ -82,28 +78,3 @@ MOCKED_BUCKET_CONTENT = {
     },
     "cloudgeass-mock-empty-bucket": {}
 }
-
-# Lista de buckets não vazios definidos no dicionário
-NON_EMPTY_BUCKETS = [b for b in MOCKED_BUCKET_CONTENT.keys()
-                     if len(MOCKED_BUCKET_CONTENT[b]) > 0]
-
-# Nome específico de bucket usado na extração individual de report
-EXAMPLE_BUCKET = NON_EMPTY_BUCKETS[0]
-
-# Lista esperada de colunas em DataFrame report de objetos
-EXPECTED_DF_OBJECTS_REPORT_COLS = [
-    "BucketName", "Key", "ObjectType", "Size", "SizeFormatted",
-    "LastModified", "ETag", "StorageClass"
-]
-
-
-"""---------------------------------------------------
--------- 1. DEFINIÇÃO DE INPUTS DE VALIDAÇÃO ---------
-       1.2 Inputs utilizados no módulo secrets
----------------------------------------------------"""
-
-# Referência nominal do segredo a ser mockado
-MOCKED_SECRET_NAME = "some-secret-name"
-
-# Valor do segredo a ser mockado
-MOCKED_SECRET_VALUE = "some-secret-value"
