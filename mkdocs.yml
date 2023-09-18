@@ -63,8 +63,8 @@ theme:
 nav:
   - Home:
     - cloudgeass: index.md
-  - Official Docs:
-    - S3Client class: mkdocstrings/s3.md
+  - Documentation:
+    - S3: mkdocstrings/s3.md
 
 # Setting up MkDocs extensions
 markdown_extensions:
