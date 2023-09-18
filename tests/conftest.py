@@ -8,13 +8,19 @@ ___
 
 # Importing libraries
 import pytest
-from moto import mock_s3
+from moto import (
+    mock_s3,
+    mock_secretsmanager
+)
 
 from cloudgeass.aws.s3 import S3Client
+from cloudgeass.aws.secrets import SecretsManagerClient
 
 from tests.helpers.user_inputs import (
     MOCKED_REGION,
-    MOCKED_BUCKET_CONTENT
+    MOCKED_BUCKET_CONTENT,
+    MOCKED_SECRET_NAME,
+    MOCKED_SECRET_VALUE
 )
 
 
@@ -50,3 +56,30 @@ def prepare_mocked_bucket(s3: S3Client):
                 )
 
     return create_elements
+
+
+""" -------------------------------------------------
+    FIXTURES: SecretsManagerClient class
+    Bulding fixtures for cloudgeass.aws.s3.SecretsManagerClient
+------------------------------------------------- """
+
+
+# A SecretsManagerClient class object
+@pytest.fixture
+@mock_secretsmanager
+def sm(region_name: str = MOCKED_REGION):
+    return SecretsManagerClient(region_name=region_name)
+
+
+# Building a function as a fixture to create a mocked secrets in Secrets Mng.
+@pytest.fixture
+@mock_secretsmanager
+def prepare_mocked_secrets(sm: SecretsManagerClient):
+    def create_secret():
+        # Creating a fake secret
+        sm.client.create_secret(
+            Name=MOCKED_SECRET_NAME,
+            SecretString=MOCKED_SECRET_VALUE
+        )
+
+    return create_secret

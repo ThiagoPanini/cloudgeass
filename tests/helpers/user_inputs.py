@@ -127,3 +127,15 @@ PARTITIONED_S3_TABLES = {
         "expected_partition": 202303
     }
 }
+
+
+""" -------------------------------------------------
+    USER INPUTS: SecretsManagerClient class
+    Defining variables for testing cloudgeass.aws.secrets
+------------------------------------------------- """
+
+# A mocked secret name
+MOCKED_SECRET_NAME = "my-mocked-secret"
+
+# A mocked secret value
+MOCKED_SECRET_VALUE = "my-mocked-secret-value"

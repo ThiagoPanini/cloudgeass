@@ -1,61 +1,91 @@
 """
-Módulo responsável por alocar funcionalidades relacionadas ao client do
-Secrets Manager no boto3. O grande objetivo deste módulo é fornecer ao usuário
-um conjunto de funções que visam facilitar operações envolvendo o gerenciamento
-de segredos na AWS.
+Module: cloudgeass.aws.secrets
+
+The module provides a class for handling operations using Secrets Manager
+client and resource from boto3.
 
 ___
 """
 
-# Importando bibliotecas
+# Importing libraries
 import boto3
+import logging
 
 from cloudgeass.utils.log import log_config
 
 
-# Configurando objeto de logger
-logger = log_config(logger_name=__file__)
+class SecretsManagerClient():
+    """Handles operations using secrets manager client and resource from boto3.
 
-# Instanciando client e recurso do Secrets Manager para uso nas funções
-client = boto3.client("secretsmanager")
-
-
-# Coletando o valor de um segredo através de seu ID
-def get_secret_string(secret_id: str, client=client) -> str:
-    """Coleta de string de segredo existente no Secrets Manager.
-
-    Com esta funcionalidade, os usuários podem passar um ID de segredo e obter,
-    como resposta, a string referente ao valor do segredo armazenado.
+    This class provides attributes and methods that can improve the way on how
+    users operate with Secrets Manager in AWS. In essence, it wraps some boto3
+    methods to build some useful features that makes it easy to put, get and
+    manager secrets in AWS.
 
     Examples:
         ```python
-        from cloudgeass.aws.secrets import get_secret_string
+        # Importing the class
+        from cloudgeass.aws.secrets import SecretsManagerClient
 
-        secret = get_secret_string(secret_id="some-secret-id")
+        # Setting up an object and getting a secret string
+        sm = SecretsManagerClient()
+        secret_string = sm.get_secret_string()
         ```
 
+    There is much more to get using the `SecretsManagerClient` class from
+    `cloudgeass.aws.secrets` module. For a comprehensive list of available
+    methods, please refere to this documentation page.
+
     Args:
-        secret_id (str):
-            ID do segredo existente no Secrets Manager
+        logger_level (int, optional):
+            The logger level to be configured on the class logger object
+
+    Attributes:
+        logger (logging.Logger):
+            A logger object to log steps according to a predefined logger level
 
         client (botocore.client.SecretsManager):
-            Client do Secrets Manager instanciado via boto3
+            A SecretsManager boto3 client to execute operations
 
-    Returns:
-        Valor do segredo identificado pelo ID em formato de string
+        resource (botocore.client.SecretsManager):
+            A SecretsManager boto3 resource to execute operations
 
-    Raises:
-        Exception: Exceção ao obter falha na tentativa de ralizar a chamada\
-        client.get_secret_value()
+    Tip: About the key word argument **client_kwargs:
+        As detailed above, the class sets up a client and a resource for the
+        target service using `boto3.client()` and `boto3.resource()` methods.
+        So, if users want to get those attributes with custom configurations
+        (for example, initialize a client in a different region), they can pass
+        additional arguments for the class using the `**client_kwargs`
+        attribute. In essence, what happens is that both client and resource
+        attributes are then initialized as following:
+
+        ```python
+        # Setting up a boto3 client and resource
+        self.client = boto3.client("secretsmanager", **client_kwargs)
+        self.resource = boto3.resource("secretsmanager", **client_kwargs)
+        ```
+
+    Methods:
+        get_secret_string() -> str:
+            Retrieves a secret string from Secrets Manager based on a secret ID
     """
 
-    # Realizando chamada de obtendo string do segredo
-    logger.info(f"Coletando segredo {secret_id} do Secrets Manager")
-    try:
-        response = client.get_secret_value(SecretId=secret_id)
-        return response["SecretString"]
+    def __init__(self, logger_level=logging.INFO, **client_kwargs):
+        # Setting up a logger object
+        self.logger_level = logger_level
+        self.logger = log_config(logger_level=self.logger_level)
 
-    except Exception as e:
-        logger.error(f"Erro ao obter resposta do segredo {secret_id}. "
-                     f"Exception: {e}")
-        raise e
+        # Setting up a boto3 client and resource
+        self.client = boto3.client("secretsmanager", **client_kwargs)
+
+    def get_secret_string(self, secret_id: str) -> str:
+
+        self.logger.info(f"Retrieving secret string for secret {secret_id}")
+        try:
+            response = self.client.get_secret_value(SecretId=secret_id)
+            return response["SecretString"]
+
+        except Exception as e:
+            self.logger.error("Error on trying to retrieve the secret string "
+                              f"of secret {secret_id}. Exception: {e}")
+            raise e
