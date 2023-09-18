@@ -34,7 +34,7 @@ class S3Client():
         buckets = s3.list_buckets()
         ```
 
-    There're much more to get using the `S3Client` class from
+    There is much more to get using the `S3Client` class from
     `cloudgeass.aws.s3` module. For a comprehensive list of available methods,
     please refere to this documentation page.
 
@@ -68,9 +68,6 @@ class S3Client():
         ```
 
     Methods:
-        __init__(self, logger_level=logging.INFO, **client_kwargs):
-            Initializes an instance of S3Client.
-
         list_buckets() -> list:
             Lists the names of all S3 buckets associated with the client.
 
