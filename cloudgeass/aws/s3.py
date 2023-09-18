@@ -264,3 +264,109 @@ class S3Client():
         df_report.reset_index(drop=True, inplace=True)
 
         return df_report
+
+    def get_date_partition_value_from_prefix(
+        self,
+        prefix_uri: str,
+        partition_mode: str = "name=value",
+        date_partition_name: str = "anomesdia",
+        date_partition_idx: int = -2
+    ) -> int:
+        """
+        Extracts the date partition value from a given URI prefix.
+
+        Args:
+            prefix_uri (str):
+                The URI prefix containing the date partition information.
+
+            partition_mode (str, optional):
+                The mode for extracting the partition value. 
+                Options are "name=value" (default) or "value".
+
+            date_partition_name (str, optional):
+                The name of the date partition in the URI.
+
+            date_partition_idx (int, optional):
+                The index of the date partition in the URI when using "value"
+                mode.
+
+        Returns:
+            int: The extracted date partition value.
+
+        Raises:
+            ValueError: If there's an issue with the URI or partition\
+                extraction.
+
+        Note:
+            This method extracts the date partition value from a given URI
+            prefix based on the specified partition mode.
+            - In "name=value" mode, it looks for the partition name in the URI
+            and extracts the corresponding value.
+            - In "value" mode, it directly extracts the partition value using
+            the specified index.
+
+        Examples:
+        ```python
+        # Importing the class
+        from cloudgeass.aws.s3 import S3Client
+
+        # Setting up an object and getting the list of buckets with an account
+        s3 = S3Client()
+
+        # Getting the partition value given a partition URI
+        uri = "s3://my-bucket/anomesdia=20230101/data/"
+        partition_value = s3.get_date_partition_value_from_prefix(
+            partition_uri=uri,
+            partition_mode="name=value"
+        )
+        # 20230101
+        ```
+        """
+
+        # Checking if partition_mode argument is filled properly
+        partition_mode_prep = partition_mode.strip().lower()
+        if partition_mode_prep not in ["name=value", "value"]:
+            raise ValueError("Invalid value for partition_mode argument "
+                             f"({partition_mode}). Acceptable values are "
+                             "'name=value' and 'value'")
+
+        # Partition mode follows the 'name=value' format
+        if partition_mode_prep == "name=value":
+            self.logger.debug("The partition mode chosen was 'name=value', so "
+                              "let's take the given prefix URI and extract "
+                              "name and value of the partition")
+
+            # Starting by finding where the partition name are in the URI
+            partition_start_idx = prefix_uri.find(date_partition_name + "=")
+            if partition_start_idx == -1:
+                raise ValueError(f"Partition name ({date_partition_name}) "
+                                 "doesn't exist in the prefix URI "
+                                 f"({prefix_uri})")
+
+            # Taking the partition prefix and its value
+            partition_prefix = prefix_uri[partition_start_idx:].split("/")[0]
+            partition_value_raw = partition_prefix.split("=")[-1]
+
+        # Partition mode follows the 'value' format
+        elif partition_mode_prep == "value":
+            self.logger.debug("The partition mode chosen was 'value', so "
+                              "let's just extract the partition value "
+                              "according to the 'date_partition_idx' given "
+                              "by user.")
+            # Taking the partition value
+            partition_value_raw = prefix_uri.split("/")[date_partition_idx]
+
+        self.logger.debug("Casting the partition value to integer")
+        try:
+            partition_value = int(partition_value_raw)
+        except ValueError as ve:
+            self.logger.error("Error on casting the partition value "
+                              f"({partition_value_raw}) to integer. In many "
+                              "cases, this error is related on trying to cast "
+                              "a non integer partition value that was "
+                              "incorretly gotten using information passed by "
+                              "the user on method's call. Check if all method "
+                              "arguments are correct.")
+            raise ve
+
+        return partition_value

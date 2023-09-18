@@ -189,3 +189,71 @@ def test_all_buckets_objects_report_has_more_rows_than_single_bucket_report(
     df_bucket_report = s3.bucket_objects_report(NON_EMPTY_BUCKET_NAME)
 
     assert len(df_all_buckets_report) > len(df_bucket_report)
+
+
+@pytest.mark.s3
+@pytest.mark.get_date_partition_value_from_prefix
+@mock_s3
+def test_get_partition_value_from_prefix_uri_with_name_and_value_format(
+    s3, prepare_mocked_bucket
+):
+    """
+    G: Given that users want to get the partition value from a partition S3 URI
+    W: When the method get_date_partition_value_from_prefix() is called from
+       S3Client class with partition_mode equals to "name=value"
+    T: Then the return integer must be the expected partition value
+    """
+
+    # Preparing a mocked s3 environment with buckets and files
+    prepare_mocked_bucket()
+
+    # Defining variables to build a target URI
+    partition_name = "ano_mes_dia"
+    expected_partition_value = 20230101
+
+    # Building a target URI to extract the partition
+    target_uri = "s3://my-bucket/my-table/"\
+        f"{partition_name}={str(expected_partition_value)}/sub/file.csv"
+
+    # Extracting the partition value
+    partition_value = s3.get_date_partition_value_from_prefix(
+        prefix_uri=target_uri,
+        partition_mode="name=value",
+        date_partition_name="ano_mes_dia"
+    )
+
+    assert partition_value == expected_partition_value
+
+
+@pytest.mark.s3
+@pytest.mark.get_date_partition_value_from_prefix
+@mock_s3
+def test_get_partition_value_from_prefix_uri_with_only_value_format(
+    s3, prepare_mocked_bucket
+):
+    """
+    G: Given that users want to get the partition value from a partition S3 URI
+    W: When the method get_date_partition_value_from_prefix() is called from
+       S3Client class with partition_mode equals to "value"
+    T: Then the return integer must be the expected partition value
+    """
+
+    # Preparing a mocked s3 environment with buckets and files
+    prepare_mocked_bucket()
+
+    # Defining variables to build a target URI
+    expected_partition_value = 20230101
+    date_partition_idx = -3
+
+    # Building a target URI to extract the partition
+    target_uri = "s3://my-bucket/my-table/"\
+        f"{str(expected_partition_value)}/sub/file.csv"
+
+    # Extracting the partition value
+    partition_value = s3.get_date_partition_value_from_prefix(
+        prefix_uri=target_uri,
+        partition_mode="value",
+        date_partition_idx=date_partition_idx
+    )
+
+    assert partition_value == expected_partition_value
