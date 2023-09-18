@@ -1,16 +1,13 @@
 """
-Módulo responsável por alocar desenvolvimentos relacionados à utilização do
-boto3 para o gerencimento de operações do S3 na AWS. Aqui será possível
-encontrar funcionalidades prontas para realizar as mais variadas atividades
-no S3.
+Module: cloudgeass.aws.s3
 
-Ao longo deste módulo, será possível encontrar funções definidas e documentadas
-visando proporcionar a melhor experiência ao usuário!
+The module provides a class for handling operations using S3 client and
+resource from boto3.
 
 ___
 """
 
-# Importando bibliotecas
+# Importing libraries
 import boto3
 import logging
 import pandas as pd
@@ -69,6 +66,25 @@ class S3Client():
         self.client = boto3.client("s3", **client_kwargs)
         self.resource = boto3.resource("s3", **client_kwargs)
         ```
+
+    Methods:
+        __init__(self, logger_level=logging.INFO, **client_kwargs):
+            Initializes an instance of S3Client.
+
+        list_buckets() -> list:
+            Lists the names of all S3 buckets associated with the client.
+
+        bucket_objects_report() -> pd.DataFrame:
+            Retrieves a report of objects within a specified S3 bucket.
+
+        all_buckets_objects_report() -> pd.DataFrame:
+            Retrieves a report of objects from all buckets in the account.
+
+        get_date_partition_value_from_prefix() -> int:
+            Extracts the date partition value from a given URI prefix.
+
+        get_last_date_partition() -> int:
+            Retrieves the last date partition from a table in a S3 bucket.
     """
 
     def __init__(self, logger_level=logging.INFO, **client_kwargs):
@@ -370,3 +386,116 @@ class S3Client():
             raise ve
 
         return partition_value
+
+    def get_last_date_partition(
+        self,
+        bucket_name: str,
+        table_prefix: str,
+        partition_mode: str = "name=value",
+        date_partition_name: str = "anomesdia",
+        date_partition_idx: int = -2
+    ) -> int:
+        """
+        Retrieves the last date partition from a table in a S3 bucket.
+
+        In big data scenarios, tables are stored in S3 in URIs that, at most,
+        uses the following structure:
+        s3://bucket-name/table-name/partition-name=value/data.parquet. So,
+        applications that needs to consume partitioned tables applies filters
+        and other optimization techniques to retrieve only data they need.
+
+        In ETL proccess that stores new data frequently in daily, monthly,
+        weekly or any other basis, new partitions are added everytime. So,
+        consumers (other ETL proccesses or applications) that need to retrieve
+        only the last data from a parent proccess may need to know in advance
+        if the parent proccess had already stored their data.
+
+        One way to do that is by looking at the date partitions of a given
+        table as S3 prefixes and retrieving the value of the last
+        partition. And that's what this method does.
+
+        Tip: How is it possible?
+            As a rule of construction, to get the last date partition from a
+            table, the following steps are done:
+
+            1. Retrieval of a pandas DataFrame with all objects information
+            from the given bucket (using the table name/prefix as a filter)
+            2. Extraction of all objects keys
+            3. Collection of all partition values from the object keys
+            4. Sorting of all partition values and collection of the last one
+
+            As an additional information, this method puts together other
+            methods from S3Client class as following:
+
+            - `bucket_objects_report()` to get all objects from the bucket
+            - `get_date_partition_value_from_prefix()` to get partition value
+
+        Args:
+            bucket_name (str):
+                The name of the S3 bucket.
+
+            table_prefix (str):
+                The table name used as a prefix filter
+
+            partition_mode (str, optional):
+                The mode for extracting the partition value.
+                Options are "name=value" (default) or "value".
+
+            date_partition_name (str, optional):
+                The name of the date partition in the URI.
+
+            date_partition_idx (int, optional):
+                The index of the date partition in the URI when using "value"
+                mode.
+
+        Returns:
+            int: The last date partition value.
+
+        Raises:
+            botocore.exceptions.ClientError: If there's an error while making\
+                the request.
+
+        Examples:
+        ```python
+        # Importing the class
+        from cloudgeass.aws.s3 import S3Client
+
+        # Setting up an object and getting the list of buckets with an account
+        s3 = S3Client()
+
+        # Getting the last date partition value from a given table
+        bucket_name = "my-bucket"
+        table_name = "my-table-name"
+        last_partition = s3.get_last_date_partition(
+            bucket_name=bucket_name,
+            table_name=table_name
+        )
+        ```
+        """
+
+        self.logger.debug("Retrieving a pandas DataFrame with bucket objects")
+        df_objects = self.bucket_objects_report(
+            bucket_name=bucket_name,
+            prefix=table_prefix
+        )
+
+        self.logger.debug("Retrieving a list of object keys")
+        objs_list = list(df_objects["Key"].values)
+
+        self.logger.debug("Looping over all object keys and getting the "
+                          "partition value from each prefix")
+        partition_values = []
+        for obj_prefix in objs_list:
+            partition_value = self.get_date_partition_value_from_prefix(
+                prefix_uri=obj_prefix,
+                partition_mode=partition_mode,
+                date_partition_name=date_partition_name,
+                date_partition_idx=date_partition_idx
+            )
+
+            # Appending the value in a list
+            partition_values.append(partition_value)
+
+        self.logger.debug("Sorting the partition values list and getting the "
+                          "last one")
+        return sorted(partition_values)[-1]
