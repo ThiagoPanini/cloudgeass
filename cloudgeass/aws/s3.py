@@ -280,7 +280,7 @@ class S3Client():
                 The URI prefix containing the date partition information.
 
             partition_mode (str, optional):
-                The mode for extracting the partition value. 
+                The mode for extracting the partition value.
                 Options are "name=value" (default) or "value".
 
             date_partition_name (str, optional):
