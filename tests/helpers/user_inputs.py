@@ -109,3 +109,21 @@ EXPECTED_OBJECTS_REPORT_COLS = [
     "BucketName", "Key", "ObjectType", "Size", "SizeFormatted", "LastModified",
     "ETag", "StorageClass"
 ]
+
+# Bucket names to test the get_last_date_partition() method
+PARTITIONED_S3_TABLES = {
+    "daily": {
+        "bucket_name": "cloudgeass-mock-bucket-01",
+        "table_name": "csv",
+        "partition_mode": "name=value",
+        "partition_name": "anomesdia",
+        "expected_partition": 20230119
+    },
+    "monthly": {
+        "bucket_name": "cloudgeass-mock-bucket-02",
+        "table_name": "csv",
+        "partition_mode": "name=value",
+        "partition_name": "anomes",
+        "expected_partition": 202303
+    }
+}

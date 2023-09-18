@@ -15,7 +15,8 @@ from tests.helpers.user_inputs import (
     MOCKED_BUCKET_CONTENT,
     NON_EMPTY_BUCKET_NAME,
     EMPTY_BUCKET_NAME,
-    EXPECTED_OBJECTS_REPORT_COLS
+    EXPECTED_OBJECTS_REPORT_COLS,
+    PARTITIONED_S3_TABLES
 )
 
 
@@ -360,3 +361,65 @@ def test_error_when_passing_a_partition_mode_that_doesnt_match_with_the_uri(
             partition_mode="value",
             date_partition_name="anomesdia"  # This name doesn't exists
         )
+
+
+@pytest.mark.s3
+@pytest.mark.get_last_date_partition
+@mock_s3
+def test_get_last_date_partition_method_returns_last_partition_in_daily_basis(
+    s3, prepare_mocked_bucket
+):
+    """
+    G: Given that users want to retrieve the last date partition from a table
+       that is partitioned in a daily basis in the format %Y%m%d
+    W: When the method get_last_date_partition()
+    T: Then the expected partition must be retrieved
+    """
+
+    # Preparing a mocked s3 environment with buckets and files
+    prepare_mocked_bucket()
+
+    # Retrieving the last partition
+    last_partition = s3.get_last_date_partition(
+        bucket_name=PARTITIONED_S3_TABLES["daily"]["bucket_name"],
+        table_prefix=PARTITIONED_S3_TABLES["daily"]["table_name"],
+        partition_mode=PARTITIONED_S3_TABLES["daily"]["partition_mode"],
+        date_partition_name=PARTITIONED_S3_TABLES["daily"]["partition_name"]
+    )
+
+    # Getting the expected last partition
+    expected_partition = PARTITIONED_S3_TABLES["daily"]["expected_partition"]
+
+    assert last_partition == expected_partition
+
+
+@pytest.mark.s3
+@pytest.mark.get_last_date_partition
+@mock_s3
+def test_get_last_date_partition_method_returns_last_partition_in_monthlybasis(
+    s3, prepare_mocked_bucket
+):
+    """
+    G: Given that users want to retrieve the last date partition from a table
+       that is partitioned in a monthly basis in the format %Y%m
+    W: When the method get_last_date_partition()
+    T: Then the expected partition must be retrieved
+    """
+
+    # Preparing a mocked s3 environment with buckets and files
+    prepare_mocked_bucket()
+
+    # Retrieving the last partition
+    last_partition = s3.get_last_date_partition(
+        bucket_name=PARTITIONED_S3_TABLES["monthly"]["bucket_name"],
+        table_prefix=PARTITIONED_S3_TABLES["monthly"]["table_name"],
+        partition_mode=PARTITIONED_S3_TABLES["monthly"]["partition_mode"],
+        date_partition_name=PARTITIONED_S3_TABLES["monthly"]["partition_name"]
+    )
+
+    # Getting the expected last partition
+    expected_partition = PARTITIONED_S3_TABLES[
+        "monthly"
+    ]["expected_partition"]
+
+    assert last_partition == expected_partition
