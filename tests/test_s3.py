@@ -257,3 +257,106 @@ def test_get_partition_value_from_prefix_uri_with_only_value_format(
     )
 
     assert partition_value == expected_partition_value
+
+
+@pytest.mark.s3
+@pytest.mark.get_date_partition_value_from_prefix
+@mock_s3
+def test_error_when_passing_an_invalid_mode_for_get_partition_value_method(
+    s3, prepare_mocked_bucket
+):
+    """
+    G: Given that users want to get the partition value from a partition S3 URI
+    W: When the method get_date_partition_value_from_prefix() is called from
+       S3Client class with an invalid partition_mode (i.e something different
+       than 'name=value' and 'value')
+    T: Then a ValueError exception must be thrown
+    """
+
+    # Preparing a mocked s3 environment with buckets and files
+    prepare_mocked_bucket()
+
+    # Defining variables to build a target URI
+    partition_name = "ano_mes_dia"
+    expected_partition_value = 20230101
+
+    # Building a target URI to extract the partition
+    target_uri = "s3://my-bucket/my-table/"\
+        f"{partition_name}={str(expected_partition_value)}/sub/file.csv"
+
+    # Extracting the partition value
+    with pytest.raises(ValueError):
+        _ = s3.get_date_partition_value_from_prefix(
+            prefix_uri=target_uri,
+            partition_mode="dummy",
+            date_partition_name=partition_name
+        )
+
+
+@pytest.mark.s3
+@pytest.mark.get_date_partition_value_from_prefix
+@mock_s3
+def test_error_when_passing_a_date_partition_name_that_doesnt_exists(
+    s3, prepare_mocked_bucket
+):
+    """
+    G: Given that users want to get the partition value from a partition S3 URI
+    W: When the method get_date_partition_value_from_prefix() is called from
+       S3Client class with an date_partition_name argument that doesn't exists
+       in the partition_uri
+    T: Then a ValueError exception must be thrown
+    """
+
+    # Preparing a mocked s3 environment with buckets and files
+    prepare_mocked_bucket()
+
+    # Defining variables to build a target URI
+    partition_name = "ano_mes_dia"
+    expected_partition_value = 20230101
+
+    # Building a target URI to extract the partition
+    target_uri = "s3://my-bucket/my-table/"\
+        f"{partition_name}={str(expected_partition_value)}/sub/file.csv"
+
+    # Extracting the partition value
+    with pytest.raises(ValueError):
+        _ = s3.get_date_partition_value_from_prefix(
+            prefix_uri=target_uri,
+            partition_mode="name=value",
+            date_partition_name="anomesdia"  # This name doesn't exists
+        )
+
+
+@pytest.mark.s3
+@pytest.mark.get_date_partition_value_from_prefix
+@mock_s3
+def test_error_when_passing_a_partition_mode_that_doesnt_match_with_the_uri(
+    s3, prepare_mocked_bucket
+):
+    """
+    G: Given that users want to get the partition value from a partition S3 URI
+    W: When the method get_date_partition_value_from_prefix() is called from
+       S3Client class with an partition_mode that doesn't match with the URI
+       format (i.e. passing "name=value" to extract the partition value from
+       an URI that has only the partition value and not the name)
+    T: Then a ValueError exception must be thrown
+    """
+
+    # Preparing a mocked s3 environment with buckets and files
+    prepare_mocked_bucket()
+
+    # Defining variables to build a target URI
+    partition_name = "ano_mes_dia"
+    expected_partition_value = 20230101
+
+    # Building a target URI to extract the partition
+    target_uri = "s3://my-bucket/my-table/"\
+        f"{partition_name}={str(expected_partition_value)}/sub/file.csv"
+
+    # Extracting the partition value
+    with pytest.raises(ValueError):
+        _ = s3.get_date_partition_value_from_prefix(
+            prefix_uri=target_uri,
+            partition_mode="value",
+            date_partition_name="anomesdia"  # This name doesn't exists
+        )
