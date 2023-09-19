@@ -34,10 +34,6 @@ class S3Client():
         buckets = s3.list_buckets()
         ```
 
-    There is much more to get using the `S3Client` class from
-    `cloudgeass.aws.s3` module. For a comprehensive list of available methods,
-    please refere to this documentation page.
-
     Args:
         logger_level (int, optional):
             The logger level to be configured on the class logger object
@@ -51,21 +47,6 @@ class S3Client():
 
         resource (botocore.client.S3):
             A S3 boto3 resource to execute operations
-
-    Tip: About the key word argument **client_kwargs:
-        As detailed above, the class sets up a client and a resource for the
-        target service using `boto3.client()` and `boto3.resource()` methods.
-        So, if users want to get those attributes with custom configurations
-        (for example, initialize a client in a different region), they can pass
-        additional arguments for the class using the `**client_kwargs`
-        attribute. In essence, what happens is that both client and resource
-        attributes are then initialized as following:
-
-        ```python
-        # Setting up a boto3 client and resource
-        self.client = boto3.client("s3", **client_kwargs)
-        self.resource = boto3.resource("s3", **client_kwargs)
-        ```
 
     Methods:
         list_buckets() -> list:
@@ -82,6 +63,17 @@ class S3Client():
 
         get_last_date_partition() -> int:
             Retrieves the last date partition from a table in a S3 bucket.
+
+    Tip: About the key word argument **client_kwargs:
+        Users can get customized client and resource attributes for the given
+        service passing additional keyword arguments. Under the hood, both
+        client and resource class attributes are initialized as following:
+
+        ```python
+        # Setting up a boto3 client and resource
+        self.client = boto3.client("s3", **client_kwargs)
+        self.resource = boto3.resource("s3", **client_kwargs)
+        ```
     """
 
     def __init__(self, logger_level=logging.INFO, **client_kwargs):
@@ -105,14 +97,14 @@ class S3Client():
                 the request.
 
         Examples:
-        ```python
-        # Importing the class
-        from cloudgeass.aws.s3 import S3Client
+            ```python
+            # Importing the class
+            from cloudgeass.aws.s3 import S3Client
 
-        # Setting up an object and getting the list of buckets with an account
-        s3 = S3Client()
-        buckets = s3.list_buckets()
-        ```
+            # Setting up a class instance and getting the list of buckets
+            s3 = S3Client()
+            buckets = s3.list_buckets()
+            ```
         """
 
         self.logger.debug("Retrieving the list of S3 bucket names")
@@ -156,17 +148,17 @@ class S3Client():
             of the file size.
 
         Examples:
-        ```python
-        # Importing the class
-        from cloudgeass.aws.s3 import S3Client
+            ```python
+            # Importing the class
+            from cloudgeass.aws.s3 import S3Client
 
-        # Setting up an object and getting the list of buckets with an account
-        s3 = S3Client()
-        df_objects_report = s3.bucket_objects_report(
-            bucket_name="some-bucket-name",
-            prefix="some-optional-prefix"
-        )
-        ```
+            # Setting up a class instance and getting a complete bucket report
+            s3 = S3Client()
+            df_objects_report = s3.bucket_objects_report(
+                bucket_name="some-bucket-name",
+                prefix="some-optional-prefix"
+            )
+            ```
         """
 
         self.logger.debug(f"Retrieving objects from {bucket_name}/{prefix}")
@@ -245,14 +237,14 @@ class S3Client():
             for this method.
 
         Examples:
-        ```python
-        # Importing the class
-        from cloudgeass.aws.s3 import S3Client
+            ```python
+            # Importing the class
+            from cloudgeass.aws.s3 import S3Client
 
-        # Setting up an object and getting the list of buckets with an account
-        s3 = S3Client()
-        df_all_buckets_report = s3.all_buckets_objects_report()
-        ```
+            # Getting a report of objects in all buckets
+            s3 = S3Client()
+            df_all_buckets_report = s3.all_buckets_objects_report()
+            ```
         """
 
         # Retrieving all buckets within an account
@@ -319,21 +311,21 @@ class S3Client():
             the specified index.
 
         Examples:
-        ```python
-        # Importing the class
-        from cloudgeass.aws.s3 import S3Client
+            ```python
+            # Importing the class
+            from cloudgeass.aws.s3 import S3Client
 
-        # Setting up an object and getting the list of buckets with an account
-        s3 = S3Client()
+            # Setting up a class instance
+            s3 = S3Client()
 
-        # Getting the partition value given a partition URI
-        uri = "s3://my-bucket/anomesdia=20230101/data/"
-        partition_value = s3.get_date_partition_value_from_prefix(
-            partition_uri=uri,
-            partition_mode="name=value"
-        )
-        # 20230101
-        ```
+            # Getting the partition value given a partition URI
+            uri = "s3://my-bucket/anomesdia=20230101/data/"
+            partition_value = s3.get_date_partition_value_from_prefix(
+                partition_uri=uri,
+                partition_mode="name=value"
+            )
+            # 20230101
+            ```
         """
 
         # Checking if partition_mode argument is filled properly
@@ -453,21 +445,21 @@ class S3Client():
                 the request.
 
         Examples:
-        ```python
-        # Importing the class
-        from cloudgeass.aws.s3 import S3Client
+            ```python
+            # Importing the class
+            from cloudgeass.aws.s3 import S3Client
 
-        # Setting up an object and getting the list of buckets with an account
-        s3 = S3Client()
+            # Setting up a class instance
+            s3 = S3Client()
 
-        # Getting the last date partition value from a given table
-        bucket_name = "my-bucket"
-        table_name = "my-table-name"
-        last_partition = s3.get_last_date_partition(
-            bucket_name=bucket_name,
-            table_name=table_name
-        )
-        ```
+            # Getting the last date partition value from a given table
+            bucket_name = "my-bucket"
+            table_name = "my-table-name"
+            last_partition = s3.get_last_date_partition(
+                bucket_name=bucket_name,
+                table_name=table_name
+            )
+            ```
         """
 
         self.logger.debug("Retrieving a pandas DataFrame with bucket objects")

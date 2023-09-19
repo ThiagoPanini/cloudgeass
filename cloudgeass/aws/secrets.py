@@ -29,12 +29,8 @@ class SecretsManagerClient():
 
         # Setting up an object and getting a secret string
         sm = SecretsManagerClient()
-        secret_string = sm.get_secret_string()
+        secret_string = sm.get_secret_string(secret_id="some-secret-id")
         ```
-
-    There is much more to get using the `SecretsManagerClient` class from
-    `cloudgeass.aws.secrets` module. For a comprehensive list of available
-    methods, please refere to this documentation page.
 
     Args:
         logger_level (int, optional):
@@ -50,24 +46,20 @@ class SecretsManagerClient():
         resource (botocore.client.SecretsManager):
             A SecretsManager boto3 resource to execute operations
 
+    Methods:
+        get_secret_string() -> str:
+            Retrieves a secret string from Secrets Manager based on a secret ID
+
     Tip: About the key word argument **client_kwargs:
-        As detailed above, the class sets up a client and a resource for the
-        target service using `boto3.client()` and `boto3.resource()` methods.
-        So, if users want to get those attributes with custom configurations
-        (for example, initialize a client in a different region), they can pass
-        additional arguments for the class using the `**client_kwargs`
-        attribute. In essence, what happens is that both client and resource
-        attributes are then initialized as following:
+        Users can get customized client and resource attributes for the given
+        service passing additional keyword arguments. Under the hood, both
+        client and resource class attributes are initialized as following:
 
         ```python
         # Setting up a boto3 client and resource
         self.client = boto3.client("secretsmanager", **client_kwargs)
         self.resource = boto3.resource("secretsmanager", **client_kwargs)
         ```
-
-    Methods:
-        get_secret_string() -> str:
-            Retrieves a secret string from Secrets Manager based on a secret ID
     """
 
     def __init__(self, logger_level=logging.INFO, **client_kwargs):
@@ -79,6 +71,35 @@ class SecretsManagerClient():
         self.client = boto3.client("secretsmanager", **client_kwargs)
 
     def get_secret_string(self, secret_id: str) -> str:
+        """
+        Retrieves the secret string for a given secret ID.
+
+        This method uses the AWS Secrets Manager client to retrieve the secret
+        string associated with the provided secret ID.
+
+        Args:
+            secret_id (str):
+                The ID of the secret to retrieve.
+
+        Returns:
+            str: The secret string associated with the provided secret ID.
+
+        Raises:
+            Exception: If there is an error while retrieving the secret string.
+
+        Examples:
+            ```python
+            # Importing the class
+            from cloudgeass.aws.secrets import SecretsManagerClient
+
+            # Creating an instance
+            sm = SecretsManagerClient()
+
+            # Getting the secret string for a specific secret
+            secret_id = "your_secret_id"
+            secret_string = sm.get_secret_string(secret_id)
+            ```
+        """
 
         self.logger.info(f"Retrieving secret string for secret {secret_id}")
         try:
