@@ -130,6 +130,18 @@ PARTITIONED_S3_TABLES = {
 
 
 """ -------------------------------------------------
+    USER INPUTS: EC2Client class
+    Defining variables for testing cloudgeass.aws.ec2
+------------------------------------------------- """
+
+# A security group name to test the creation of one with a class method
+MOCKED_SG_NAME = "ssh-local-connection-sg"
+
+# A fake local IP address to mock the request response from LOCAL_IP_URL
+LOCAL_IP_MOCKED_RESPONSE = "172.0.0.1"
+
+
+""" -------------------------------------------------
     USER INPUTS: SecretsManagerClient class
     Defining variables for testing cloudgeass.aws.secrets
 ------------------------------------------------- """

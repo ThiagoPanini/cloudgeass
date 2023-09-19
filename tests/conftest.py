@@ -10,11 +10,13 @@ ___
 import pytest
 from moto import (
     mock_s3,
+    mock_ec2,
     mock_secretsmanager
 )
 
 from cloudgeass.aws.s3 import S3Client
 from cloudgeass.aws.secrets import SecretsManagerClient
+from cloudgeass.aws.ec2 import EC2Client
 
 from tests.helpers.user_inputs import (
     MOCKED_REGION,
@@ -30,7 +32,7 @@ from tests.helpers.user_inputs import (
 ------------------------------------------------- """
 
 
-# A S3Client class object
+# A S3Client class instance
 @pytest.fixture
 @mock_s3
 def s3(region_name: str = MOCKED_REGION):
@@ -59,19 +61,32 @@ def prepare_mocked_bucket(s3: S3Client):
 
 
 """ -------------------------------------------------
-    FIXTURES: SecretsManagerClient class
-    Bulding fixtures for cloudgeass.aws.s3.SecretsManagerClient
+    FIXTURES: EC2Client class
+    Bulding fixtures for cloudgeass.aws.ec2.EC2Client
 ------------------------------------------------- """
 
 
-# A SecretsManagerClient class object
+# An EC2Client class instance
+@pytest.fixture()
+@mock_ec2
+def ec2(region_name: str = MOCKED_REGION):
+    return EC2Client(region_name=region_name)
+
+
+""" -------------------------------------------------
+    FIXTURES: SecretsManagerClient class
+    Bulding fixtures for cloudgeass.aws.secrets
+------------------------------------------------- """
+
+
+# A SecretsManagerClient class instance
 @pytest.fixture
 @mock_secretsmanager
 def sm(region_name: str = MOCKED_REGION):
     return SecretsManagerClient(region_name=region_name)
 
 
-# Building a function as a fixture to create a mocked secrets in Secrets Mng.
+# Building a function as a fixture to create mocked secrets in Secrets Manager
 @pytest.fixture
 @mock_secretsmanager
 def prepare_mocked_secrets(sm: SecretsManagerClient):

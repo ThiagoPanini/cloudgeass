@@ -1,8 +1,9 @@
 # Improving the Experience on Operating with AWS Services
 
-![Project animated logo](../assets/gifs/logo-animated-intro.gif)
+<div align="center">
+    <br><img src="https://github.com/ThiagoPanini/cloudgeass/blob/v1.2.0/docs/assets/gifs/logo-animated-intro.gif?raw=true" alt="cloudgeass-animated-intro">
+</div>
 
-![Project animated logo](../assets/imgs/cloudgeass-logo-red.png)
 
 ## Overview
 

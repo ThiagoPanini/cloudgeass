@@ -56,6 +56,10 @@ import logging
 from cloudgeass.utils.log import log_config
 
 
+# Defining a variable with a website URL used to get the local IP address
+LOCAL_IP_URL = "https://checkip.amazonaws.com"
+
+
 class EC2Client():
     """Handles operations using ec2 client and resource from boto3.
 
@@ -250,7 +254,7 @@ class EC2Client():
                     }
                 ]
             )
-            self.logger.info(f"Successfuly created security group {sg_name}")
+            self.logger.debug(f"Successfuly created security group {sg_name}")
         except Exception as e:
             self.logger.error(f"Error on trying to create security group "
                               f"{sg_name}. Exception: {e}")
@@ -259,9 +263,7 @@ class EC2Client():
         # Setting up igress rules
         try:
             # Getting the IP address of the runner machine in CIDR format
-            local_machine_ip = requests.get(
-                "https://checkip.amazonaws.com"
-            ).text.strip()
+            local_machine_ip = requests.get(LOCAL_IP_URL).text.strip()
 
             # Creating a ingress rule to allow SSH traffic from local IP
             _ = self.client.authorize_security_group_ingress(
