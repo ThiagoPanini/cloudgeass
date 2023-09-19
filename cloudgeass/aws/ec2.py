@@ -51,331 +51,472 @@ import random
 import requests
 import os
 import time
+import logging
 
 from cloudgeass.utils.log import log_config
 
 
-# Setting up a logger object
-logger = log_config(__file__)
+class EC2Client():
+    """Handles operations using ec2 client and resource from boto3.
 
-# Getting EC2 client and resource
-ec2_client = boto3.client("ec2")
-ec2_resource = boto3.resource("ec2")
+    This class provides attributes and methods that can improve the way on how
+    users operate with EC2 in AWS. In essence, it wraps some boto3 methods to
+    build some useful features that makes it easy to operate with EC2 instances
+    using python code.
 
+    Examples:
+        ```python
+        # Importing the class
+        from cloudgeass.aws.ec2 import EC2Client
 
-# Getting the default VPC ID from an AWS account
-def get_default_vpc_id(ec2_client=ec2_client) -> str:
-    """
-    Retrieves the default VPC ID from the AWS account.
+        # Setting up an object and launching an EC2 instance
+        ec2 = EC2Client()
+        ec2.create_ec2_instance(
+            image_id="some-image-id",
+            instance_type="some-instance-type",
+            key_name="some-key-pair-name",
+            security_group_ids=["some-sg-id"]
+        )
+        ```
 
     Args:
-        ec2_client (boto3.client, optional): EC2 client.
+        logger_level (int, optional):
+            The logger level to be configured on the class logger object
 
-    Returns:
-        str: The ID of the default VPC.
+    Attributes:
+        logger (logging.Logger):
+            A logger object to log steps according to a predefined logger level
 
-    Raises:
-        botocore.exceptions.ClientError: If there's an error while making the\
-            request.
+        client (botocore.client.Ec2):
+            An EC2 boto3 client to execute operations
+
+        resource (botocore.client.Ec2):
+            An EC2 boto3 resource to execute operations
+
+    Methods:
+        get_default_vpc_id() -> str:
+            Retrieves the default VPC ID within an account
+
+        create_security_group_for_local_ssh_access() -> dict:
+            Creates a custom security group that allows SSH acces from local IP
+
+        create_key_pair() -> dict:
+            Creates and optionally saves a Key Pair for EC2 connection
+
+        create_ec2_instance() -> dict:
+            Creates an EC2 instance with basic configuration
+
+    Tip: About the key word argument **client_kwargs:
+        Users can get customized client and resource attributes for the given
+        service passing additional keyword arguments. Under the hood, both
+        client and resource class attributes are initialized as following:
+
+        ```python
+        # Setting up a boto3 client and resource
+        self.client = boto3.client("ec2", **client_kwargs)
+        self.resource = boto3.resource("ec2", **client_kwargs)
+        ```
     """
 
-    # Describing all VPCs and searching for the default one
-    response = ec2_client.describe_vpcs()
+    def __init__(self, logger_level=logging.INFO, **client_kwargs):
+        # Setting up a logger object
+        self.logger_level = logger_level
+        self.logger = log_config(logger_level=self.logger_level)
 
-    for vpc in response["Vpcs"]:
-        if vpc["IsDefault"]:
-            return vpc["VpcId"]
+        # Setting up a boto3 client and resource
+        self.client = boto3.client("ec2", **client_kwargs)
+        self.resource = boto3.resource("ec2", **client_kwargs)
 
+    def get_default_vpc_id(self) -> str:
+        """
+        Retrieves the default VPC ID from the AWS account.
 
-# Creating a preconfigured security group for local SSH access
-def create_security_group_for_local_ssh_access(
-    ec2_client=ec2_client,
-    sg_name: str = "ssh-local-connection-sg",
-    delete_if_exists: bool = True,
-    tags: list = []
-):
-    """
-    Creates a preconfigured security group allowing local SSH access.
+        Returns:
+            str: The ID of the default VPC.
 
-    Args:
-        ec2_client (boto3.client, optional):
-            EC2 client.
+        Raises:
+            botocore.exceptions.ClientError: If there's an error while\
+                making the request.
 
-        sg_name (str, optional):
-            Name for the security group.
+        Examples:
+            ```python
+            # Importing the class
+            from cloudgeass.aws.ec2 import EC2Client
 
-        delete_if_exists (bool, optional):
-            Whether to delete existing security group if found with the same
-            name.
+            # Creating an instance
+            ec2 = EC2Client()
 
-        tags (list, optional):
-            Additional tags for the security group.
+            # Getting the default VPC ID from an AWS account
+            default_vpc_id = ec2.get_default_vpc_id()
+            ```
+        """
 
-    Returns:
-        dict: Response from the create_security_group call.
+        # Describing all VPCs and searching for the default one
+        response = self.client.describe_vpcs()
 
-    Raises:
-        botocore.exceptions.ClientError: If there's an error while making the\
-            request.
-    """
+        for vpc in response["Vpcs"]:
+            if vpc["IsDefault"]:
+                return vpc["VpcId"]
 
-    # Setting up tags
-    resource_tags = tags + [
-        {
-            "Key": "Name",
-            "Value": sg_name
-        }
-    ]
+    def create_security_group_for_local_ssh_access(
+        self,
+        sg_name: str = "ssh-local-connection-sg",
+        delete_if_exists: bool = True,
+        tags: list = []
+    ) -> dict:
+        """
+        Creates a preconfigured security group allowing local SSH access.
 
-    logger.info("Checking if the given security group already exists")
-    response = ec2_client.describe_security_groups()
-    for sg in response["SecurityGroups"]:
-        if sg["GroupName"] == sg_name:
-            # Security group exists. Checking the chosen delete behavior
-            if delete_if_exists:
-                logger.info(f"Security group {sg_name} already exists and the "
-                            "deletion flag is set as True. Proceeding to "
-                            "delete the security group.")
-                try:
-                    ec2_client.delete_security_group(GroupName=sg_name)
-                    logger.info(f"Successfuly deleted the SG {sg_name}")
-                except Exception as e:
-                    logger.error(f"Error on trying to delete the SG {sg_name}."
-                                 f" Exception: {e}")
-                    raise e
+        Args:
+            sg_name (str, optional):
+                Name for the security group.
 
-            else:
-                logger.info(f"Security group {sg_name} already exists and the "
-                            "deletion flag is set as False. Adding a random "
-                            "suffix at the name of the security group to be "
-                            "created in order to avoid errors.")
+            delete_if_exists (bool, optional):
+                Whether to delete existing security group if found with the
+                same name.
 
-                random_suffix = "-" + "".join(
-                    random.choices(string.ascii_letters, k=7)
-                )
-                sg_name += random_suffix
+            tags (list, optional):
+                Additional tags for the security group.
 
-    # Creating the security group after the validation
-    logger.info(f"Creating security group {sg_name}")
-    try:
-        sg_response = ec2_client.create_security_group(
-            GroupName=sg_name,
-            Description="Enables port 22 from a local IP address",
-            VpcId=get_default_vpc_id(),
-            TagSpecifications=[
-                {
-                    "ResourceType": "security-group",
-                    "Tags": resource_tags
-                }
-            ]
-        )
-        logger.info(f"Successfuly created security group {sg_name}")
-    except Exception as e:
-        logger.error(f"Error on trying to create security group {sg_name}. "
-                     f"Exception: {e}")
-        raise e
+        Returns:
+            dict: Response from the create_security_group call.
 
-    # Setting up igress rules
-    try:
-        local_machine_ip = requests.get('https://checkip.amazonaws.com')\
-            .text.strip()
-        _ = ec2_client.authorize_security_group_ingress(
-            GroupName=sg_name,
-            IpPermissions=[
-                {
-                    "IpProtocol": "tcp",
-                    "FromPort": 22,
-                    "ToPort": 22,
-                    "IpRanges": [
-                        {
-                            "CidrIp": f"{local_machine_ip}/32"
-                        }
-                    ]
-                }
-            ]
-        )
-        logger.info("Successfully created an inbound rule that allows SSH "
-                    "traffic for the caller machine IP address")
-    except Exception as e:
-        logger.error("Error on trying to get the called machine IP address "
-                     "and setting up an inbound rule that allows SSH traffic "
-                     f"from it. Exception: {e}")
+        Raises:
+            botocore.exceptions.ClientError: If there's an error while\
+                making the request.
 
-    # Returning the response of security group creation call
-    return sg_response
+        Examples:
+            ```python
+            # Importing the class
+            from cloudgeass.aws.ec2 import EC2Client
 
+            # Creating an instance
+            ec2 = EC2Client()
 
-# Creating a key pair
-def create_key_pair(
-    ec2_client=ec2_client,
-    key_name: str = "local-connection-kp",
-    key_type: str = "rsa",
-    key_format: str = "ppk",
-    delete_if_exists: bool = True,
-    save_file: bool = True,
-    path_to_save_file: str = ".",
-    tags: list = []
-):
-    """
-    Creates a key pair and optionally saves it to a file.
+            # Creating a custom SG that allows SSH traffic from local machine
+            response = ec2.create_security_group_for_local_ssh_access()
+            ```
+        """
 
-    Args:
-        ec2_client (boto3.client, optional): EC2 client.
-        key_name (str, optional): Name for the key pair.
-        key_type (str, optional): Type of the key.
-        key_format (str, optional): Format of the key.
-        delete_if_exists (bool, optional): Whether to delete existing key pair
-            if found with the same name.
-        save_file (bool, optional): Whether to save the key material to a file.
-        path_to_save_file (str, optional): Path to save the file.
-        tags (list, optional): Additional tags for the key pair.
+        # Setting up tags
+        resource_tags = tags + [
+            {
+                "Key": "Name",
+                "Value": sg_name
+            }
+        ]
 
-    Returns:
-        dict: Response from the create_key_pair call.
+        self.logger.debug("Checking if the given SG already exists")
+        response = self.client.describe_security_groups()
+        for sg in response["SecurityGroups"]:
+            if sg["GroupName"] == sg_name:
+                # Security group exists. Checking the chosen delete behavior
+                if delete_if_exists:
+                    self.logger.debug(f"Security group {sg_name} already "
+                                      "exists and the deletion flag is set "
+                                      "as True. Proceeding to delete the "
+                                      "security group.")
+                    try:
+                        self.client.delete_security_group(GroupName=sg_name)
+                        self.logger.debug(f"Successfuly deleted the {sg_name}")
+                    except Exception as e:
+                        self.logger.error("Error on trying to delete the SG "
+                                          f"{sg_name}. Exception: {e}")
+                        raise e
 
-    Raises:
-        botocore.exceptions.ClientError: If there's an error while making the\
-            request.
-        OSError: If there's an error while saving the key to a file.
-    """
+                else:
+                    self.logger.debug(f"Security group {sg_name} already "
+                                      "and the deletion flag is set as False. "
+                                      "Adding a random suffix at the name of "
+                                      "the security group to be created in "
+                                      "order to avoid errors.")
 
-    # Setting up tags
-    resource_tags = tags + [
-        {
-            "Key": "Name",
-            "Value": key_name
-        }
-    ]
+                    random_suffix = "-" + "".join(
+                        random.choices(string.ascii_letters, k=7)
+                    )
+                    sg_name += random_suffix
 
-    logger.info("Checking if the given security group already exists")
-    response = ec2_client.describe_key_pairs()
-    for kp in response["KeyPairs"]:
-        if kp["KeyName"] == key_name:
-            # Key pair already exists. Checking the chosen delete behavior
-            if delete_if_exists:
-                logger.info(f"Key pair {key_name} already exists and the "
-                            "deletion flag is set as True. Proceeding to "
-                            "delete the key pair.")
-                try:
-                    ec2_client.delete_key_pair(KeyName=key_name)
-                    logger.info(f"Successfuly deleted the key pair {key_name}")
-                except Exception as e:
-                    logger.error("Error on trying to delete the key pair "
-                                 f"{key_name}. Exception: {e}")
-                    raise e
+        # Creating the security group after the validation
+        self.logger.debug(f"Creating security group {sg_name}")
+        try:
+            sg_response = self.client.create_security_group(
+                GroupName=sg_name,
+                Description="Enables port 22 from a local IP address",
+                VpcId=self.get_default_vpc_id(),
+                TagSpecifications=[
+                    {
+                        "ResourceType": "security-group",
+                        "Tags": resource_tags
+                    }
+                ]
+            )
+            self.logger.info(f"Successfuly created security group {sg_name}")
+        except Exception as e:
+            self.logger.error(f"Error on trying to create security group "
+                              f"{sg_name}. Exception: {e}")
+            raise e
 
-            else:
-                logger.info(f"Key pair {key_name} already exists and the "
-                            "deletion flag is set as False. Adding a random "
-                            "suffix at the name of the key pair to be create "
-                            "to avoid errors.")
+        # Setting up igress rules
+        try:
+            # Getting the IP address of the runner machine in CIDR format
+            local_machine_ip = requests.get(
+                "https://checkip.amazonaws.com"
+            ).text.strip()
 
-                random_suffix = "-" + "".join(
-                    random.choices(string.ascii_letters, k=7)
-                )
-                key_name += random_suffix
+            # Creating a ingress rule to allow SSH traffic from local IP
+            _ = self.client.authorize_security_group_ingress(
+                GroupName=sg_name,
+                IpPermissions=[
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": 22,
+                        "ToPort": 22,
+                        "IpRanges": [
+                            {
+                                "CidrIp": f"{local_machine_ip}/32"
+                            }
+                        ]
+                    }
+                ]
+            )
+            self.logger.debug("Successfully created an inbound rule that "
+                              "allows SSH traffic for the caller machine IP "
+                              "address")
+        except Exception as e:
+            self.logger.error("Error on trying to get the called machine IP "
+                              "address and setting up an inbound rule that "
+                              f"allows SSH traffic from it. Exception: {e}")
 
-    # Creating a new key pair
-    try:
-        logger.info(f"Creating key pair {key_name}")
-        kp_response = ec2_client.create_key_pair(
-            KeyName=key_name,
-            KeyType=key_type,
-            KeyFormat=key_format,
-            TagSpecifications=[
-                {
-                    "ResourceType": "key-pair",
-                    "Tags": resource_tags
-                }
-            ]
-        )
-        logger.info(f"Successfuly created key pair {key_name}")
+        # Returning the response of security group creation call
+        return sg_response
 
-    except Exception as e:
-        logger.error(f"Error on trying to create key pair {key_name}. "
-                     f"Exception: {e}")
-        raise e
+    def create_key_pair(
+        self,
+        key_name: str = "local-connection-kp",
+        key_type: str = "rsa",
+        key_format: str = "ppk",
+        delete_if_exists: bool = True,
+        save_file: bool = True,
+        path_to_save_file: str = ".",
+        tags: list = []
+    ) -> dict:
+        """
+        Creates a key pair and optionally saves it to a file.
 
-    # Saving the key material (if applicable)
-    if save_file:
-        file_name = f"{key_name}.{key_format}"
-        with open(os.path.join(path_to_save_file, file_name), "w") as f:
-            f.write(kp_response["KeyMaterial"])
+        Args:
+            key_name (str, optional):
+                A key pair name
 
-    # Returning the response of key pai creation call
-    return kp_response
+            key_type (str, optional):
+                Key pair type
 
+            key_format (str, optional):
+                Key pair format. Choose between "pem" and "ppk"
 
-# Creating an simple and preconfigured EC2 instance
-def create_ec2_instance(
-    key_name: str,
-    security_group_ids: list,
-    ec2_resource=ec2_resource,
-    ec2_client=ec2_client,
-    image_id: str = "ami-04cb4ca688797756f",
-    instance_type: str = "t2.micro",
-    min_count: int = 1,
-    max_count: int = 1,
-    status_check_sleep_time: int = 5
-):
-    """
-    Creates a preconfigured EC2 instance.
+            delete_if_exists (bool, optional):
+                Whether to delete existing key pair if found with the same name
 
-    Args:
-        key_name (str): Name of the key pair to associate with the instance.
-        security_group_ids (list): List of security group IDs to associate
-            with the instance.
-        ec2_resource (boto3.resource, optional): EC2 resource.
-        ec2_client (boto3.client, optional): EC2 client.
-        image_id (str, optional): AMI ID for the instance.
-        instance_type (str, optional): Type of the instance.
-        min_count (int, optional): Minimum number of instances to launch.
-        max_count (int, optional): Maximum number of instances to launch.
-        status_check_sleep_time (int, optional): Time to wait between status
-            checks.
+            save_file (bool, optional):
+                Whether to save the key material to a file.
 
-    Returns:
-        dict: Response from the create_instances call.
+            path_to_save_file (str, optional):
+                Path to save the file.
 
-    Raises:
-        botocore.exceptions.ClientError: If there's an error while making the\
-            request.
-    """
+            tags (list, optional):
+                Additional tags for the key pair.
 
-    # Calling the method to create a new EC2 instance
-    try:
-        logger.info("Creating a new EC2 instance")
-        ec2_response = ec2_resource.create_instances(
-            ImageId=image_id,
-            InstanceType=instance_type,
-            SecurityGroupIds=security_group_ids,
-            KeyName=key_name,
-            MinCount=min_count,
-            MaxCount=max_count
-        )
+        Returns:
+            dict: Response from the create_key_pair call.
 
-        # Getting the instance if for further status check
-        instance_id = ec2_response[0].id
-        logger.info(f"Successfully created a new EC2 instance {instance_id}")
-    except Exception as e:
-        logger.error(f"Error on creating a new EC2 instance. Exception: {e}")
+        Raises:
+            botocore.exceptions.ClientError: If there's an error while\
+                making the request.
+            OSError: If there's an error while saving the key to a file.
 
-    # Checking the status and wait until instance is running
-    logger.info(f"Checking the instance {instance_id} status "
-                "and waiting until it's running")
-    status_response = ec2_client.describe_instance_status()
-    for instance in status_response["InstanceStatuses"]:
-        if instance["InstanceId"] == instance_id:
-            # Get the status of the new instance
-            status = instance["InstanceState"]["Name"]
-            while status.strip().lower() != "running":
-                # Wait some time until next status check
-                logger.info(f"The instance is still in {status} status")
-                time.sleep(status_check_sleep_time)
+        Examples:
+            ```python
+            # Importing the class
+            from cloudgeass.aws.ec2 import EC2Client
+
+            # Creating an instance
+            ec2 = EC2Client()
+
+            # Creating and saving a Key Pair for an EC2 connection
+            response = ec2.create_key_pair(
+                key_type="rsa",
+                key_format="ppk",
+                save_file=True,
+                path_to_save_file="../some-folder/"
+            )
+            ```
+        """
+
+        # Setting up tags
+        resource_tags = tags + [
+            {
+                "Key": "Name",
+                "Value": key_name
+            }
+        ]
+
+        self.logger.debug("Checking if the given key pair already exists")
+        response = self.client.describe_key_pairs()
+        for kp in response["KeyPairs"]:
+            if kp["KeyName"] == key_name:
+                # Key pair already exists. Checking the chosen delete behavior
+                if delete_if_exists:
+                    self.logger.debug(f"Key pair {key_name} already exists "
+                                      "and the deletion flag is set as True. "
+                                      "Proceeding to delete the key pair.")
+                    try:
+                        self.cliet.delete_key_pair(KeyName=key_name)
+                        self.logger.debug("Successfuly deleted the key pair "
+                                          f"{key_name}")
+                    except Exception as e:
+                        self.logger.error("Error on trying to delete the key "
+                                          f"pair {key_name}. Exception: {e}")
+                        raise e
+
+                else:
+                    self.logger.debug(f"Key pair {key_name} already exists "
+                                      "and the deletion flag is set as False. "
+                                      "Adding a random suffix at the name of "
+                                      "the key pair to be create to avoid "
+                                      "errors.")
+
+                    random_suffix = "-" + "".join(
+                        random.choices(string.ascii_letters, k=7)
+                    )
+                    key_name += random_suffix
+
+        # Creating a new key pair
+        try:
+            self.logger.debug(f"Creating key pair {key_name}")
+            kp_response = self.client.create_key_pair(
+                KeyName=key_name,
+                KeyType=key_type,
+                KeyFormat=key_format,
+                TagSpecifications=[
+                    {
+                        "ResourceType": "key-pair",
+                        "Tags": resource_tags
+                    }
+                ]
+            )
+            self.logger.debug(f"Successfuly created key pair {key_name}")
+
+        except Exception as e:
+            self.logger.error(f"Error on trying to create key pair "
+                              f"{key_name}. Exception: {e}")
+            raise e
+
+        # Saving the key material (if applicable)
+        if save_file:
+            file_name = f"{key_name}.{key_format}"
+            with open(os.path.join(path_to_save_file, file_name), "w") as f:
+                f.write(kp_response["KeyMaterial"])
+
+        # Returning the response of key pai creation call
+        return kp_response
+
+    def create_ec2_instance(
+        self,
+        image_id: str = "ami-04cb4ca688797756f",
+        instance_type: str = "t2.micro",
+        key_name: str = "",
+        security_group_ids: list = list(),
+        min_count: int = 1,
+        max_count: int = 1,
+        status_check_sleep_time: int = 5
+    ) -> dict:
+        """
+        Creates a preconfigured EC2 instance.
+
+        Args:
+            key_name (str):
+                Name of the key pair to associate with the instance.
+
+            security_group_ids (list):
+                List of security group IDs to associate with the instance.
+
+            image_id (str, optional):
+                AMI ID for the instance.
+
+            instance_type (str, optional):
+                Type of the instance.
+
+            min_count (int, optional):
+                Minimum number of instances to launch.
+
+            max_count (int, optional):
+                Maximum number of instances to launch.
+
+            status_check_sleep_time (int, optional):
+                Time to wait between status checks that aims to verify if
+                the created instance is already running.
+
+        Returns:
+            dict: Response from the create_instances call.
+
+        Raises:
+            botocore.exceptions.ClientError: If there's an error while\
+                making the request.
+
+        Examples:
+            ```python
+            # Importing the class
+            from cloudgeass.aws.ec2 import EC2Client
+
+            # Creating an instance
+            ec2 = EC2Client()
+
+            # Creating and saving a Key Pair for an EC2 connection
+            response = ec2.create_ec2_instance(
+                image_id="some-image-id",
+                instance_type="some-instance-type",
+                key_name="some-key-pair-name",
+                security_group_ids=["some-sg-id"]
+            )
+            ```
+        """
+
+        # Calling the method to create a new EC2 instance
+        try:
+            self.logger.debug("Creating a new EC2 instance")
+            ec2_response = self.resource.create_instances(
+                ImageId=image_id,
+                InstanceType=instance_type,
+                SecurityGroupIds=security_group_ids,
+                KeyName=key_name,
+                MinCount=min_count,
+                MaxCount=max_count
+            )
+
+            # Getting the instance if for further status check
+            instance_id = ec2_response[0].id
+            self.logger.debug("Successfully created a new EC2 instance "
+                              f"{instance_id}")
+        except Exception as e:
+            self.logger.error(f"Error on creating a new EC2 instance. "
+                              f"Exception: {e}")
+
+        # Checking the status and wait until instance is running
+        self.logger.debug(f"Checking the instance {instance_id} status and "
+                          "waiting until it's running")
+
+        status_response = self.client.describe_instance_status()
+        for instance in status_response["InstanceStatuses"]:
+            if instance["InstanceId"] == instance_id:
+                # Getting the status of the new instance
                 status = instance["InstanceState"]["Name"]
+                while status.strip().lower() != "running":
+                    # Wait some time until next status check
+                    self.logger.debug(f"The instance is still {status}")
+                    time.sleep(status_check_sleep_time)
+                    status = instance["InstanceState"]["Name"]
 
-            logger.info(f"The instance {instance_id} is now running "
-                        "and ready to connect ")
-            break
+                self.logger.debug(f"The instance {instance_id} is now running "
+                                  "and ready to connect ")
+                break
 
-    return ec2_response
+        return ec2_response

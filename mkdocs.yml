@@ -65,6 +65,8 @@ nav:
     - cloudgeass: index.md
   - Documentation:
     - S3: mkdocstrings/s3.md
+    - EC2: mkdocstrings/ec2.md
+    - Secrets Manager: mkdocstrings/secrets.md
 
 # Setting up MkDocs extensions
 markdown_extensions:
