@@ -63,10 +63,19 @@ theme:
 nav:
   - Home:
     - cloudgeass: index.md
+    - A draw.io view: architecture.md
+    - Library structure: library-structure.md
+    - Design and colors: design.md
   - Documentation:
     - S3: mkdocstrings/s3.md
     - EC2: mkdocstrings/ec2.md
     - Secrets Manager: mkdocstrings/secrets.md
+  - Demos:
+    - About demos: demos/about-demos.md
+    - S3 module demos:
+      - list_buckets(): demos/s3/list-buckets.md
+  - Contributing: contributing/contributing.md
+  - FAQ: faq/faq.md
 
 # Setting up MkDocs extensions
 markdown_extensions:
@@ -90,6 +99,8 @@ markdown_extensions:
       options:
         custom_icons:
           - overrides/.icons
+  - attr_list
+  - md_in_html
 
 # Custom CSS
 extra_css:
@@ -100,3 +111,5 @@ plugins:
   - search:
       lang: en
   - mkdocstrings
+  - drawio_file
+  - glightbox
