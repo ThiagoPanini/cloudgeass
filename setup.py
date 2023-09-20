@@ -1,34 +1,35 @@
-"""
-MÓDULO: setup.py.
+"""Package setup script.
 
-Arquivo de configuração da biblioteca.
+This script handles everything about package publishing on PyPI.
 """
-# Importando bibliotecas
+
+# Importing libraries
 from setuptools import setup, find_packages
 
-# Lendo README.md
+# Reading README.md for project description
 with open("README.md", "r", encoding='utf-8') as f:
     __long_description__ = f.read()
 
-# Criando setup
+# Setting up package information
 setup(
     name='cloudgeass',
-    version='1.1.3',
+    version='2.0.0',
     author='Thiago Panini',
     author_email='panini.development@gmail.com',
     packages=find_packages(),
     install_requires=[
         "boto3",
-        "pandas",
+        "Faker",
         "s3fs",
         "pyarrow"
     ],
     license='MIT',
-    description='Operações úteis para o uso de serviços AWS',
+    description="Making your life easier on doing simple tasks in AWS via "
+                "boto3",
     long_description=__long_description__,
     long_description_content_type="text/markdown",
     url='https://github.com/ThiagoPanini/cloudgeass',
-    keywords='Cloud, AWS, Python',
+    keywords='Cloud, AWS, Python, boto3',
     include_package_data=True,
     zip_safe=False,
     classifiers=[
