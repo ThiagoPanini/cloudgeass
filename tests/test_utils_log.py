@@ -20,4 +20,4 @@ def test_log_config_function_returns_a_logger_object():
     """
 
     logger = log_config()
-    assert type(logger) == logging.Logger
+    assert isinstance(logger, logging.Logger)
