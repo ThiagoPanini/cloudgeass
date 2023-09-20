@@ -1,7 +1,9 @@
-# Notebooks e arquivos ipynb
-notebooks/
-**ipynb
+# tmp dir
 tmp/
+
+# kp files
+**.ppk
+**.pem
 
 # Arquivos auxiliares do VSCode
 .vscode
