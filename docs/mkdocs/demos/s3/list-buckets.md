@@ -24,4 +24,4 @@ buckets = s3.list_buckets()
 ```
 
 ???+ example "📽️ Getting the list of buckets"
-    
+    ![A video gif showing the list_buckets() method](../../../assets/gifs/s3-list_buckets.gif)
