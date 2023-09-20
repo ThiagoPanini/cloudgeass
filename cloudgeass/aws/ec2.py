@@ -371,7 +371,7 @@ class EC2Client():
                                       "and the deletion flag is set as True. "
                                       "Proceeding to delete the key pair.")
                     try:
-                        self.cliet.delete_key_pair(KeyName=key_name)
+                        self.client.delete_key_pair(KeyName=key_name)
                         self.logger.debug("Successfuly deleted the key pair "
                                           f"{key_name}")
                     except Exception as e:
@@ -386,9 +386,12 @@ class EC2Client():
                                       "the key pair to be create to avoid "
                                       "errors.")
 
+                    # Creating a random suffix
                     random_suffix = "-" + "".join(
                         random.choices(string.ascii_letters, k=7)
                     )
+
+                    # Adding the random sufix to the key pair name
                     key_name += random_suffix
 
         # Creating a new key pair
