@@ -285,7 +285,7 @@ class EC2Client():
                               "allows SSH traffic for the caller machine IP "
                               "address")
         except Exception as e:
-            self.logger.error("Error on trying to get the called machine IP "
+            self.logger.error("Error on trying to get the caller machine IP "
                               "address and setting up an inbound rule that "
                               f"allows SSH traffic from it. Exception: {e}")
 
@@ -392,8 +392,8 @@ class EC2Client():
                     key_name += random_suffix
 
         # Creating a new key pair
+        self.logger.debug(f"Creating key pair {key_name}")
         try:
-            self.logger.debug(f"Creating key pair {key_name}")
             kp_response = self.client.create_key_pair(
                 KeyName=key_name,
                 KeyType=key_type,
@@ -482,9 +482,8 @@ class EC2Client():
             ```
         """
 
-        # Calling the method to create a new EC2 instance
+        self.logger.debug("Creating a new EC2 instance")
         try:
-            self.logger.debug("Creating a new EC2 instance")
             ec2_response = self.resource.create_instances(
                 ImageId=image_id,
                 InstanceType=instance_type,

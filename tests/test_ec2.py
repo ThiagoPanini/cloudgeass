@@ -81,6 +81,94 @@ def test_create_security_group_for_local_ssh_access_method_creates_a_sec_group(
 @pytest.mark.ec2
 @pytest.mark.create_security_group_for_local_ssh_access
 @mock_ec2
+def test_sg_creation_with_a_name_that_already_exists_and_with_deletion_flag(
+    ec2, mocked_sg_name: str = MOCKED_SG_NAME
+):
+    """
+    G: Given that users want to create a preconfigured Security Group with an
+       ingress rule that allows SSH access from the caller machine IP address
+    W: When the method create_security_group_for_local_ssh_access() is called
+       to create a Security Group with a name that already exists and the
+       deletion flag set as True (delete_if_exists=True)
+    T: Then the SG that already exists must be deleted and a new SG with the
+       same name must be created
+    """
+
+    # Mocking a request response to get a mocked local IP address
+    responses.add(
+        method=responses.GET,
+        url=LOCAL_IP_URL,
+        body=LOCAL_IP_MOCKED_RESPONSE
+    )
+
+    # Creating a mocked SG just to simulate a SG that already exists
+    r = ec2.create_security_group_for_local_ssh_access(
+        sg_name=mocked_sg_name
+    )
+
+    # Trying to create a new SG with the same name
+    r = ec2.create_security_group_for_local_ssh_access(
+        sg_name=mocked_sg_name,
+        delete_if_exists=True
+    )
+
+    # Collecting the SG ID for further evaluation
+    sg_id = r["GroupId"]
+
+    # Retrieving a list of SGs in the account to see if the new SG exists
+    sgs = ec2.client.describe_security_groups()
+    sgs_ids = [sg["GroupId"] for sg in sgs["SecurityGroups"]]
+
+    assert sg_id in sgs_ids
+
+
+@pytest.mark.ec2
+@pytest.mark.create_security_group_for_local_ssh_access
+@mock_ec2
+def test_sg_creation_with_a_name_that_already_exists_and_without_deletion_flag(
+    ec2, mocked_sg_name: str = MOCKED_SG_NAME
+):
+    """
+    G: Given that users want to create a preconfigured Security Group with an
+       ingress rule that allows SSH access from the caller machine IP address
+    W: When the method create_security_group_for_local_ssh_access() is called
+       to create a Security Group with a name that already exists and the
+       deletion flag set as False (delete_if_exists=False)
+    T: Then the SG that already exists must be deleted and a new SG with the
+       same name must be created
+    """
+
+    # Mocking a request response to get a mocked local IP address
+    responses.add(
+        method=responses.GET,
+        url=LOCAL_IP_URL,
+        body=LOCAL_IP_MOCKED_RESPONSE
+    )
+
+    # Creating a mocked SG just to simulate a SG that already exists
+    r = ec2.create_security_group_for_local_ssh_access(
+        sg_name=mocked_sg_name
+    )
+
+    # Trying to create a new SG with the same name
+    r = ec2.create_security_group_for_local_ssh_access(
+        sg_name=mocked_sg_name,
+        delete_if_exists=False
+    )
+
+    # Collecting the SG ID for further evaluation
+    sg_id = r["GroupId"]
+
+    # Retrieving a list of SGs in the account to see if the new SG exists
+    sgs = ec2.client.describe_security_groups()
+    sgs_ids = [sg["GroupId"] for sg in sgs["SecurityGroups"]]
+
+    assert sg_id in sgs_ids
+
+
+@pytest.mark.ec2
+@pytest.mark.create_security_group_for_local_ssh_access
+@mock_ec2
 def test_security_group_created_has_a_ssh_inbound_rule_for_a_local_ip_address(
     ec2, mocked_sg_name: str = MOCKED_SG_NAME
 ):
