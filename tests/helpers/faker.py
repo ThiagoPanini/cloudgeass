@@ -8,74 +8,78 @@ para simulação de dados nos mais variados formatos.
 ___
 """
 
-# Importando bibliotecas
+# Importing libraries
 from faker import Faker
 import pandas as pd
 
 
-# Instanciando faker
+# Initializing faker
 faker = Faker()
 Faker.seed(42)
 
 
-# Função para gerar dados fictícios nos formatos CSV, JSON ou PARQUET
+# Generating fake data in CSV, JSON or PARQUET format
 def fake_data(
     format: str = "csv",
     headers: list = ["col1", "col2", "col3"],
     n_rows: int = 10
 ) -> bytes:
     """
-    Gera dados fictícios simulando diferentes formatos de arquivos.
+    Generate fake strings to be saved as CSV, JSON, or PARQUET files.
 
-    Com essa função, o usuário poderá obter um dados (em bytes) gerados
-    aleatoriamente através da biblioteca Faker para realizar as mais variadas
-    validações e testes. A função utiliza um DataFrame do pandas para guiar os
-    diferentes formatos de saída. Como exemplo, caso o usuário queira um
-    objeto que simule um arquivo CSV (format="csv"), a resposta será dada
-    através do método bytes(df.to_csv()), onde df é um DataFrame pandas criado
-    com dados fictícios.
+    Args:
+        format (str, optional):
+            The desired output format ("csv", "json", or "parquet").
+
+        headers (list, optional):
+            List of column headers for the fake data file.
+
+        n_rows (int, optional):
+            Number of rows of fake data to generate.
+
+    Returns:
+        bytes: The generated fake data in bytes format.
+
+    Raises:
+        ValueError: If the specified format is not supported.
+
+    Note:
+        This function uses the Faker library to generate arbitrary fake values.
+        For "csv" format, data is returned as CSV formatted bytes.
+        For "json" format, data is returned as JSON formatted bytes.
+        For "parquet" format, data is returned as Parquet formatted bytes.
 
     Examples:
         ```python
-        from tests.helpers.faker import fake_data
-
-        mocked_data = fake_data(format="parquet")
+        fake_csv_data = fake_data(
+            format="csv",
+            headers=["name", "email", "phone"],
+            n_rows=20
+        )
         ```
-
-    Args:
-        format (str): Formato dos dados resultantes.
-        headers (list): Lista de headers a serem mockados.
-        n_rows (int): Número de registros dos dados resultantes.
-
-    Keyword Args:
-        sep (str): Separador em caso de `format="csv"`
-
-    Returns:
-        Bytes representando dados fictícios gerados a partir das configurações\
-        parametrizadas pelo usuário na chamada da função.
     """
 
-    # Gerando lista aninhada de valores fictícios usando Faker
+    # Getting arbitrary fake values using Faker
     fake_values = [[faker.uuid4() for _ in range(len(headers))]
                    for _ in range(n_rows)]
 
-    # Gerando DataFrame fictício
+    # Bulding a fake pandas DataFrame
     df_fake = pd.DataFrame(data=fake_values, columns=headers)
 
-    # Validando formato de saída antes dos direcionamentos
+    # Preparing the output file extension
     format_prep = format.lower().strip().replace(".", "")
 
-    # Validando se o formato de saída remete a um arquivo CSV
+    # Checking if it is a CSV file
     if format_prep == "csv":
         bytes_data = bytes(df_fake.to_csv(index=False),
                            encoding="utf-8")
 
-    # Validando se o formato de saída remete a um arquivo JSON
+    # Checking if it is a JSON file
     elif format_prep == "json":
         bytes_data = bytes(df_fake.to_json(orient="records"),
                            encoding="utf-8")
 
-    # Validando se o formato de saída remete a um arquivo PARQUET
+    # Checking if it is a PARQUET file
     elif format_prep == "parquet":
         bytes_data = df_fake.to_parquet(compression="snappy")
 

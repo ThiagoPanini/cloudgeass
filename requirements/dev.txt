@@ -7,5 +7,4 @@ boto3
 build
 pandas
 Faker
-s3fs
 pyarrow

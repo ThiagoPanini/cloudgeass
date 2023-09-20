@@ -1,592 +1,425 @@
-"""Consolidação de testes unitários do módulo s3.py
+"""Test cases for features defined on cloudgeass.aws.s3.S3Client module class
 
-O objetivo deste arquivo é consolidar uma suíte de testes capaz de
-testar e validar todas as funcionalidades presentes no módulo s3
-da biblioteca cloudgeass.
+This file handles the definition of all test cases for testing S3Client class
+and its features.
 
 ___
 """
 
-# Importando módulos para uso
+# Importing libraries
 import pytest
 from moto import mock_s3
+import pandas as pd
 
-from pandas import DataFrame
-
-from cloudgeass.aws.s3 import bucket_objects_report,\
-    all_buckets_objects_report, read_s3_object,\
-    get_partition_value_from_prefix, get_last_partition
-
-from tests.configs.inputs import MOCKED_BUCKET_CONTENT,\
-    NON_EMPTY_BUCKETS, EXPECTED_DF_OBJECTS_REPORT_COLS
-
-
-"""---------------------------------------------------
------------- 1. DEFININDO SUÍTE DE TESTES ------------
-               1.1 Função list_buckets()
----------------------------------------------------"""
+from tests.helpers.user_inputs import (
+    MOCKED_BUCKET_CONTENT,
+    NON_EMPTY_BUCKET_NAME,
+    EMPTY_BUCKET_NAME,
+    EXPECTED_OBJECTS_REPORT_COLS,
+    PARTITIONED_S3_TABLES
+)
 
 
+@pytest.mark.s3
 @pytest.mark.list_buckets
 @mock_s3
-def test_list_buckets_retorna_uma_lista(bucket_list):
+def test_list_buckets_method_returns_a_list(s3, prepare_mocked_bucket):
     """
-    G: dado que o usuário deseja obter uma lista de buckets em sua conta
-    W: quando o método list_buckets() de cloudgeass.aws.s3 for executado
-    T: então o elemento resultante deve ser um objeto do tipo lista
-    """
-    assert type(bucket_list) is list
-
-
-@pytest.mark.list_buckets
-@mock_s3
-def test_list_buckets_retorna_o_bucket_esperado(bucket_list):
-    """
-    G: dado que o usuário deseja obter uma lista de buckets em sua conta
-    W: quando o método list_buckets() de cloudgeass.aws.s3 for executado
-       na ciência da existência de uma lista de buckets definidos
-    T: então a lista resultante deve conter os buckets esperados
-    """
-    assert bucket_list == list(MOCKED_BUCKET_CONTENT.keys())
-
-
-"""---------------------------------------------------
------------- 1. DEFININDO SUÍTE DE TESTES ------------
-          1.2 Função bucket_objects_report()
----------------------------------------------------"""
-
-
-@pytest.mark.bucket_objects_report
-@mock_s3
-def test_bucket_objects_report_gera_dataframe_pandas(
-    df_objects_report
-):
-    """
-    G: dado que o usuário deseja extrair um report de objetos em um bucket
-    W: quando o método bucket_objects_report() for executado com qualquer
-       configuração de parâmetros
-    T: então um objeto do tipo DataFrame do pandas deve ser retornado
-    """
-    assert type(df_objects_report) is DataFrame
-
-
-@pytest.mark.bucket_objects_report
-@mock_s3
-def test_bucket_objects_report_possui_atributos_esperados(
-    df_objects_report
-):
-    """
-    G: dado que o usuário deseja extrair um report de objetos em um bucket
-    W: quando o método bucket_objects_report() for executado com qualquer
-       configuração de parâmetros
-    T: então a lista de atributos do DataFrame resultante precisa ser igual
-       a uma lista esperada de atributos
-    """
-    assert list(df_objects_report.columns) == EXPECTED_DF_OBJECTS_REPORT_COLS
-
-
-@pytest.mark.bucket_objects_report
-@mock_s3
-def test_bucket_objects_report_possui_apenas_um_nome_de_bucket(
-    df_objects_report
-):
-    """
-    G: dado que o usuário deseja extrair um report de objetos em um bucket
-    W: quando o método bucket_objects_report() for executado com qualquer
-       configuração de parâmetros
-    T: então deve haver apenas um único valor distinto para o atributo
-       "BucketName" do DataFrame resultante
-    """
-    assert len(set(list(df_objects_report["BucketName"].values))) == 1
-
-
-@pytest.mark.bucket_objects_report
-@mock_s3
-def test_erro_ao_tentar_gerar_report_de_objetos_com_nome_de_bucket_incorreto(
-    s3_client, prepare_mocked_bucket
-):
-    """
-    G: dado que o usuário deseja extrair um report de objetos em um bucket
-    W: quando o método bucket_objects_report() for executado com um nome
-       de bucket inexistente na conta alvo
-    T: então uma exceção genérica deve ser lançada
+    G: Given that users want to get a list of all S3 buckets within an account
+    W: When the method list_buckets() from S3Client class is called
+    T: Then the return must be a Python list
     """
 
-    # Preparando ambiente mockado
+    # Preparing a mocked s3 environment with buckets and files
     prepare_mocked_bucket()
 
-    # Modificando nome de bucket para simulação de erro
-    incorrect_bucket_name = "cloudgeass-non-existent-bucket"
+    # Checking if list_buckets() method returns a list
+    assert isinstance(s3.list_buckets(), list)
 
-    # Chamando função simulando bucket inexistente na conta
+
+@pytest.mark.s3
+@pytest.mark.list_buckets
+@mock_s3
+def test_list_buckets_method_returns_all_expected_buckets_within_an_account(
+    s3, prepare_mocked_bucket
+):
+    """
+    G: Given that users want to get a list of all S3 buckets within an account
+    W: When the method list_buckets() from S3Client class is called
+    T: Then the returned list must contain all expected bucket names
+    """
+
+    # Preparing a mocked s3 environment with buckets and files
+    prepare_mocked_bucket()
+
+    # Extracting all expected bucket names from user inputs
+    expected_buckets = list(MOCKED_BUCKET_CONTENT.keys())
+
+    assert s3.list_buckets() == expected_buckets
+
+
+@pytest.mark.s3
+@pytest.mark.bucket_objects_report
+@mock_s3
+def test_bucket_objects_report_method_returns_a_pandas_dataframe(
+    s3, prepare_mocked_bucket
+):
+    """
+    G: Given that users want to retrieve information about objects in a bucket
+    W: When the method buckets_objects_report() from S3Client class is called
+    T: Then the return must be a pandas DataFrame
+    """
+
+    # Preparing a mocked s3 environment with buckets and files
+    prepare_mocked_bucket()
+
+    # Getting the objects report
+    df_objects_report = s3.bucket_objects_report(
+        bucket_name=NON_EMPTY_BUCKET_NAME,
+        prefix=""
+    )
+
+    assert isinstance(df_objects_report, pd.DataFrame)
+
+
+@pytest.mark.s3
+@pytest.mark.bucket_objects_report
+@mock_s3
+def test_bucket_objects_report_dataframe_has_expected_columns(
+    s3, prepare_mocked_bucket
+):
+    """
+    G: Given that users want to retrieve information about objects in a bucket
+    W: When the method buckets_objects_report() from S3Client class is called
+    T: Then the DataFrame return must have a list of expected columns
+    """
+
+    # Preparing a mocked s3 environment with buckets and files
+    prepare_mocked_bucket()
+
+    # Getting the objects report
+    df_objects_report = s3.bucket_objects_report(
+        bucket_name=NON_EMPTY_BUCKET_NAME,
+        prefix=""
+    )
+
+    assert list(df_objects_report.columns) == EXPECTED_OBJECTS_REPORT_COLS
+
+
+@pytest.mark.s3
+@pytest.mark.bucket_objects_report
+@mock_s3
+def test_error_on_trying_to_retrieve_objects_report_from_a_invalid_bucket(
+    s3, prepare_mocked_bucket
+):
+    """
+    G: Given that users want to retrieve information about objects in a bucket
+    W: When the method buckets_objects_report() from S3Client class is called
+       with an invalid bucket name (i.e. a bucket name that doesn't exists)
+    T: Then an Exception must be thrown
+    """
+
+    # Preparing a mocked s3 environment with buckets and files
+    prepare_mocked_bucket()
+
     with pytest.raises(Exception):
-        bucket_objects_report(
-            bucket_name=incorrect_bucket_name,
-            client=s3_client
+        _ = s3.bucket_objects_report(
+            bucket_name="invalid-bucket-name"
         )
 
 
-"""---------------------------------------------------
------------- 1. DEFININDO SUÍTE DE TESTES ------------
-        1.3 Função all_buckets_objects_report()
----------------------------------------------------"""
-
-
-@pytest.mark.all_buckets_objects_report
+@pytest.mark.s3
+@pytest.mark.bucket_objects_report
 @mock_s3
-def test_all_buckets_objects_report_retorna_dataframe_do_pandas(
-    df_all_buckets_objects
+def test_bucket_objects_report_method_returns_none_when_called_on_empty_bucket(
+    s3, prepare_mocked_bucket
 ):
     """
-    G: dado que o usuário deseja obter um report completo contendo todos
-       os objetos de todos os buckets em sua conta
-    W: quando o método all_buckets_objects_report() for executado
-    T: então um objeto do tipo DataFrame do pandas deve ser retornado
-    """
-    assert type(df_all_buckets_objects) is DataFrame
-
-
-@pytest.mark.all_buckets_objects_report
-@mock_s3
-def test_all_buckets_objects_report_retorna_atributos_esperados(
-    df_all_buckets_objects
-):
-    """
-    G: dado que o usuário deseja obter um report completo contendo todos
-       os objetos de todos os buckets em sua conta
-    W: quando o método all_buckets_objects_report() for executado
-    T: então um conjunto esperado de atributos deve ser retornado
+    G: Given that users want to retrieve information about objects in a bucket
+    W: When the method buckets_objects_report() from S3Client class is called
+       on an empty bucket
+    T: Then the return must be None
     """
 
-    # Colunas retornadas no DataFrame resultante
-    report_cols = list(df_all_buckets_objects.columns)
-
-    assert report_cols == EXPECTED_DF_OBJECTS_REPORT_COLS
-
-
-@pytest.mark.all_buckets_objects_report
-@mock_s3
-def test_all_buckets_objects_report_contem_lista_de_buckets_nao_vazios(
-    df_all_buckets_objects
-):
-    """
-    G: dado que o usuário deseja obter um report completo contendo todos
-       os objetos de todos os buckets em sua conta
-    W: quando o método all_buckets_objects_report() for executado
-    T: então deve haver apenas uma lista esperada contendo buckets onde
-       sabe-se previamente que os mesmos estão populados
-    """
-
-    # Extraindo lista de buckets não vazios retornados no DataFrame
-    buckets = list(set(df_all_buckets_objects["BucketName"].values))
-
-    assert len(buckets) == len(NON_EMPTY_BUCKETS)
-
-
-@pytest.mark.all_buckets_objects_report
-@mock_s3
-def test_all_buckets_objects_report_possui_nomes_esperados_de_buckets(
-    df_all_buckets_objects
-):
-    """
-    G: dado que o usuário deseja obter um report completo contendo todos
-       os objetos de todos os buckets em sua conta
-    W: quando o método all_buckets_objects_report() for executado
-    T: então os valores distintos do atributo "BucketName" do DataFrame
-       resultante deve ser igual a lista de buckets não vazios esperada
-    """
-
-    # Extração de nome de bucket do DataFrame resultante
-    bucket_names = list(set(df_all_buckets_objects["BucketName"].values))
-
-    assert set(bucket_names) == set(NON_EMPTY_BUCKETS)
-
-
-@pytest.mark.all_buckets_objects_report
-@mock_s3
-def test_all_buckets_objects_report_com_lista_de_buckets_ignorados(
-    s3_client, prepare_mocked_bucket
-):
-    """
-    G: dado que o usuário deseja obter um report completo contendo todos
-       os objetos de todos os buckets em sua conta
-    W: quando o método all_buckets_objects_report() for executado com uma
-       lista de buckets a serem ignorados pelo processo de extração
-    T: então os elementos contidos na lista de buckets ignorados NÃO devem
-       estar entre os buckets do DataFrame resultante
-    """
-
-    # Preparando ambiente
+    # Preparing a mocked s3 environment with buckets and files
     prepare_mocked_bucket()
 
-    # Estabelecendo um nome de bucket a ser ignorado
-    buckets_to_exclude = NON_EMPTY_BUCKETS[0]
+    assert s3.bucket_objects_report(EMPTY_BUCKET_NAME) is None
 
-    # Extração de nome de bucket do DataFrame resultante
-    df_all_buckets_objects = all_buckets_objects_report(
-        client=s3_client,
-        exclude_buckets=buckets_to_exclude
+
+@pytest.mark.s3
+@pytest.mark.all_buckets_objects_report
+@mock_s3
+def test_all_buckets_objects_report_returns_a_pandas_dataframe(
+    s3, prepare_mocked_bucket
+):
+    """
+    G: Given that users want to retrieve a DataFrame with info of all objects
+       from all S3 buckets within an account
+    W: When the method all_buckets_objects_report() is called
+    T: Then the return must be a pandas DataFrame
+    """
+
+    # Preparing a mocked s3 environment with buckets and files
+    prepare_mocked_bucket()
+
+    assert isinstance(s3.all_buckets_objects_report(), pd.DataFrame)
+
+
+@pytest.mark.s3
+@pytest.mark.all_buckets_objects_report
+@mock_s3
+def test_all_buckets_objects_report_has_more_rows_than_single_bucket_report(
+    s3, prepare_mocked_bucket
+):
+    """
+    G: Given that users want to retrieve a DataFrame with info of all objects
+       from all S3 buckets within an account
+    W: When the method all_buckets_objects_report() is called
+    T: Then the number of rows of the returned DataFrame must be higher than
+       the number of rows of a DataFrame retrieve from bucket_objects_report()
+       method (since we are talking about a complete report from all buckets
+       versus a report from a single bucket)
+    """
+
+    # Preparing a mocked s3 environment with buckets and files
+    prepare_mocked_bucket()
+
+    # Getting all buckets report and a single bucket report
+    df_all_buckets_report = s3.all_buckets_objects_report()
+    df_bucket_report = s3.bucket_objects_report(NON_EMPTY_BUCKET_NAME)
+
+    assert len(df_all_buckets_report) > len(df_bucket_report)
+
+
+@pytest.mark.s3
+@pytest.mark.get_date_partition_value_from_prefix
+@mock_s3
+def test_get_partition_value_from_prefix_uri_with_name_and_value_format(
+    s3, prepare_mocked_bucket
+):
+    """
+    G: Given that users want to get the partition value from a partition S3 URI
+    W: When the method get_date_partition_value_from_prefix() is called from
+       S3Client class with partition_mode equals to "name=value"
+    T: Then the return integer must be the expected partition value
+    """
+
+    # Preparing a mocked s3 environment with buckets and files
+    prepare_mocked_bucket()
+
+    # Defining variables to build a target URI
+    partition_name = "ano_mes_dia"
+    expected_partition_value = 20230101
+
+    # Building a target URI to extract the partition
+    target_uri = "s3://my-bucket/my-table/"\
+        f"{partition_name}={str(expected_partition_value)}/sub/file.csv"
+
+    # Extracting the partition value
+    partition_value = s3.get_date_partition_value_from_prefix(
+        prefix_uri=target_uri,
+        partition_mode="name=value",
+        date_partition_name="ano_mes_dia"
     )
 
-    # Coletando lista de buckets distintos resultantes da função
-    bucket_names = list(set(df_all_buckets_objects["BucketName"].values))
-
-    assert buckets_to_exclude not in bucket_names
+    assert partition_value == expected_partition_value
 
 
-"""---------------------------------------------------
------------- 1. DEFININDO SUÍTE DE TESTES ------------
-              1.4 Função read_s3_object()
----------------------------------------------------"""
-
-
-@pytest.mark.read_s3_object
+@pytest.mark.s3
+@pytest.mark.get_date_partition_value_from_prefix
 @mock_s3
-def test_read_s3_object_retorna_dataframe_ao_ler_objeto_csv(
-    df_csv_from_s3
+def test_get_partition_value_from_prefix_uri_with_only_value_format(
+    s3, prepare_mocked_bucket
 ):
     """
-    G: dado que o usuário deseja realizar a leitura de um objeto no
-       s3 presente no formato CSV e transformá-lo em um DataFrame do
-       pandas
-    W: quando o método read_s3_object() for executado com uma URI do S3
-       que indica a leitura de um objeto JSON de um bucket
-    T: então o objeto resultante deve ser um DataFrame do pandas
-    """
-    assert type(df_csv_from_s3) is DataFrame
-
-
-@pytest.mark.read_s3_object
-@mock_s3
-def test_read_s3_object_retorna_dataframe_ao_ler_objeto_json(
-    df_json_from_s3
-):
-    """
-    G: dado que o usuário deseja realizar a leitura de um objeto no
-       s3 presente no formato JSON e transformá-lo em um DataFrame do
-       pandas
-    W: quando o método read_s3_object() for executado com uma URI do S3
-       que indica a leitura de um objeto JSON de um bucket
-    T: então o objeto resultante deve ser um DataFrame do pandas
-    """
-    assert type(df_json_from_s3) is DataFrame
-
-
-@pytest.mark.read_s3_object
-@mock_s3
-def test_read_s3_object_retorna_dataframe_ao_ler_objeto_parquet(
-    df_parquet_from_s3
-):
-    """
-    G: dado que o usuário deseja realizar a leitura de um objeto no
-       s3 presente no formato PARQUET e transformá-lo em um DataFrame do
-       pandas
-    W: quando o método read_s3_object() for executado com uma URI do S3
-       que indica a leitura de um objeto PARQUET de um bucket
-    T: então o objeto resultante deve ser um DataFrame do pandas
-    """
-    assert type(df_parquet_from_s3) is DataFrame
-
-
-@pytest.mark.read_s3_object
-@mock_s3
-def test_read_s3_object_retora_none_ao_ler_arquivo_com_extensao_png():
-    """
-    G: dado que o usuário deseja realizar a leitura de um objeto no
-       s3 presente em um foramto qualquer e transformá-lo em um DataFrame
-       do pandas
-    W: quando o método read_s3_object() for executado com uma URI do S3
-       que indica a leitura de um objeto com uma extensão ainda não
-       habilitada para transformação em DataFrame (ex: .png)
-    T: então a função não deve retornar nada (None)
+    G: Given that users want to get the partition value from a partition S3 URI
+    W: When the method get_date_partition_value_from_prefix() is called from
+       S3Client class with partition_mode equals to "value"
+    T: Then the return integer must be the expected partition value
     """
 
-    # Definindo URI de teste a ser lida
-    file_uri = "s3://mocked-bucket/prefix/file.png"
-    assert read_s3_object(file_uri) is None
-
-
-@pytest.mark.read_s3_object
-@mock_s3
-def test_read_s3_object_retora_erro_com_uri_de_objeto_inexistente():
-    """
-    G: dado que o usuário deseja realizar a leitura de um objeto no
-       s3 presente em um foramto qualquer e transformá-lo em um DataFrame
-       do pandas
-    W: quando o método read_s3_object() for executado com uma URI do S3
-       que aponta para um objeto inexistente no bucket
-    T: então uma exceção FileNotFoundError deve ser lançada
-    """
-
-    # Definindo URI de teste a ser lida
-    error_uri = "s3://mocked-bucket/prefix/file.csv"
-
-    # Validando lançamento da exceção
-    with pytest.raises(FileNotFoundError):
-        _ = read_s3_object(error_uri)
-
-
-"""---------------------------------------------------
------------- 1. DEFININDO SUÍTE DE TESTES ------------
-      1.5 Função get_partition_value_from_prefix()
----------------------------------------------------"""
-
-
-@pytest.mark.get_partition_value_from_prefix
-@mock_s3
-def test_erro_get_partition_value_from_prefix_com_partition_mode_invalido(
-    prepare_mocked_bucket
-):
-    """
-    G: dado que o usuário deseja extrair o valor de partição de um
-       prefixo de objeto no s3
-    W: quando a função get_partition_value_from_prefix() for executada
-       com um valor inválido para o parâmetro partition_mode
-    T: então uma exceção ValueError deve ser lançada
-    """
-
-    # Preparando ambiente mockado
+    # Preparing a mocked s3 environment with buckets and files
     prepare_mocked_bucket()
 
-    # Chamando função e verificando exceção lançada
+    # Defining variables to build a target URI
+    expected_partition_value = 20230101
+    date_partition_idx = -3
+
+    # Building a target URI to extract the partition
+    target_uri = "s3://my-bucket/my-table/"\
+        f"{str(expected_partition_value)}/sub/file.csv"
+
+    # Extracting the partition value
+    partition_value = s3.get_date_partition_value_from_prefix(
+        prefix_uri=target_uri,
+        partition_mode="value",
+        date_partition_idx=date_partition_idx
+    )
+
+    assert partition_value == expected_partition_value
+
+
+@pytest.mark.s3
+@pytest.mark.get_date_partition_value_from_prefix
+@mock_s3
+def test_error_when_passing_an_invalid_mode_for_get_partition_value_method(
+    s3, prepare_mocked_bucket
+):
+    """
+    G: Given that users want to get the partition value from a partition S3 URI
+    W: When the method get_date_partition_value_from_prefix() is called from
+       S3Client class with an invalid partition_mode (i.e something different
+       than 'name=value' and 'value')
+    T: Then a ValueError exception must be thrown
+    """
+
+    # Preparing a mocked s3 environment with buckets and files
+    prepare_mocked_bucket()
+
+    # Defining variables to build a target URI
+    partition_name = "ano_mes_dia"
+    expected_partition_value = 20230101
+
+    # Building a target URI to extract the partition
+    target_uri = "s3://my-bucket/my-table/"\
+        f"{partition_name}={str(expected_partition_value)}/sub/file.csv"
+
+    # Extracting the partition value
     with pytest.raises(ValueError):
-        _ = get_partition_value_from_prefix(
-            prefix_uri="teste/anomesdia=20230101/file.csv",
-            partition_mode="name"  # Valor não aceito na função
+        _ = s3.get_date_partition_value_from_prefix(
+            prefix_uri=target_uri,
+            partition_mode="dummy",
+            date_partition_name=partition_name
         )
 
 
-@pytest.mark.get_partition_value_from_prefix
+@pytest.mark.s3
+@pytest.mark.get_date_partition_value_from_prefix
 @mock_s3
-def test_erro_extracao_valor_de_particao_anomesdia_com_partition_name_anomes(
-    prepare_mocked_bucket
+def test_error_when_passing_a_date_partition_name_that_doesnt_exists(
+    s3, prepare_mocked_bucket
 ):
     """
-    G: dado que o usuário deseja extrair o valor de partição de um
-       prefixo de objeto no s3
-    W: quando a função get_partition_value_from_prefix() for executada
-       com partition_mode="name=value" e date_partition_name="anomes"
-       em um prefixo NÃO adequado aos parâmetros acima (ex: a partição
-       é anomesdia e não anomes)
-    T: então uma exceção ValueError deve ser lançada
+    G: Given that users want to get the partition value from a partition S3 URI
+    W: When the method get_date_partition_value_from_prefix() is called from
+       S3Client class with an date_partition_name argument that doesn't exists
+       in the partition_uri
+    T: Then a ValueError exception must be thrown
     """
 
-    # Preparando ambiente mockado
+    # Preparing a mocked s3 environment with buckets and files
     prepare_mocked_bucket()
 
-    # Definindo parâmetros a serem testados na função
-    prefix_uri = "csv/anomesdia=20230117/file.csv"
-    partition_mode = "name=value"
-    date_partition_name = "anomes"
+    # Defining variables to build a target URI
+    partition_name = "ano_mes_dia"
+    expected_partition_value = 20230101
 
-    # Chamando função e verificando exceção lançada
+    # Building a target URI to extract the partition
+    target_uri = "s3://my-bucket/my-table/"\
+        f"{partition_name}={str(expected_partition_value)}/sub/file.csv"
+
+    # Extracting the partition value
     with pytest.raises(ValueError):
-        _ = get_partition_value_from_prefix(
-            prefix_uri=prefix_uri,
-            partition_mode=partition_mode,
-            date_partition_name=date_partition_name
+        _ = s3.get_date_partition_value_from_prefix(
+            prefix_uri=target_uri,
+            partition_mode="name=value",
+            date_partition_name="anomesdia"  # This name doesn't exists
         )
 
 
-@pytest.mark.get_partition_value_from_prefix
+@pytest.mark.s3
+@pytest.mark.get_date_partition_value_from_prefix
 @mock_s3
-def test_erro_extracao_valor_de_particao_anomes_com_partition_name_anomesdia(
-    prepare_mocked_bucket
+def test_error_when_passing_a_partition_mode_that_doesnt_match_with_the_uri(
+    s3, prepare_mocked_bucket
 ):
     """
-    G: dado que o usuário deseja extrair o valor de partição de um
-       prefixo de objeto no s3
-    W: quando a função get_partition_value_from_prefix() for executada
-       com partition_mode="name=value" e date_partition_name="anomesdia"
-       em um prefixo NÃO adequado aos parâmetros acima (ex: a partição
-       é anomes e não anomesdia)
-    T: então uma exceção ValueError deve ser lançada
+    G: Given that users want to get the partition value from a partition S3 URI
+    W: When the method get_date_partition_value_from_prefix() is called from
+       S3Client class with an partition_mode that doesn't match with the URI
+       format (i.e. passing "name=value" to extract the partition value from
+       an URI that has only the partition value and not the name)
+    T: Then a ValueError exception must be thrown
     """
 
-    # Preparando ambiente mockado
+    # Preparing a mocked s3 environment with buckets and files
     prepare_mocked_bucket()
 
-    # Definindo parâmetros a serem testados na função
-    prefix_uri = "csv/anomes=202303/file.csv"
-    partition_mode = "name=value"
-    date_partition_name = "anomesdia"
+    # Defining variables to build a target URI
+    partition_name = "ano_mes_dia"
+    expected_partition_value = 20230101
 
-    # Chamando função e verificando exceção lançada
+    # Building a target URI to extract the partition
+    target_uri = "s3://my-bucket/my-table/"\
+        f"{partition_name}={str(expected_partition_value)}/sub/file.csv"
+
+    # Extracting the partition value
     with pytest.raises(ValueError):
-        _ = get_partition_value_from_prefix(
-            prefix_uri=prefix_uri,
-            partition_mode=partition_mode,
-            date_partition_name=date_partition_name
+        _ = s3.get_date_partition_value_from_prefix(
+            prefix_uri=target_uri,
+            partition_mode="value",
+            date_partition_name="anomesdia"  # This name doesn't exists
         )
 
 
-@pytest.mark.get_partition_value_from_prefix
+@pytest.mark.s3
+@pytest.mark.get_last_date_partition
 @mock_s3
-def test_retorno_valor_de_particao_com_nome_de_particao_anomesdia(
-    prepare_mocked_bucket
+def test_get_last_date_partition_method_returns_last_partition_in_daily_basis(
+    s3, prepare_mocked_bucket
 ):
     """
-    G: dado que o usuário deseja extrair o valor de partição de um
-       prefixo de objeto no s3
-    W: quando a função get_partition_value_from_prefix() for executada
-       com partition_mode="name=value" e date_partition_name="anomesdia"
-       em um prefixo adequado aos parâmetros citados
-    T: então o valor de partição esperado deve ser retornado
+    G: Given that users want to retrieve the last date partition from a table
+       that is partitioned in a daily basis in the format %Y%m%d
+    W: When the method get_last_date_partition()
+    T: Then the expected partition must be retrieved
     """
 
-    # Preparando ambiente mockado
+    # Preparing a mocked s3 environment with buckets and files
     prepare_mocked_bucket()
 
-    # Definindo parâmetros a serem testados na função
-    prefix_uri = "csv/anomesdia=20230117/file.csv"
-    partition_mode = "name=value"
-    date_partition_name = "anomesdia"
-    expected_result = 20230117
-
-    # Extraindo valor de partição
-    partition_value = get_partition_value_from_prefix(
-        prefix_uri=prefix_uri,
-        partition_mode=partition_mode,
-        date_partition_name=date_partition_name
+    # Retrieving the last partition
+    last_partition = s3.get_last_date_partition(
+        bucket_name=PARTITIONED_S3_TABLES["daily"]["bucket_name"],
+        table_prefix=PARTITIONED_S3_TABLES["daily"]["table_name"],
+        partition_mode=PARTITIONED_S3_TABLES["daily"]["partition_mode"],
+        date_partition_name=PARTITIONED_S3_TABLES["daily"]["partition_name"]
     )
 
-    # Validando resultado
-    assert partition_value == expected_result
+    # Getting the expected last partition
+    expected_partition = PARTITIONED_S3_TABLES["daily"]["expected_partition"]
+
+    assert last_partition == expected_partition
 
 
-@pytest.mark.get_partition_value_from_prefix
+@pytest.mark.s3
+@pytest.mark.get_last_date_partition
 @mock_s3
-def test_retorno_valor_de_particao_com_nome_de_particao_anomes(
-    prepare_mocked_bucket
+def test_get_last_date_partition_method_returns_last_partition_in_monthlybasis(
+    s3, prepare_mocked_bucket
 ):
     """
-    G: dado que o usuário deseja extrair o valor de partição de um
-       prefixo de objeto no s3
-    W: quando a função get_partition_value_from_prefix() for executada
-       com partition_mode="name=value" e date_partition_name="anomes"
-       em um prefixo adequado aos parâmetros citados
-    T: então o valor de partição esperado deve ser retornado
+    G: Given that users want to retrieve the last date partition from a table
+       that is partitioned in a monthly basis in the format %Y%m
+    W: When the method get_last_date_partition()
+    T: Then the expected partition must be retrieved
     """
 
-    # Preparando ambiente mockado
+    # Preparing a mocked s3 environment with buckets and files
     prepare_mocked_bucket()
 
-    # Definindo parâmetros a serem testados na função
-    prefix_uri = "csv/anomes=202303/file.csv"
-    partition_mode = "name=value"
-    date_partition_name = "anomes"
-    expected_result = 202303
-
-    # Extraindo valor de partição
-    partition_value = get_partition_value_from_prefix(
-        prefix_uri=prefix_uri,
-        partition_mode=partition_mode,
-        date_partition_name=date_partition_name
+    # Retrieving the last partition
+    last_partition = s3.get_last_date_partition(
+        bucket_name=PARTITIONED_S3_TABLES["monthly"]["bucket_name"],
+        table_prefix=PARTITIONED_S3_TABLES["monthly"]["table_name"],
+        partition_mode=PARTITIONED_S3_TABLES["monthly"]["partition_mode"],
+        date_partition_name=PARTITIONED_S3_TABLES["monthly"]["partition_name"]
     )
 
-    # Validando resultado
-    assert partition_value == expected_result
+    # Getting the expected last partition
+    expected_partition = PARTITIONED_S3_TABLES[
+        "monthly"
+    ]["expected_partition"]
 
-
-@pytest.mark.get_partition_value_from_prefix
-@mock_s3
-def test_retorno_valor_da_particao_com_prefixo_contendo_apenas_valor(
-    prepare_mocked_bucket
-):
-    """
-    G: dado que o usuário deseja extrair o valor de partição de um
-       prefixo de objeto no s3
-    W: quando a função get_partition_value_from_prefix() for executada
-       com partition_mode="value" simulando tabelas que não possuem
-       o nome da partição explícito no prefixo do s3
-    T: então o valor de partição esperado deve ser retornado
-    """
-
-    # Preparando ambiente mockado
-    prepare_mocked_bucket()
-
-    # Definindo parâmetros a serem testados na função
-    prefix_uri = "csv/202303/file.csv"
-    partition_mode = "value"
-    expected_result = 202303
-
-    # Extraindo valor de partição
-    partition_value = get_partition_value_from_prefix(
-        prefix_uri=prefix_uri,
-        partition_mode=partition_mode,
-    )
-
-    # Validando resultado
-    assert partition_value == expected_result
-
-
-@pytest.mark.get_partition_value_from_prefix
-@mock_s3
-def test_erro_conversao_de_valor_de_particao_para_inteiro(
-    prepare_mocked_bucket
-):
-    """
-    G: dado que o usuário deseja extrair o valor de partição de um
-       prefixo de objeto no s3
-    W: quando a função get_partition_value_from_prefix() for executada
-       com partition_mode="value" em um prefixo NÃO adequado
-       (ex: a partição está armazenada no formato "name=value", como
-       por exemplo, anomesdia=20230101)
-    T: então uma exceção ValueError deve ser lançada
-    """
-
-    # Preparando ambiente mockado
-    prepare_mocked_bucket()
-
-    # Definindo parâmetros a serem testados na função
-    prefix_uri = "csv/anomesdia=20230101/file.csv"
-    partition_mode = "value"
-
-    # Simulando exceção
-    with pytest.raises(ValueError):
-        _ = get_partition_value_from_prefix(
-            prefix_uri=prefix_uri,
-            partition_mode=partition_mode,
-        )
-
-
-"""---------------------------------------------------
------------- 1. DEFININDO SUÍTE DE TESTES ------------
-            1.6 Função get_last_partition()
----------------------------------------------------"""
-
-
-@pytest.mark.get_last_partition
-@mock_s3
-def test_get_last_partition_com_particao_anomesdia(
-    s3_client, prepare_mocked_bucket
-):
-    """
-    G: dado que o usuário deseja extraír o valor da última partição
-       de um prefixo de tabela armazenada no s3 com o padrão
-       anomesdia=valorparticao
-    W: quando o método get_last_partition() for executado
-    T: então o último valor de partição esperado deve ser retornado
-    """
-
-    # Preparando ambiente mockado
-    prepare_mocked_bucket()
-
-    # Definindo parâmetros a serem testados na função
-    bucket_name = "cloudgeass-mock-bucket-01"
-    table_prefix = "csv"
-    partition_mode = "name=value"
-    date_partition_name = "anomesdia"
-    expected_result = 20230119
-
-    # Extraindo última partição
-    last_partition = get_last_partition(
-        bucket_name=bucket_name,
-        table_prefix=table_prefix,
-        partition_mode=partition_mode,
-        date_partition_name=date_partition_name,
-        client=s3_client
-    )
-
-    # Verificando resultado
-    assert last_partition == expected_result
+    assert last_partition == expected_partition

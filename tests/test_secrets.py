@@ -1,45 +1,57 @@
-"""Consolidação de testes unitários do módulo secrets.py
+"""Test cases for features defined on cloudgeass.aws.secrets module classes
 
-Neste arquivo, serão consolidados testes unitários
-utilizados para validar as funcionalidades presentes na
-classe GlueJobManager, visando garantir que todos os insumos
-essenciais para execução de jobs do Glue na AWS estejam
-sendo entregues com eficiência ao usuário.
+This file handles the definition of all test cases for testing
+SecretsManagerClient class and its features.
 
 ___
 """
 
-# Importando bibliotecas
+# Importing libraries
 import pytest
 from moto import mock_secretsmanager
 
-from cloudgeass.aws.secrets import get_secret_string
-
-from tests.configs.inputs import MOCKED_SECRET_NAME, MOCKED_SECRET_VALUE
-
-
-"""---------------------------------------------------
------------- 1. DEFININDO SUÍTE DE TESTES ------------
-            1.1 Função get_secret_string()
----------------------------------------------------"""
+from tests.helpers.user_inputs import (
+    MOCKED_SECRET_NAME,
+    MOCKED_SECRET_VALUE
+)
 
 
+@pytest.mark.secrets
 @pytest.mark.get_secret_string
 @mock_secretsmanager
-def test_coleta_esperada_de_string_de_segredo(
-    sm_client, prepare_mocked_secrets
+def test_get_secret_string_method_retrieves_the_expected_secret_string(
+    sm, prepare_mocked_secrets
 ):
     """
-    G: dado que o usuário deseja coletar um segredo do Secrets Manager
-    W: quando o método get_secret_string() for executado passando um ID
-       esperado de segredo cujo valor é conhecido
-    T: então o valor esperado deve ser retornado pela função
+    G: Given that users want to retrieve a secret string from a secret ID
+    W: When the method get_secret_string() is called from SecretsManagerClient
+    T: Then the expected secret string must be retrieved
     """
 
-    # Preparando ambiente mockado
+    # Preparing a mocked Secrets Manager environment with mocked secrets
     prepare_mocked_secrets()
 
-    # Coletando segredo
-    secret = get_secret_string(secret_id=MOCKED_SECRET_NAME, client=sm_client)
+    # Retrieving a secret string
+    secret_string = sm.get_secret_string(secret_id=MOCKED_SECRET_NAME)
 
-    assert secret == MOCKED_SECRET_VALUE
+    assert secret_string == MOCKED_SECRET_VALUE
+
+
+@pytest.mark.secrets
+@pytest.mark.get_secret_string
+@mock_secretsmanager
+def test_error_on_trying_to_retrieve_a_secret_string_with_an_invalid_secret_id(
+    sm, prepare_mocked_secrets
+):
+    """
+    G: Given that users want to retrieve a secret string from a secret ID
+    W: When the method get_secret_string() is called from SecretsManagerClient
+       with an invalid secret id (i.e. a secret ID that doesn't exists)
+    T: Then a exception must be thrown
+    """
+
+    # Preparing a mocked Secrets Manager environment with mocked secrets
+    prepare_mocked_secrets()
+
+    with pytest.raises(Exception):
+        _ = sm.get_secret_string(secret_id="some-invalid-secret-id")

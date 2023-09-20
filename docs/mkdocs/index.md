@@ -1,102 +1,47 @@
-# Cloudgeass
-
-## Visão Geral
-
-Cloudgeass é uma biblioteca Python criada para centralizar uma série de módulos, classes, métodos e funções prontas para serem utilizadas nos mais variados serviços da AWS. Inspirado em um [renomado anime japonês](https://en.wikipedia.org/wiki/Code_Geass), o cloudgeass visa proporcionar um maior controle sobre atividades e operações comumente realizadas em aplicações criadas na nuvem.
+# Do simple tasks in AWS as simple as possible
 
 <div align="center">
-    <br><img src="https://github.com/ThiagoPanini/cloudgeass/blob/feature/create-docs-page-with-mkdocs/docs/assets/imgs/cloudgeass-logo.png?raw=true" alt="cloudgeass-logo" width=200 height=200>
+    <br><img src="https://github.com/ThiagoPanini/cloudgeass/blob/v1.2.0/docs/assets/gifs/logo-animated-intro.gif?raw=true" alt="cloudgeass-animated-intro" width="900" height="400">
 </div>
 
-<div align="center">
-    <i>cloudgeass<br>
-    Python Library</i>
-</div>
 
-<div align="center">  
-  <br>
-  <a href="https://pypi.org/project/cloudgeass/">
-    <img src="https://img.shields.io/pypi/v/cloudgeass?color=purple" alt="Shield cloudgeass PyPI version">
-  </a>
+## Overview
 
-  <a href="https://pypi.org/project/cloudgeass/">
-    <img src="https://img.shields.io/pypi/dm/cloudgeass?color=purple" alt="Shield cloudgeass PyPI downloads">
-  </a>
+Ladies and gentlemen, meet *cloudgeass* as a helpful Python library that is able to improve the way how users run simple tasks in AWS using [boto3](https://boto3.amazonaws.com/v1/documentation/api/latest/index.html) client and resource.
 
-  <a href="https://pypi.org/project/cloudgeass/">
-    <img src="https://img.shields.io/pypi/status/cloudgeass?color=purple" alt="Shield cloudgeass PyPI status">
-  </a>
-  
-  <img src="https://img.shields.io/github/commit-activity/m/ThiagoPanini/cloudgeass?color=purple" alt="Shield github commit activity">
-  
-  <img src="https://img.shields.io/github/last-commit/ThiagoPanini/cloudgeass?color=purple" alt="Shield github last commit">
+Built as a boto3 wrapper, the *cloudgeass* package aims to put together some useful functions and methods for common tasks in AWS, such as:
 
-  <br>
-  
-  <img src="https://img.shields.io/github/actions/workflow/status/ThiagoPanini/cloudgeass/ci-cloudgeass-main.yml?label=ci" alt="Shield github CI workflow">
+- List all S3 buckets in an AWS account
+- Get a report from all objects within a S3 bucket in a pandas DataFrame format
+- Get the last date partition from a table stored in S3
+- Get a secret string from Secrets Manager
+- Launch an EC2 instance
+- *and much more*
 
-  <a href='https://cloudgeass.readthedocs.io/pt/latest/?badge=latest'>
-    <img src='https://readthedocs.org/projects/cloudgeass/badge/?version=latest' alt='Documentation Status' />
-  </a>
-  
-  <a href="https://codecov.io/github/ThiagoPanini/cloudgeass">
-    <img src="https://codecov.io/github/ThiagoPanini/cloudgeass/branch/main/graph/badge.svg?token=7HI1YGS4AA" alt="Shield cloudgeass CodeCov">
-  </a>
 
-</div>
+## Quickstart
 
-___
+To start using the package, just install it using [pip](https://pypi.org/project/pip/) (or any other Python dependency management of your choose) as:
 
-## Instalação
-
-A última versão da biblioteca *cloudgeass* já está publicada no [PyPI](https://pypi.org/project/cloudgeass/) e disponível para uso totalmente gratuito por qualquer um interessado em aprimorar a construção de suas aplicações em um ambiente de nuvem. Para iniciar sua jornada de uso, basta realizar sua instalação através do seguinte comando:
-
-```bash
+```python
 pip install cloudgeass
 ```
 
-??? tip "Sobre ambientes virtuais Python"
-    Em geral, uma boa prática relacionada a criação de novos projetos Python diz respeito à criação e uso de [ambientes virtuais](https://docs.python.org/3/library/venv.html) (ou *virtual environments*, no inglês). Criar um *venv* para cada projeto Python iniciado permite, entre outras vantagens, ter em mãos um ambiente isolado com um controle mais refinado sobre as dependências utilizadas.
+You may want to install *cloudgeass* in a [Python virtual environment](https://docs.python.org/3/library/venv.html) to get a good control of your project or application dependencies. If you don't know what this is about, feel free to take a look at this excellent [article from Real Python](https://realpython.com/python-virtual-environments-a-primer/).
 
-    ??? example "Criando ambientes virtuais"
-        Para criar um ambiente virtual Python, basta navegar até um diretório escolhido para organizar todos os *virtual envs* criados e executar o seguinte comando:
 
-        ```bash
-        python -m venv <nome_venv>
-        ```
+## What to find in this doc?
 
-        Onde `<nome_venv>` deve ser substituído pelo nome escolhido para o ambiente virtual a ser criado. É comum ter nomes de ambientes virtuais associados à projetos (ex: `cloudgeass_venv`).
+Well, the work is always been done. Until this moment, there are some pages to be highlighted in this doc, such as:
 
-    ??? example "Acessando ambientes virtuais"
-        Criar um *virtual env* é apenas a primeira etapa do processo. Após criado, o ambiente precisa ser explicitamente acessado pelo usuário para garantir que todas as ações subsequentes relacionadas à instalação de bibliotecas sejam realizadas, de fato, no ambiente isolado criado.
-        
-        Se o sistema operacional utilizado é Windows, então use o comando abaixo para acessar o ambiente virtual Python:
+- The [package achitecture](architecture.md) and the [library structure](library-structure.md) pages
+- The [official documentation page](./mkdocstrings/s3.md) built with [mkdcostrings](https://mkdocstrings.github.io/)
+- The [library demos](./demos/about-demos.md) page with gifs showing some of the most stunning features
 
-        ```bash
-        # Acessando ambiente virtual no Windows
-        <caminho_venv>/Scripts/activate
-        ```
 
-        Em caso de uso de um sistema operacional Linux (ou Git Bash no Windows), o comando possui pequenas alterações e é dado por:
-
-        ```bash
-        # Acessando ambiente virtual no Linux
-        source <caminho_venv>/Scripts/activate
-        ```
-
-        Onde `<caminho_venv>` é a referência da localização do ambiente virtual recém criado. Por exemplo, se você criou o ambiente virtual de nome *test_venv* no seu diretório de usuário, então `<caminho_venv>` pode ser substituído por `C:\Users\usuario\test_venv` no Windows ou simplesmente `~/test_venv` no Linux.
-    
-    Para mais informações, o [excelente artigo do blog Real Python](https://realpython.com/python-virtual-environments-a-primer/) poderá esclarecer uma série de dúvidas envolvendo a criação e o uso de ambientes virtuais Python.
-
-## O Poder do cloudgeass
-
-Agora que o *cloudgeass* foi instalado com sucesso, todo o seu leque de funcionalidades se encontra disponível para utilização e suas funções e métodos poderão ser importadas em aplicações Python.
-
-:material-alert-decagram:{ .mdx-pulse .warning } Não deixe de assistir as [demonstrações práticas](./features/organizacao.md) de grande parte daquilo que o *cloudgeass* pode oferecer! Imagino que você possa se surpreender com as vantagens envolvidas em seu uso!
-
-## Contatos
+## Contact me
 
 - :fontawesome-brands-github: [@ThiagoPanini](https://github.com/ThiagoPanini)
 - :fontawesome-brands-linkedin: [Thiago Panini](https://www.linkedin.com/in/thiago-panini/)
 - :fontawesome-brands-hashnode: [panini-tech-lab](https://panini.hashnode.dev/)
-
+- :fontawesome-brands-dev: [thiagopanini](https://dev.to/thiagopanini)

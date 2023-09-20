@@ -42,8 +42,9 @@ ___
 
 Em linhas gerais, a biblioteca **cloudgeass** é divida em diferentes módulos, cada um encapsulando e consolidando funcionalidades para fins específicos. Os módulos existentes até o momento são:
 
-- 🪣 `cloudgeass.aws.s3` - funcionalidades para facilitar operações no S3 através do SDK `boto3`.
-- 🧼 `cloudgeass.aws.glue` - em ideação
+- :bucket: `cloudgeass.aws.s3`: funcionalidades para operações no S3
+- :key: `cloudgeass.aws.secrets`: funcionalidades para operações no Secrets Manager
+- :soap: `cloudgeass.aws.glue`: :warning: *em ideação*
 
 
 ### O módulo s3

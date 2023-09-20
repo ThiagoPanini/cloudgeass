@@ -1,68 +1,57 @@
-"""
-SCRIPT: conftest.py
+"""Confest file for managing pytest fixtures and other components.
 
-CONTEXTO:
----------
-Arquivo de conferência/configuração do pytest para
-alocação de fixtures e outros elementos e insumos
-utilizados durante a execução dos testes.
----------------------------------------------------
+This file will handle essential components and elements to be used on test
+scripts along the project, like features and other things.
+
+___
 """
 
-# Importando bibliotecas
+# Importing libraries
 import pytest
-import boto3
-from moto import mock_s3, mock_secretsmanager
+from moto import (
+    mock_s3,
+    mock_ec2,
+    mock_secretsmanager
+)
 
-from cloudgeass.aws.s3 import list_buckets, bucket_objects_report,\
-    all_buckets_objects_report, read_s3_object
+from cloudgeass.aws.s3 import S3Client
+from cloudgeass.aws.secrets import SecretsManagerClient
+from cloudgeass.aws.ec2 import EC2Client
 
-from tests.configs.inputs import MOCKED_REGION, MOCKED_BUCKET_CONTENT,\
-    EXAMPLE_BUCKET, MOCKED_SECRET_NAME, MOCKED_SECRET_VALUE
+from tests.helpers.user_inputs import (
+    MOCKED_REGION,
+    MOCKED_BUCKET_CONTENT,
+    MOCKED_SECRET_NAME,
+    MOCKED_SECRET_VALUE
+)
 
 
-"""---------------------------------------------------
--------- 1. DEFINIÇÃO DE FIXTURES DE MÓDULOS ---------
-         1.1 Fixtures gerais e de preparação
----------------------------------------------------"""
+""" -------------------------------------------------
+    FIXTURES: S3Client class
+    Bulding fixtures for cloudgeass.aws.s3.S3Client
+------------------------------------------------- """
 
 
-# Definindo resource s3 para operações de mock
+# A S3Client class instance
+@pytest.fixture
+@mock_s3
+def s3(region_name: str = MOCKED_REGION):
+    return S3Client(region_name=region_name)
+
+
+# Building a function as a fixture to create a mocked bucket with objects
 @pytest.fixture()
-def s3_resource():
-    with mock_s3():
-        resource = boto3.resource("s3", region_name=MOCKED_REGION)
-        return resource
-
-
-# Definindo client s3 para operações de mock
-@pytest.fixture()
-def s3_client():
-    with mock_s3():
-        client = boto3.client("s3", region_name=MOCKED_REGION)
-        return client
-
-
-# Definindo client do secrets manager para operações de mock
-@pytest.fixture()
-def sm_client():
-    with mock_secretsmanager():
-        client = boto3.client("secretsmanager", region_name=MOCKED_REGION)
-        return client
-
-
-# Retornando função como fixture para preparação de bucket mockado
-@pytest.fixture()
-def prepare_mocked_bucket(s3_resource, s3_client):
+@mock_s3
+def prepare_mocked_bucket(s3: S3Client):
     def create_elements():
-        # Iterando por dicionário de definição de mock no s3
+        # Lopping over a dictionary with all definition of mock content for s3
         for bucket_name, content_definition in MOCKED_BUCKET_CONTENT.items():
-            # Criando bucket s3 definido no dicionário
-            s3_resource.create_bucket(Bucket=bucket_name)
+            # Creating a mocked bucket
+            s3.resource.create_bucket(Bucket=bucket_name)
 
-            # Iterando por definição de conteúdo para upload de objetos
+            # Putting mocked objects in this mocked bucket
             for _, content in content_definition.items():
-                s3_client.put_object(
+                s3.client.put_object(
                     Bucket=bucket_name,
                     Body=content["Body"],
                     Key=content["Key"]
@@ -71,112 +60,41 @@ def prepare_mocked_bucket(s3_resource, s3_client):
     return create_elements
 
 
-# Retornando função como fixture para preparação de segredos mockados
+""" -------------------------------------------------
+    FIXTURES: EC2Client class
+    Bulding fixtures for cloudgeass.aws.ec2.EC2Client
+------------------------------------------------- """
+
+
+# An EC2Client class instance
 @pytest.fixture()
-def prepare_mocked_secrets(sm_client):
+@mock_ec2
+def ec2(region_name: str = MOCKED_REGION):
+    return EC2Client(region_name=region_name)
+
+
+""" -------------------------------------------------
+    FIXTURES: SecretsManagerClient class
+    Bulding fixtures for cloudgeass.aws.secrets
+------------------------------------------------- """
+
+
+# A SecretsManagerClient class instance
+@pytest.fixture
+@mock_secretsmanager
+def sm(region_name: str = MOCKED_REGION):
+    return SecretsManagerClient(region_name=region_name)
+
+
+# Building a function as a fixture to create mocked secrets in Secrets Manager
+@pytest.fixture
+@mock_secretsmanager
+def prepare_mocked_secrets(sm: SecretsManagerClient):
     def create_secret():
-        # Criando novo segredo
-        sm_client.create_secret(
+        # Creating a fake secret
+        sm.client.create_secret(
             Name=MOCKED_SECRET_NAME,
             SecretString=MOCKED_SECRET_VALUE
         )
 
     return create_secret
-
-
-"""---------------------------------------------------
--------- 1. DEFINIÇÃO DE FIXTURES DE MÓDULOS ---------
-       1.2 Funcionalidades do módulo test_s3.py
----------------------------------------------------"""
-
-
-# Lista resultante da função list_buckets()
-@pytest.fixture()
-@mock_s3
-def bucket_list(s3_client, prepare_mocked_bucket):
-    # Preparando ambiente mockado no s3
-    prepare_mocked_bucket()
-
-    # Gerando lista de buckets mockados no ambiente
-    return list_buckets(client=s3_client)
-
-
-# DataFrame resultante da função bucket_objects_report()
-@pytest.fixture()
-@mock_s3
-def df_objects_report(s3_client, prepare_mocked_bucket):
-    # Preparando ambiente mockado no s3
-    prepare_mocked_bucket()
-
-    # Gerando DataFrame com report de objetos
-    return bucket_objects_report(
-        bucket_name=EXAMPLE_BUCKET, client=s3_client
-    )
-
-
-# DataFrame resultante da função all_buckets_objects_report()
-@pytest.fixture()
-@mock_s3
-def df_all_buckets_objects(s3_client, prepare_mocked_bucket):
-    # Preparando ambiente mockado no s3
-    prepare_mocked_bucket()
-
-    # Gerando DataFrame com report de objetos de todos os buckets
-    return all_buckets_objects_report(client=s3_client)
-
-
-# DataFrame resultante de leitura de objeto CSV via read_s3_object()
-@pytest.fixture()
-@mock_s3
-def df_csv_from_s3(prepare_mocked_bucket):
-    # Preparando ambiente mockado no s3
-    prepare_mocked_bucket()
-
-    # Formato de objeto
-    file_ext = "csv"
-
-    # Extraindo URI para leitura de objeto CSV
-    bucket_name = "cloudgeass-mock-bucket-04"
-    object_key = f"{file_ext}/anomesdia=20230117/file.{file_ext}"
-    s3_uri = f"s3://{bucket_name}/{object_key}"
-
-    # Gerando DataFrame com base em dados mockados no s3
-    return read_s3_object(s3_uri=s3_uri)
-
-
-# DataFrame resultante de leitura de objeto JSON via read_s3_object()
-@pytest.fixture()
-@mock_s3
-def df_json_from_s3(prepare_mocked_bucket):
-    # Preparando ambiente mockado no s3
-    prepare_mocked_bucket()
-
-    # Formato de objeto
-    file_ext = "json"
-
-    # Extraindo URI para leitura de objeto JSON
-    bucket_name = "cloudgeass-mock-bucket-04"
-    object_key = f"{file_ext}/anomesdia=20230117/file.{file_ext}"
-    s3_uri = f"s3://{bucket_name}/{object_key}"
-
-    # Gerando DataFrame com base em dados mockados no s3
-    return read_s3_object(s3_uri=s3_uri)
-
-
-# DataFrame resultante de leitura de objeto PARQUET via read_s3_object()
-@pytest.fixture()
-@mock_s3
-def df_parquet_from_s3(prepare_mocked_bucket):
-    # Preparando ambiente mockado no s3
-    prepare_mocked_bucket()
-
-    # Formato de objeto
-    file_ext = "parquet"
-
-    # Extraindo URI para leitura de objeto JSON
-    bucket_name = "cloudgeass-mock-bucket-04"
-    object_key = f"{file_ext}/anomesdia=20230117/file.{file_ext}"
-    s3_uri = f"s3://{bucket_name}/{object_key}"
-
-    # Gerando DataFrame com base em dados mockados no s3
-    return read_s3_object(s3_uri=s3_uri)

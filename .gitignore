@@ -1,6 +1,13 @@
-# Notebooks e arquivos ipynb
-notebooks/
-**ipynb
+# tmp dir
+tmp/
+
+# kp files
+**.ppk
+**.pem
+
+# drawio temp files
+**.drawio.bkp
+**.drawio.dtmp
 
 # Arquivos auxiliares do VSCode
 .vscode

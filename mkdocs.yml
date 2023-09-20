@@ -1,51 +1,51 @@
-# Informações do projeto
+# Project main info
 site_name: cloudgeass
-site_url: https://github.com/ThiagoPanini/cloudgeass
+site_url: https://cloudgeass.readthedocs.io/en/latest/
 site_author: Thiago Panini
 site_description: >-
-  Funcionalidades relevantes para uso em aplicações construídas
-  e executadas em ambientes de cloud
+  A Python package that uses boto3's clients and resources
+  to delivery useful functions to operate with AWS services
 
-# Repositório
+# Source repo info
 repo_name: ThiagoPanini/cloudgeass
 repo_url: https://github.com/ThiagoPanini/cloudgeass
 
 # Copyright
 copyright: |
-  Copyright &copy; 2021 - 2023 <a href="https://github.com/ThiagoPanini"  target="_blank" rel="noopener">ThiagoPanini</a>
+  Copyright &copy; 2023 <a href="https://github.com/ThiagoPanini"  target="_blank" rel="noopener">ThiagoPanini</a>
 
-# Definindo diretório de páginas em markdown
+# Setting up docs dir
 docs_dir: docs/mkdocs
 
-# Configuração do tema
+# Setting up theme
 theme:
   name: material
 
-  # Apontando diretório adicional para customizações
+  # Pointing a additional dir for custom setup
   custom_dir: docs/assets
 
-  # Definindo ícone customizado no header
+  # Setting up a custom icon for site header
   icon:
-    logo: custom/geass
+    logo: custom/custom-icon
 
-  # Definindo paleta de cores nas versões "Dia" e "Noite"
+  # Setting up a color palette
   palette:
     - media: "(prefers-color-scheme: light)"
       scheme: default
-      primary: indigo
-      accent: indigo
+      primary: white
+      accent: white
       toggle:
         icon: material/weather-sunny
-        name: Clique para alterar para modo noturno
+        name: Tap for dark mode
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
-      primary: deep purple
-      accent: deep purple
+      primary: black
+      accent: black
       toggle:
         icon: material/weather-night
-        name: Clique para alterar para modo claro
+        name: Tap for light mode
 
-  # Definindo features do template
+  # Setting up template features
   features:
     - navigation.tabs
     - navigation.top
@@ -59,22 +59,25 @@ theme:
     - search.suggest
     - content.code.copy
 
-# Configurando navegação
+# Setting up navigation
 nav:
   - Home:
-    - Cloudgeass: index.md
-    - Pré Requisitos: reqs.md
-    - Motivação: motivacao.md
-  - Features:
-    - Organização da Biblioteca: features/organizacao.md
-    - Operações no S3: features/exemplos-s3.md
-  - Documentação Oficial:
-    - s3.py: mkdocstrings/s3-docs.md
-    - secrets.py: mkdocstrings/secrets-docs.md
-    - Funcionalidades Úteis: mkdocstrings/other-functions.md
+    - cloudgeass: index.md
+    - A draw.io view: architecture.md
+    - Library structure: library-structure.md
+    - Design and colors: design.md
+  - Documentation:
+    - S3: mkdocstrings/s3.md
+    - EC2: mkdocstrings/ec2.md
+    - Secrets Manager: mkdocstrings/secrets.md
+  - Demos:
+    - About demos: demos/about-demos.md
+    - S3 module demos:
+      - list_buckets(): demos/s3/list-buckets.md
+  - Contributing: contributing/contributing.md
   - FAQ: faq/faq.md
 
-# Extensões do MkDocs
+# Setting up MkDocs extensions
 markdown_extensions:
   - pymdownx.tasklist:
       custom_checkbox: true
@@ -96,11 +99,17 @@ markdown_extensions:
       options:
         custom_icons:
           - overrides/.icons
+  - attr_list
+  - md_in_html
 
-# Definindo customizações personalizadas
+# Custom CSS
 extra_css:
   - stylesheets/extra.css
 
-# Definindo plugins
+# Plugins
 plugins:
+  - search:
+      lang: en
   - mkdocstrings
+  - drawio_file
+  - glightbox
