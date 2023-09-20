@@ -15,7 +15,8 @@ from cloudgeass.aws.ec2 import LOCAL_IP_URL
 
 from tests.helpers.user_inputs import (
     MOCKED_SG_NAME,
-    LOCAL_IP_MOCKED_RESPONSE
+    LOCAL_IP_MOCKED_RESPONSE,
+    MOCKED_KP_CONFIG
 )
 
 
@@ -213,3 +214,119 @@ def test_security_group_created_has_a_ssh_inbound_rule_for_a_local_ip_address(
     # Check if traffic is allowed for the given (mocked) IP address
     allowed_ip_address = sg_inbound_rules[0]["IpRanges"][0]["CidrIp"]
     assert allowed_ip_address == LOCAL_IP_MOCKED_RESPONSE + "/32"
+
+
+@pytest.mark.ec2
+@pytest.mark.create_key_pair
+@mock_ec2
+def test_create_key_pair_method_creates_a_key_pair(
+    ec2, mocked_kp_config: str = MOCKED_KP_CONFIG
+):
+    """
+    G: Given that users want to create a new key pair to connect to their EC2
+    W: When the method create_key_pair() is called
+    T: Then the new key pair must exists in the account (checked by key pair
+       ID)
+    """
+
+    # Creating a mocked key pair
+    r = ec2.create_key_pair(
+        key_name=mocked_kp_config["key_name"],
+        key_type=mocked_kp_config["key_type"],
+        key_format=mocked_kp_config["key_format"],
+        delete_if_exists=True,
+        save_file=False
+    )
+
+    # Collecting key pair information for further evaluation
+    kp_id = r["KeyPairId"]
+
+    # Retrieving a list of KPs in the account to see if the new KP exists
+    key_pairs = ec2.client.describe_key_pairs()
+    key_pairs_ids = [kp["KeyPairId"] for kp in key_pairs["KeyPairs"]]
+
+    assert kp_id in key_pairs_ids
+
+
+@pytest.mark.ec2
+@pytest.mark.create_key_pair
+@mock_ec2
+def test_kp_creation_with_a_name_that_already_exists_and_with_deletion_flag(
+    ec2, mocked_kp_config: str = MOCKED_KP_CONFIG
+):
+    """
+    G: Given that users want to create a new key pair to connect to their EC2
+    W: When the method create_key_pair() is called to create a key pair with a
+       name that already exists and the deletion flag set as True
+       (delete_if_exists=True)
+    T: Then the KP that already exists must be deleted and a new KP with the
+       same name must be created
+    """
+
+    # Creating a mocked KP just to simulate a SG that already exists
+    r = ec2.create_key_pair(
+        key_name=mocked_kp_config["key_name"],
+        key_type=mocked_kp_config["key_type"],
+        key_format=mocked_kp_config["key_format"],
+        save_file=False
+    )
+
+    # Trying to create a new KP with the same name
+    r = ec2.create_key_pair(
+        key_name=mocked_kp_config["key_name"],
+        key_type=mocked_kp_config["key_type"],
+        key_format=mocked_kp_config["key_format"],
+        delete_if_exists=True,
+        save_file=False
+    )
+
+    # Collecting key pair information for further evaluation
+    kp_id = r["KeyPairId"]
+
+    # Retrieving a list of KPs in the account to see if the new KP exists
+    key_pairs = ec2.client.describe_key_pairs()
+    key_pairs_ids = [kp["KeyPairId"] for kp in key_pairs["KeyPairs"]]
+
+    assert kp_id in key_pairs_ids
+
+
+@pytest.mark.ec2
+@pytest.mark.create_key_pair
+@mock_ec2
+def test_kp_creation_with_a_name_that_already_exists_and_without_deletion_flag(
+    ec2, mocked_kp_config: str = MOCKED_KP_CONFIG
+):
+    """
+    G: Given that users want to create a new key pair to connect to their EC2
+    W: When the method create_key_pair() is called to create a key pair with a
+       name that already exists and the deletion flag set as False
+       (delete_if_exists=False)
+    T: Then the KP that already exists must be deleted and a new KP with the
+       same name must be created
+    """
+
+    # Creating a mocked KP just to simulate a SG that already exists
+    r = ec2.create_key_pair(
+        key_name=mocked_kp_config["key_name"],
+        key_type=mocked_kp_config["key_type"],
+        key_format=mocked_kp_config["key_format"],
+        save_file=False
+    )
+
+    # Trying to create a new KP with the same name
+    r = ec2.create_key_pair(
+        key_name=mocked_kp_config["key_name"],
+        key_type=mocked_kp_config["key_type"],
+        key_format=mocked_kp_config["key_format"],
+        delete_if_exists=False,
+        save_file=False
+    )
+
+    # Collecting key pair information for further evaluation
+    kp_id = r["KeyPairId"]
+
+    # Retrieving a list of KPs in the account to see if the new KP exists
+    key_pairs = ec2.client.describe_key_pairs()
+    key_pairs_ids = [kp["KeyPairId"] for kp in key_pairs["KeyPairs"]]
+
+    assert kp_id in key_pairs_ids

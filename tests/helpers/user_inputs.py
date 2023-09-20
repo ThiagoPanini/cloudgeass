@@ -140,6 +140,13 @@ MOCKED_SG_NAME = "ssh-local-connection-sg"
 # A fake local IP address to mock the request response from LOCAL_IP_URL
 LOCAL_IP_MOCKED_RESPONSE = "172.0.0.1"
 
+# A dictionary with key pair information to test the method
+MOCKED_KP_CONFIG = {
+    "key_name": "local-connection-kp",
+    "key_type": "rsa",
+    "key_format": "ppk"
+}
+
 
 """ -------------------------------------------------
     USER INPUTS: SecretsManagerClient class
