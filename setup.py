@@ -19,7 +19,8 @@ setup(
     packages=find_packages(),
     install_requires=[
         "boto3",
-        "Faker"
+        "Faker",
+        "pyarrow"
     ],
     license='MIT',
     description="Making your life easier on doing simple tasks in AWS via "
