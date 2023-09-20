@@ -5,6 +5,10 @@ tmp/
 **.ppk
 **.pem
 
+# drawio temp files
+**.drawio.bkp
+**.drawio.dtmp
+
 # Arquivos auxiliares do VSCode
 .vscode
 
