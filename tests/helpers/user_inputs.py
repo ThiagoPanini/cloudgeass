@@ -144,7 +144,14 @@ LOCAL_IP_MOCKED_RESPONSE = "172.0.0.1"
 MOCKED_KP_CONFIG = {
     "key_name": "local-connection-kp",
     "key_type": "rsa",
-    "key_format": "ppk"
+    "key_format": "ppk",
+    "path_to_save_file": "."
+}
+
+# A dictionary with EC2 information to test the creation method
+MOCKED_EC2_CONFIG = {
+    "image_id": "ami-04cb4ca688797756f",
+    "instance_type": "t2.micro"
 }
 
 

@@ -11,12 +11,15 @@ import pytest
 from moto import mock_ec2
 import responses
 
+import os
+
 from cloudgeass.aws.ec2 import LOCAL_IP_URL
 
 from tests.helpers.user_inputs import (
     MOCKED_SG_NAME,
     LOCAL_IP_MOCKED_RESPONSE,
-    MOCKED_KP_CONFIG
+    MOCKED_KP_CONFIG,
+    MOCKED_EC2_CONFIG
 )
 
 
@@ -220,7 +223,7 @@ def test_security_group_created_has_a_ssh_inbound_rule_for_a_local_ip_address(
 @pytest.mark.create_key_pair
 @mock_ec2
 def test_create_key_pair_method_creates_a_key_pair(
-    ec2, mocked_kp_config: str = MOCKED_KP_CONFIG
+    ec2, mocked_kp_config: dict = MOCKED_KP_CONFIG
 ):
     """
     G: Given that users want to create a new key pair to connect to their EC2
@@ -252,7 +255,7 @@ def test_create_key_pair_method_creates_a_key_pair(
 @pytest.mark.create_key_pair
 @mock_ec2
 def test_kp_creation_with_a_name_that_already_exists_and_with_deletion_flag(
-    ec2, mocked_kp_config: str = MOCKED_KP_CONFIG
+    ec2, mocked_kp_config: dict = MOCKED_KP_CONFIG
 ):
     """
     G: Given that users want to create a new key pair to connect to their EC2
@@ -294,7 +297,7 @@ def test_kp_creation_with_a_name_that_already_exists_and_with_deletion_flag(
 @pytest.mark.create_key_pair
 @mock_ec2
 def test_kp_creation_with_a_name_that_already_exists_and_without_deletion_flag(
-    ec2, mocked_kp_config: str = MOCKED_KP_CONFIG
+    ec2, mocked_kp_config: dict = MOCKED_KP_CONFIG
 ):
     """
     G: Given that users want to create a new key pair to connect to their EC2
@@ -330,3 +333,74 @@ def test_kp_creation_with_a_name_that_already_exists_and_without_deletion_flag(
     key_pairs_ids = [kp["KeyPairId"] for kp in key_pairs["KeyPairs"]]
 
     assert kp_id in key_pairs_ids
+
+
+@pytest.mark.ec2
+@pytest.mark.create_key_pair
+@mock_ec2
+def test_create_key_pair_method_creates_and_saves_a_key_pair_file(
+    ec2, mocked_kp_config: dict = MOCKED_KP_CONFIG
+):
+    """
+    G: Given that users want to create a new key pair to connect to their EC2
+    W: When the method create_key_pair() is called
+    T: Then the new key pair must exists in the account (checked by key pair
+       ID)
+    """
+
+    # Creating a mocked key pair
+    _ = ec2.create_key_pair(
+        key_name=mocked_kp_config["key_name"],
+        key_type=mocked_kp_config["key_type"],
+        key_format=mocked_kp_config["key_format"],
+        delete_if_exists=True,
+        save_file=True,
+        path_to_save_file=mocked_kp_config["path_to_save_file"]
+    )
+
+    # Checking if there is a new key pair file saved on disk
+    key_name = mocked_kp_config["key_name"]
+    key_format = mocked_kp_config["key_format"]
+    kp_filename = key_name + '.' + key_format
+
+    assert kp_filename in os.listdir(mocked_kp_config["path_to_save_file"])
+
+    # Tear down: deleting the kp file
+    kp_path = os.path.join(
+        mocked_kp_config["path_to_save_file"],
+        kp_filename
+    )
+    os.remove(kp_path)
+
+
+@pytest.mark.ec2
+@pytest.mark.create_ec2_instance
+@mock_ec2
+def test_create_ec2_instance_method_creates_an_ec2_instance(
+    ec2, mocked_ec2_config: dict = MOCKED_EC2_CONFIG
+):
+    """
+    G: Given that users want to create a new EC2 instance
+    W: When the method create_ec2_instance() is called
+    T: Then there must be a new EC2 instance in the account (checked by
+       instance ID)
+    """
+
+    # Creating a mocked EC2 instance
+    r = ec2.create_ec2_instance(
+        image_id=mocked_ec2_config["image_id"],
+        instance_type=mocked_ec2_config["instance_type"]
+    )
+
+    # Retrieving the instance ID for further evaluation
+    instance_id = r[0].id
+
+    # Retrieving a list of KPs in the account to see if the new KP exists
+    instances = ec2.client.describe_instances()
+    instances_ids = [
+        i["InstanceId"] for i in [
+            instance["Instances"] for instance in instances["Reservations"]
+        ][0]
+    ]
+
+    assert instance_id in instances_ids
