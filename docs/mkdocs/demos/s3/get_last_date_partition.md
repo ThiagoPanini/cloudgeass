@@ -5,12 +5,15 @@
 | | |
 | :-- | :-- |
 | 🚀 **Method** | [get_last_date_partition()](../../mkdocstrings/s3.md/#cloudgeass.aws.s3.S3Client.get_last_date_partition) |
-| 📄 **Description** | A method that enables users to get the last date partition (the most recent one) from a partitioned table stored in S3 |
+| 📄 **Description** | A method that enables users to get the last date partition (integer descending sorting) from a partitioned table stored in S3 |
 | 📦 **Acessible from** | `cloudgeass.aws.s3.S3Client` |
 
 ## Feature demo
 
-In this demo, we will get a pandas DataFrame with useful details about all objects within a bucket called `datadelivery-sor-data-282495905450-us-east-1` (adding a filter prefix to get only objects inside `br_ecommerce/`).
+First of all, suppose we have a table in the [Glue Data Catalog](https://docs.aws.amazon.com/glue/latest/dg/catalog-and-crawler.html) that receives new data every day from an Glue job Spark ETL script. All the data are stored in S3. So, we want to build another ETL proccess that reads data from this daily table but only the last updated records.
+
+The `get_last_date_partition()` method provides an easy way to look at a date partitioned table location on S3 and get the last available partition (i.e. the last date partition prefix that exists for the given table). Let's see how it works:
+
 
 ```python
 # Importing the client class
@@ -19,27 +22,28 @@ from cloudgeass.aws.s3 import S3Client
 # Creating a class instance
 s3 = S3Client()
 
-# Getting the most recent partition from a table in S3
+# Getting the last date partition from a table in S3
 last_partition = s3.get_last_date_partition(
-    bucket_name="",
-    table_prefix=""
+    bucket_name="datadelivery-sot-data-245034457829-us-east-1",
+    table_prefix="tbsot_ecommerce_data/",
+    date_partition_name="anomesdia",
+    partition_mode="name=value"
 )
 
 # Checking the result
-df_objects_report.head()
+last_partition
 ```
 
-???+ example "📽️ Getting a report of all objects within a S3 bucket"
-    ![A video gif showing the bucket_objects_report() method](https://github.com/ThiagoPanini/cloudgeass/blob/v2.0.x/docs/assets/gifs/s3-bucket_objects_report.gif?raw=true)
+???+ example "📽️ Getting the last date partition from a table stored in S3"
+    ![A video gif showing the get_last_date_partition() method](https://github.com/ThiagoPanini/cloudgeass/blob/v2.0.x/docs/assets/gifs/s3-get_last_date_partition.gif?raw=true)
 
 
 ## Additional comments
 
-This method uses a source boto3 s3 client [list_objects_v2()](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/s3/client/list_objects_v2.html) with a bucket name and a prefix parameteres to filter the data analyzed.
+???+ question "A little bit more about how the method really works"
+    Well, in simple terms, that's what happens when users call the `get_last_date_partition()` method:
 
-By using the `bucket_objects_report()` method, *cloudgeass* users can have in hands a pandas DataFrame in a friendly format that enables the extraction of many insights, such as:
-
-- The size of the largest objects in the bucket
-- The name and the file format of all objects stored in the given bucket
-- The storage class of all objects (optimization opportunities)
-- *and many others*
+    1. First, the method [bucket_objects_report()](../../mkdocstrings/s3.md/#cloudgeass.aws.s3.S3Client.bucket_objects_report) is called to return a pandas DataFrame with information about all objects within a given bucket **and a prefix** (in this case, a table prefix where the given table is stored)
+    2. Then, a list of all object keys is obtained from the pandas DataFrame gotten in the previous step
+    3. For all object keys from the previous step list, the method [get_date_partition_value_from_prefix()](../../mkdocstrings/s3.md/#cloudgeass.aws.s3.S3Client.get_date_partition_value_from_prefix) is called in order to get the value of all date partition prefix. The result of this loop is a list with all date partition values
+    4. The list are sorted in descending order and the last value is obtained (i.e. the last available date partition)
