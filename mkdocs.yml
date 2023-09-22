@@ -73,7 +73,8 @@ nav:
   - Demos:
     - About demos: demos/about-demos.md
     - S3 module demos:
-      - list_buckets(): demos/s3/list-buckets.md
+      - list_buckets(): demos/s3/list_buckets.md
+      - bucket_objects_report(): demos/s3/bucket_objects_report.md
   - Contributing: contributing/contributing.md
   - FAQ: faq/faq.md
 

@@ -23,5 +23,5 @@ s3 = S3Client()
 buckets = s3.list_buckets()
 ```
 
-???+ example "📽️ Getting the list of buckets"
-    ![A video gif showing the list_buckets() method](../../../assets/gifs/s3-list_buckets.gif)
+???+ example "📽️ Getting a list of S3 buckets"
+    ![A video gif showing the list_buckets() method](https://github.com/ThiagoPanini/cloudgeass/blob/v2.0.x/docs/assets/gifs/s3-list_buckets.gif?raw=true)
