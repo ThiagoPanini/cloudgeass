@@ -9,7 +9,7 @@
 ## Logo
 
 <figure markdown>
-  ![cloudgeass logo](https://github.com/ThiagoPanini/cloudgeass/blob/v1.2.0/docs/assets/imgs/logo.png?raw=true){ width="300" }
+  ![cloudgeass logo](https://github.com/ThiagoPanini/cloudgeass/blob/main/docs/assets/imgs/logo.png?raw=true){ width="300" }
 </figure>
 
 ## Animated intro
