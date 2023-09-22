@@ -66,14 +66,23 @@ nav:
     - A draw.io view: architecture.md
     - Library structure: library-structure.md
     - Design and colors: design.md
+
   - Documentation:
     - S3: mkdocstrings/s3.md
     - EC2: mkdocstrings/ec2.md
     - Secrets Manager: mkdocstrings/secrets.md
+
   - Demos:
     - About demos: demos/about-demos.md
     - S3 module demos:
-      - list_buckets(): demos/s3/list-buckets.md
+      - list_buckets(): demos/s3/list_buckets.md
+      - bucket_objects_report(): demos/s3/bucket_objects_report.md
+      - get_last_date_partition(): demos/s3/get_last_date_partition.md
+    - EC2 module demos:
+      - get_default_vpc_id(): demos/ec2/get_default_vpc_id.md
+    - Secrets Manager module demos:
+      - get_secret_string(): demos/secrets/get_secret_string.md
+
   - Contributing: contributing/contributing.md
   - FAQ: faq/faq.md
 

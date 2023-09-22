@@ -1,7 +1,7 @@
 # Do simple tasks in AWS as simple as possible
 
 <div align="center">
-    <br><img src="https://github.com/ThiagoPanini/cloudgeass/blob/v1.2.0/docs/assets/gifs/logo-animated-intro.gif?raw=true" alt="cloudgeass-animated-intro" width="900" height="400">
+    <br><img src="https://github.com/ThiagoPanini/cloudgeass/blob/main/docs/assets/gifs/logo-animated-intro.gif?raw=true" alt="cloudgeass-animated-intro" width="900" height="400">
 </div>
 
 
@@ -17,6 +17,13 @@ Built as a boto3 wrapper, the *cloudgeass* package aims to put together some use
 - Get a secret string from Secrets Manager
 - Launch an EC2 instance
 - *and much more*
+
+??? question "Where this name cloudgeass came from?"
+    Ha! I though you would ask me that!
+    
+    The name *cloudgeass* was inspired by a renowned japanese anime called [Code Geass](https://en.wikipedia.org/wiki/Code_Geass). If you don't know this anime, it's a gold chance to watch it for the first time. It will surprise you, believe me!
+
+    So, as a python package that has the purpose to put together some useful features and blocks of code to run in the cloud, *cloudgeass* just sound nice and fits perfectly.
 
 
 ## Quickstart

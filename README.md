@@ -1,6 +1,7 @@
 <div align="center">
-    <br><img src="https://github.com/ThiagoPanini/cloudgeass/blob/main/docs/assets/imgs/01-header-readme.png?raw=true" alt="cloudgeass-logo">
+    <br><img src="https://github.com/ThiagoPanini/cloudgeass/blob/v2.0.x/docs/assets/gifs/logo-animated-intro.gif?raw=true" alt="cloudgeass-animated-intro">
 </div>
+
 
 <div align="center">  
   <br>
@@ -8,7 +9,6 @@
   [![PyPI](https://img.shields.io/pypi/v/cloudgeass?color=purple)](https://pypi.org/project/cloudgeass/)
   ![PyPI - Downloads](https://img.shields.io/pypi/dm/cloudgeass?color=purple)
   ![PyPI - Status](https://img.shields.io/pypi/status/cloudgeass?color=purple)
-  ![GitHub commit activity](https://img.shields.io/github/commit-activity/m/ThiagoPanini/cloudgeass?color=purple)
   ![GitHub Last Commit](https://img.shields.io/github/last-commit/ThiagoPanini/cloudgeass?color=purple)
   <br>
 
@@ -18,194 +18,72 @@
 
 </div>
 
-## Table of content
-
-- [Table of content](#table-of-content)
-- [O que é o cloudgeass?](#o-que-é-o-cloudgeass)
-- [Funcionalidades presentes](#funcionalidades-presentes)
-  - [O módulo s3](#o-módulo-s3)
-- [Contatos](#contatos)
-- [Referências](#referências)
-
-___
-
-## O que é o cloudgeass?
-
-Cloudgeass é uma biblioteca Python criada para centralizar uma série de módulos, classes, métodos e funções prontas para serem utilizadas nos mais variados serviços da AWS. Inspirado em um [renomado anime japonês](https://en.wikipedia.org/wiki/Code_Geass), o **cloudgeass** visa proporcionar um maior **controle** sobre atividades e operações comumente realizadas em aplicações criadas na nuvem.
-
 > **Note**
-> Agora o *cloudgeass* possui uma **documentação oficial** no readthedocs! Acesse o [seguinte link](https://cloudgeass.readthedocs.io/pt/latest/) e confira detalhes técnicos de usabilidade, exemplos práticos e muito mais!
+> Now *cloudgeass* has an [official documentation page on readthedocs](https://cloudgeass.readthedocs.io/pt/latest/)! possui uma **documentação oficial** no readthedocs! Check it out to get access to the latest features!
+
+## Quickstart
+
+To start using the package, just install it using [pip](https://pypi.org/project/pip/) (or any other Python dependency management of your choose) as:
+
+```python
+pip install cloudgeass
+```
+
+You may want to install *cloudgeass* in a [Python virtual environment](https://docs.python.org/3/library/venv.html) to get a good control of your project or application dependencies. If you don't know what this is about, feel free to take a look at this excellent [article from Real Python](https://realpython.com/python-virtual-environments-a-primer/).
+
+## Modules
+
+Getting straight to the point, each *cloudgeass* module represents an AWS service that contains at least one class and a bunch of methods built from both boto's source client and resource for that service.
+
+In other words, some modules that you can find here are:
+
+- `cloudgeass.aws.s3` for working with S3 service
+- `cloudgeass.aws.ec2` for working with EC2 service
+- `cloudgeass.aws.secrets` for working with Secrets Manager service
+- *and some others*
+
+## Classes
+
+Each one of the aforementioned modules have at least one class that can be imported on user's application in order to provide access to all features for that given AWS service. So, we have:
+
+- `cloudgeass.aws.s3.S3Client` class with methods to operate with S3 service
+- `cloudgeass.aws.ec2.EC2Client` class with methods to operate with EC2 service
+- `cloudgeass.aws.secrets.SecretsManagerClient` class with methods to operate with Secrets Manager service
+- *and some others*
+
+## Attributes
+
+All *cloudgeass'* service classes are initialized with a set of predefined attributes to make the work easier. Those basic attributes are:
+
+| **Service class attribute** | **Description** |
+| :-- | :-- |
+| `self.logger` | A preconfigured logger object to build and stream informative log messages |
+| `self.client` | A boto3 client for the given service |
+| `self.resource` | A boto3 resource for the given service |
+
+The attributes can be externally accessed for all class instances created on an application. This means users can build an application using both *cloudgeass* and source boto3 code.
+
+## Methods
+
+Finally, each service class has its own set of methods that, in fact, enables the power of using *cloudgeass* to do simple tasks in an AWS environment. To mention some of them, we have:
+
+- [S3Client.get_last_date_partition()](./mkdocstrings/s3.md/#cloudgeass.aws.s3.S3Client.get_last_date_partition) to get the last date partition from a table stored in S3
+- [EC2Client.get_default_vpc_id()](./mkdocstrings/ec2.md/#cloudgeass.aws.ec2.EC2Client.get_default_vpc_id) to get the default VPC ID of an AWS account
+- [SecretsManagerClient.get_secret_string()](./mkdocstrings/secrets.md/#cloudgeass.aws.secrets.SecretsManagerClient.get_secret_string) to get a secret string given a secret ID
 
 ___
 
-## Funcionalidades presentes
+## Contact me
 
-Em linhas gerais, a biblioteca **cloudgeass** é divida em diferentes módulos, cada um encapsulando e consolidando funcionalidades para fins específicos. Os módulos existentes até o momento são:
+- GitHub: [@ThiagoPanini](https://github.com/ThiagoPanini)
+- LinkedIn: [Thiago Panini](https://www.linkedin.com/in/thiago-panini/)
+- Hashnode: [panini-tech-lab](https://panini.hashnode.dev/)
+- DevTo: [thiagopanini](https://dev.to/thiagopanini)
 
-- :bucket: `cloudgeass.aws.s3`: funcionalidades para operações no S3
-- :key: `cloudgeass.aws.secrets`: funcionalidades para operações no Secrets Manager
-- :soap: `cloudgeass.aws.glue`: :warning: *em ideação*
-
-
-### O módulo s3
-
-A ideia por trás do módulo `cloudgeass.aws.s3` gira em torno do fornecimento de funções e blocos de código contendo operações comumente realizadas no S3. Para navegar por todas as funcionalidades presentes, consulte o arquivo [s3.py](https://github.com/ThiagoPanini/cloudgeass/blob/main/cloudgeass/aws/s3.py) ou, se preferir, clique no _dropdown_ abaixo para assistir os vídeos de demonstrações.
-
-> **Note**
-> Vídeos marcados com ⭐ indicam _features_ provavelmente relevantes para o contexto de Analytics e são as preferidas dos usuários!
-
-<details>
-    <summary>📽️ Listando buckets de uma conta com <code>list_buckets()</code></summary>
-    <br>
-  
-https://user-images.githubusercontent.com/38161178/218567983-cc852ca5-f5df-4cf7-9b59-7408e0f309fa.mp4
-
-**Código utilizado:**
-
-```python
-from cloudgeass.aws.s3 import list_buckets
-
-buckets = list_buckets()
-buckets
-```
-</details>
-
-<details>
-    <summary>📽️ Obtendo um report de objetos de um bucket com <code>bucket_objects_report()</code></summary>
-    <br>
-
-https://user-images.githubusercontent.com/38161178/218573417-2d705b06-2ab0-4441-b845-f6afe43b8f17.mp4  
-        
-**Código utilizado:**
-
-```python
-from cloudgeass.aws.s3 import bucket_objects_report
-
-bucket_name = "nome-de-bucket-aws"
-df_objs_report = bucket_objects_report(bucket_name=bucket_name)
-
-df_objs_report.head(3)
-```
-</details>
-
-
-<details>
-    <summary>📽️ Obtendo um report de objetos apenas de um determinado prefixo (ou tabela no S3)</code></summary>
-    <br>
-
-https://user-images.githubusercontent.com/38161178/218575065-ef22a25a-4ead-4983-bf5f-fe2a5502608c.mp4
-        
-**Código utilizado:**
-
-```python
-from cloudgeass.aws.s3 import bucket_objects_report
-
-# Definindo nome de bucket e prefixo alvo da extração
-bucket_name = "nome-de-bucket-aws"
-prefix = "a-sample-prefix"
-
-df_objs_report = bucket_objects_report(bucket_name=bucket_name, prefix=prefix)
-
-df_objs_report.head(3)
-```
-</details>
-
-<details>
-    <summary>📽️ Obtendo um report de objetos de todos os buckets com <code>all_buckets_objects_report()</code></summary>
-    <br>
-
-https://user-images.githubusercontent.com/38161178/218576685-2215a62e-8b1f-4fb6-85b4-edf02d6706be.mp4
-        
-**Código utilizado:**
-
-```python
-from cloudgeass.aws.s3 import all_buckets_objects_report
-
-df_report = all_buckets_objects_report()
-df_report.head()
-```
-</details>
-
-<details>
-    <summary>📽️ Obtendo um report de objetos de todos os buckets ignorando alguns buckets</code></summary>
-    <br>
-
-https://user-images.githubusercontent.com/38161178/218577709-006b5d1c-51dc-4735-9230-cfb694126e4d.mp4
-        
-**Código utilizado:**
-
-```python
-from cloudgeass.aws.s3 import all_buckets_objects_report
-
-# Definindo lista de buckets a serem ignorados no report de objetos
-ignore_buckets = [
-    "terraglue-athena-query-results-569781470788-us-east-1",
-    "terraglue-glue-assets-569781470788-us-east-1",
-    "terraglue-sor-data-569781470788-us-east-1",
-    "terraglue-spec-data-569781470788-us-east-1"
-]
-
-# Obtendo report
-df_report = all_buckets_objects_report(exclude_buckets=ignore_buckets)
-df_report.head()
-```
-</details>
-
-<details>
-    <summary>📽️⭐ Lendo um objeto CSV, JSON ou PARQUET em um DataFrame do pandas com <code>read_s3_object()</code></summary>
-    <br>
-
-https://user-images.githubusercontent.com/38161178/218580090-385e4170-a76c-4b03-b00e-865b9e4ec05e.mp4
-        
-**Código utilizado:**
-
-```python
-from cloudgeass.aws.s3 import read_s3_object
-
-# Definindo variáveis para leitura de objeto no S3
-bucket_name = "nome-de-bucket"
-obj_prefix = "tbsot_ecommerce_br/anomesdia=20230213/run-1676319522273-part-block-0-0-r-00004-snappy.parquet"
-
-# Criando URI
-s3_uri_parquet = f"s3://{bucket_name}/{obj_prefix}"
-
-# Lendo objeto parquet
-df_parquet = read_s3_object(s3_uri_parquet)
-df_parquet.head()
-```
-</details>
-
-<details>
-    <summary>📽️⭐ Coletando última partição de tabela no S3 com <code>get_last_partition()</code></summary>
-    <br>
-         
-
-https://user-images.githubusercontent.com/38161178/218581540-82a4836b-9224-4646-a9ff-6dc6966b0132.mp4
-
-
-**Código utilizado:**
-
-```python
-from cloudgeass.aws.s3 import get_last_partition
-
-# Definindo variáveis para leitura de objeto no S3
-bucket_name = "terraglue-sot-data-569781470788-us-east-1"
-table_prefix = "tbsot_ecommerce_br"
-
-last_partition = get_last_partition(bucket_name, table_prefix)
-```
-</details>
 
 ___
 
-## Contatos
-
-- [Thiago Panini - LinkedIn](https://www.linkedin.com/in/thiago-panini/)
-- [paninitechlab @ hashnode](https://panini.hashnode.dev/)
-
-___
-
-## Referências
+## References
 
 **Python**
 

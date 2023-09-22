@@ -101,7 +101,7 @@ class SecretsManagerClient():
             ```
         """
 
-        self.logger.info(f"Retrieving secret string for secret {secret_id}")
+        self.logger.debug(f"Retrieving secret string for secret {secret_id}")
         try:
             response = self.client.get_secret_value(SecretId=secret_id)
             return response["SecretString"]
