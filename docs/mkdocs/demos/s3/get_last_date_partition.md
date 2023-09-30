@@ -10,7 +10,7 @@
 
 ## Feature demo
 
-First of all, suppose we have a table in the [Glue Data Catalog](https://docs.aws.amazon.com/glue/latest/dg/catalog-and-crawler.html) that receives new data every day from an Glue job Spark ETL script. All the data are stored in S3. So, we want to build another ETL proccess that reads data from this daily table but only the last updated records.
+First of all, suppose we have a table in the [Glue Data Catalog](https://docs.aws.amazon.com/glue/latest/dg/catalog-and-crawler.html) that receives new data every day from a Glue job Spark ETL script. All the data are stored in S3. So, we want to build another ETL proccess that reads data from this daily table but only the last updated records.
 
 The `get_last_date_partition()` method provides an easy way to look at a date partitioned table location on S3 and get the last available partition (i.e. the last date partition prefix that exists for the given table). Let's see how it works:
 

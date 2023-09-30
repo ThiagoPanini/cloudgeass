@@ -1,5 +1,5 @@
 <div align="center">
-    <br><img src="https://github.com/ThiagoPanini/cloudgeass/blob/v2.0.x/docs/assets/gifs/logo-animated-intro.gif?raw=true" alt="cloudgeass-animated-intro">
+    <br><img src="https://github.com/ThiagoPanini/cloudgeass/blob/main/docs/assets/gifs/logo-animated-intro.gif?raw=true" alt="cloudgeass-animated-intro">
 </div>
 
 
@@ -13,13 +13,13 @@
   <br>
 
   ![CI workflow](https://img.shields.io/github/actions/workflow/status/ThiagoPanini/cloudgeass/ci-main.yml?label=ci)
-  [![Documentation Status](https://readthedocs.org/projects/cloudgeass/badge/?version=latest)](https://cloudgeass.readthedocs.io/pt/latest/?badge=latest)
+  [![Documentation Status](https://readthedocs.org/projects/cloudgeass/badge/?version=latest)](https://cloudgeass.readthedocs.io/en/latest/?badge=latest)
   [![codecov](https://codecov.io/github/ThiagoPanini/cloudgeass/branch/main/graph/badge.svg?token=7HI1YGS4AA)](https://codecov.io/github/ThiagoPanini/cloudgeass)
 
 </div>
 
 > **Note**
-> Now *cloudgeass* has an [official documentation page on readthedocs](https://cloudgeass.readthedocs.io/pt/latest/)! possui uma **documentação oficial** no readthedocs! Check it out to get access to the latest features!
+> Now *cloudgeass* has an [official documentation page on readthedocs](https://cloudgeass.readthedocs.io/en/latest/)! possui uma **documentação oficial** no readthedocs! Check it out to get access to the latest features!
 
 ## Quickstart
 
