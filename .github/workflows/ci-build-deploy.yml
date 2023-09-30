@@ -4,13 +4,25 @@ on:
   push:
     branches:
       - main
-
+  
 permissions:
   id-token: write
   contents: write
   pull-requests: write
 
 jobs:
+  check-doc-improvement:
+    name: check-doc-improvement
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: "Check if this is a doc branch"
+        run: |
+          if [[ ${{ github.head_ref }} =~ ^docs[-/].* ]]; then
+            echo "Branch starts with 'docs/' - Skipping workflow"
+            exit 0
+          fi
+
   ci-pypi-publish:
     name: ci-pypi-publish
     runs-on: ubuntu-latest
@@ -33,17 +45,15 @@ jobs:
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           password: ${{ secrets.PYPI_API_TOKEN }}
-    
+
   update-release-draft:
     name: update-relase-draft
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Release Drafter
         uses: release-drafter/release-drafter@v5
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          config-name: configs/release-drafter.yml
-
-      
+          config-name: configs/release-drafter.yml     
